@@ -20,7 +20,7 @@ EOF
 do_run()
 {
     export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
-    runner=soda.unittest.testerx
+    runner=soda.engine.main
     python3 -m $runner "$@" --script "$framework_dir/$language/work.sh"
 }
 
