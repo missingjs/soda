@@ -95,7 +95,9 @@ def execute(script, testname, script_args, config, testobj):
             print('expected:', json.dumps(expected))
             print('result:', json.dumps(res))
 
-            if type(expected) != type(res):
+            def not_numeric(v):
+                return type(v) not in (int, float)
+            if type(expected) != type(res) and not_numeric(expected) and not_numeric(res):
                 print('Error: result and expected is not the same type')
                 return False
 
