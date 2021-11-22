@@ -8,7 +8,7 @@ import (
     "reflect"
     "time"
 
-    lc "soda/leetcode"
+    lc "missingjs.com/soda/leetcode"
 )
 
 // object real type -> function parse data from json serial

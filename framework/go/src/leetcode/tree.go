@@ -1,6 +1,6 @@
 package leetcode
 
-import "soda/util"
+import "missingjs.com/soda/util"
 
 type TreeNode struct {
     Val int

@@ -44,16 +44,20 @@ assert_testname()
     [ -z $testname ] && usage
 }
 
+package_name="missingjs.com/soda"
+package_version="v0.0.1"
+
 assert_testname
 case $cmd in
     new)
         create_source_file $self_dir/bootstrap.go $srcfile
+        suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
+        go mod init "$package_name/coding/$suffix"
+        go mod edit -require "$package_name@$package_version"
+        go mod edit -replace "$package_name=$self_dir/src"
         ;;
     make)
         [ -e $execfile ] && rm $execfile
-        export GOPATH=$self_dir
-        # for go1.16
-        export GO111MODULE=auto
         go build -o $execfile $srcfile && echo "Build success."
         ;;
     run)
