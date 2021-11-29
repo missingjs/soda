@@ -21,11 +21,45 @@ func init() {
     dataParsers = make(map[reflect.Type]reflect.Value)
     dataSerializers = make(map[reflect.Type]reflect.Value)
 
-    dataParsers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListCreate)
-    dataSerializers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListDump)
+    // dataParsers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListCreate)
+    // dataSerializers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListDump)
+    regParser(lc.ListCreate)
+    regSerializer(lc.ListDump)
 
-    dataParsers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeCreate)
-    dataSerializers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeDump)
+    // dataParsers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeCreate)
+    // dataSerializers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeDump)
+    regParser(lc.TreeCreate)
+    regSerializer(lc.TreeDump)
+
+    regParser(DecodeByteSlice)
+    regSerializer(EncodeByteSlice)
+
+    regParser(DecodeByteSlice2D)
+    regSerializer(EncodeByteSlice2D)
+}
+
+func regParser(function interface{}) {
+    funcType := reflect.TypeOf(function)
+    if funcType.Kind() != reflect.Func {
+        panic(fmt.Sprintf("input param must be a function"))
+    }
+    if funcType.NumIn() != 1 || funcType.NumOut() != 1 {
+        panic(fmt.Sprintf("parser function must be one in one out"))
+    }
+    outputType := funcType.Out(0)
+    dataParsers[outputType] = reflect.ValueOf(function)
+}
+
+func regSerializer(function interface{}) {
+    funcType := reflect.TypeOf(function)
+    if funcType.Kind() != reflect.Func {
+        panic(fmt.Sprintf("input param must be a function"))
+    }
+    if funcType.NumIn() != 1 || funcType.NumOut() != 1 {
+        panic(fmt.Sprintf("serializer function must be one in one out"))
+    }
+    inputType := funcType.In(0)
+    dataSerializers[inputType] = reflect.ValueOf(function)
 }
 
 type TestInput struct {
