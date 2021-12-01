@@ -112,9 +112,9 @@ def call_process(command, testobj, timeout):
         except subprocess.TimeoutExpired as ex:
             kill_all_child_processes(proc.pid)
             raise Exception(f'Time Limit Exceeded, timeout={timeout}s')
-        except:
-            logger.exception('internal error')
+        except Exception as ex:
             kill_all_child_processes(proc.pid)
+            raise ex
 
         return_code = proc.returncode
 
