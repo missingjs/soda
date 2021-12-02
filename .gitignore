@@ -4,4 +4,4 @@
 *.pyc
 Makefile.gen.*
 *.swp
-
+.idea
