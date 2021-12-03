@@ -7,6 +7,7 @@ import (
 )
 
 var logger = util.Logger
+var _used ListNode
 
 func main() {
     work := unittest.CreateWork(FUNCTION)
