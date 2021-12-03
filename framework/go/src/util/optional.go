@@ -48,7 +48,7 @@ func (this *OptionalIntSlice) UnmarshalJSON(data []byte) error {
 }
 
 func (self OptionalIntSlice) MarshalJSON() ([]byte, error) {
-    var out []interface{}
+    out := make([]interface{}, 0)
     for _, v := range self {
         if v.IsNull() {
             out = append(out, nil)
