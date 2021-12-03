@@ -1,8 +1,10 @@
 package main
 
-import _ "missingjs.com/soda/leetcode"
-import "missingjs.com/soda/unittest"
-import "missingjs.com/soda/util"
+import (
+    . "missingjs.com/soda/leetcode"
+    "missingjs.com/soda/unittest"
+    "missingjs.com/soda/util"
+)
 
 var logger = util.Logger
 
