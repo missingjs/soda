@@ -75,7 +75,10 @@ def execute(script, testname, script_args, config, testobj):
 
     try:
         command = f'{script} run {testname} {script_args}'
+        begin_time = time.time()
         response = call_process(command, testobj, config.timeout)
+        end_time = time.time()
+        total_time = end_time - begin_time
     except Exception as ex:
         print(f'Error: {ex}')
         return False
@@ -118,7 +121,8 @@ def execute(script, testname, script_args, config, testobj):
 
     print('----')
     elapse = response['elapse']
-    print(f'{elapse:.3f} ms\n')
+    print(f'solve: {elapse:.3f} ms')
+    print(f'total: {total_time * 1000:.3f} ms\n')
     return True
 
 def main():
