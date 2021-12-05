@@ -86,6 +86,31 @@ public:
     }
 };
 
+// ---- type: vector<char> ----
+template <>
+class TypedDataParser<std::vector<char>> : public DataParser {
+public:
+    virtual std::vector<char> parse(const JsonProxy& v) {
+        auto strs = v.get<std::vector<std::string>>();
+        std::vector<char> res(strs.size());
+        for (int i = 0; i < strs.size(); ++i) {
+            res[i] = strs[i][0];
+        }
+        return res;
+    }
+};
+template <>
+class TypedDataSerializer<std::vector<char>> : public DataSerializer {
+public:
+    virtual JsonProxy serialize(const std::vector<char>& chars) {
+        std::vector<std::string> strs(chars.size());
+        for (int i = 0; i < chars.size(); ++i) {
+            strs[i].push_back(chars[i]);
+        }
+        return JsonProxy::fromData(strs);
+    }
+};
+
 // ---- type: std::vector<JsonProxy> ----
 template <>
 class TypedDataParser<std::vector<JsonProxy>> : public DataParser {
