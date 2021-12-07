@@ -67,9 +67,12 @@ case $cmd in
     make)
         assert_testname
         srcfile=${testname}.java
-        assert_framework
-        echo "Compiling $srcfile ..."
-        javac -cp $(get_classpath) $SODA_JAVA_COMPILE_OPTION $srcfile && echo "Compile $srcfile OK"
+        classfile=${testname}.class
+        if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
+            assert_framework
+            echo "Compiling $srcfile ..."
+            javac -cp $(get_classpath) $SODA_JAVA_COMPILE_OPTION $srcfile && echo "Compile $srcfile OK"
+        fi
         ;;
     run)
         assert_testname

@@ -8,6 +8,7 @@ usage:
     $cmd init <work>
     $cmd new  <lang>
     $cmd run  <lang>
+    $cmd tool <lang> [options]
 EOF
     exit 1
 }
@@ -28,6 +29,9 @@ function init_work()
 soda:
   version: 2.0.1
   work_name: $work
+  run:
+    java:
+      mode: normal
 eof
 }
 
@@ -58,6 +62,16 @@ function execute()
     python3 -m $runner $work --script "$framework_dir/$ilang/work.sh"
 }
 
+function get_java_running_mode()
+{
+    python3 << eof
+import yaml
+with open("$project_file", "rt") as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
+    print(config['soda']['run']['java']['mode'])
+eof
+}
+
 case $cmd in 
     init)
         work=$2
@@ -84,7 +98,23 @@ case $cmd in
         # run test cases
         export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
         runner=soda.engine.main
-        python3 -m $runner $work --script $script
+        if [ "$ilang" == "java" ]; then
+            mode=$(get_java_running_mode)
+            if [ "$mode" == "server" ]; then
+                python3 -m $runner $work --full-command --script "$script run $work -server"
+            else
+                python3 -m $runner $work --script $script
+            fi
+        else
+            python3 -m $runner $work --script $script
+        fi
+        ;;
+    tool)
+        ilang=$2
+        check_sdk $ilang
+        script=$framework_dir/$ilang/work.sh
+        shift; shift;
+        $script "$@"
         ;;
     *)
         usage

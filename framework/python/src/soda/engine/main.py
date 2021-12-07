@@ -56,7 +56,7 @@ def parse_input(fp):
                     lines.append(lineIter.next())
             yield (config, build_test_object(lines))
 
-def execute(script, testname, script_args, config, testobj):
+def execute(script, testname, config, testobj, *, full_command=False):
     seq_number = testobj['id']
     print(f'**[{seq_number}]**')
     print(f'* {config.inputFile} <{config.seqNum}>')
@@ -74,7 +74,10 @@ def execute(script, testname, script_args, config, testobj):
         return True
 
     try:
-        command = f'{script} run {testname} {script_args}'
+        if not full_command:
+            command = f'{script} run {testname}'
+        else:
+            command = script
         begin_time = time.time()
         response = call_process(command, testobj, config.timeout)
         end_time = time.time()
@@ -133,7 +136,7 @@ def main():
     parser.add_argument('--delim', default=',')
     parser.add_argument('--verbose', action='store_true', default=False)
     parser.add_argument('--script', required=True)
-    parser.add_argument('-X', default='')
+    parser.add_argument('--full-command', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -152,8 +155,6 @@ def main():
         logger.error('No test case specified')
         sys.exit(2)
 
-    script_args = args.X
-
     counter = 0
     for infile in input_files:
         seq_in_file = 0
@@ -164,7 +165,7 @@ def main():
                 testobj['id'] = counter
                 config.inputFile = infile
                 config.seqNum = seq_in_file
-                if not execute(args.script, testname, script_args, config, testobj):
+                if not execute(args.script, testname, config, testobj, full_command=args.full_command):
                     sys.exit(3)
 
 if __name__ == '__main__':
