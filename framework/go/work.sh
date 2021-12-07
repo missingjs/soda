@@ -57,8 +57,10 @@ case $cmd in
         go mod edit -replace "$package_name=$self_dir/src"
         ;;
     make)
-        [ -e $execfile ] && rm $execfile
-        go build -o $execfile $srcfile && echo "Build success."
+#        [ -e $execfile ] && rm $execfile
+        if [[ ! -e $execfile ]] || [[ $srcfile -nt $execfile ]]; then
+            go build -o $execfile $srcfile && echo "Build success."
+        fi
         ;;
     run)
         ./$execfile
