@@ -1,0 +1,92 @@
+#!/bin/bash
+
+usage()
+{
+    local cmd=$(basename $0)
+    cat << EOF
+usage:
+    $cmd init <work>
+    $cmd new  <lang>
+    $cmd run  <lang>
+EOF
+    exit 1
+}
+
+self_dir=$(cd $(dirname $0) && pwd)
+soda_dir=$(dirname $self_dir)
+framework_dir=$soda_dir/framework
+export SODA_FRAMEWORK_DIR=$framework_dir
+project_file=soda.prj.yml
+
+cmd=$1
+
+function init_work()
+{
+    local work=$1
+    [ -e $project_file ] && { echo "$project_file already exists"; exit 2; }
+    cat >$project_file << eof
+soda:
+  version: 2.0.1
+  work_name: $work
+eof
+}
+
+function get_work_name()
+{
+    python3 << eof
+import yaml
+with open("$project_file", "rt") as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
+    print(config['soda']['work_name'])
+eof
+}
+
+function check_sdk()
+{
+    ilang=$1
+    [ -z "$ilang" ] && usage
+    sdk_dir=$framework_dir/$ilang
+    [ -e $sdk_dir ] || { echo "language '$ilang' not supported"; exit 3; }
+}
+
+function execute()
+{
+    local work=$1
+    local ilang=$2
+    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+    runner=soda.engine.main
+    python3 -m $runner $work --script "$framework_dir/$ilang/work.sh"
+}
+
+case $cmd in 
+    init)
+        work=$2
+        [ -z "$work" ] && usage
+        init_work $work
+        ;;
+    new)
+        ilang=$2
+        check_sdk $ilang
+        work=$(get_work_name)
+        $framework_dir/$ilang/work.sh new $work || exit
+        lowcase=$(echo "$work" | awk '{print tolower($0)}')
+        test_file=${lowcase}.input
+        [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
+        ;;
+    run)
+        # prepare sdk
+        ilang=$2
+        check_sdk $ilang
+        script=$framework_dir/$ilang/work.sh
+        work=$(get_work_name)
+        # build executable
+        $script make $work || exit 
+        # run test cases
+        export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+        runner=soda.engine.main
+        python3 -m $runner $work --script $script
+        ;;
+    *)
+        usage
+        ;;
+esac
