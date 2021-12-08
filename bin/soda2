@@ -5,7 +5,7 @@ usage()
     local cmd=$(basename $0)
     cat << EOF
 usage:
-    $cmd init <work>
+    $cmd init <work> [lang]
     $cmd new  <lang>
     $cmd run  <lang>
     $cmd tool <lang> [options]
@@ -33,6 +33,7 @@ soda:
     java:
       mode: normal
 eof
+    echo $project_file generated
 }
 
 function get_work_name()
@@ -72,20 +73,28 @@ with open("$project_file", "rt") as fp:
 eof
 }
 
+function create_work()
+{
+    ilang=$1
+    check_sdk $ilang
+    work=$(get_work_name)
+    $framework_dir/$ilang/work.sh new $work || exit
+    lowcase=$(echo "$work" | awk '{print tolower($0)}')
+    test_file=${lowcase}.input
+    [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
+}
+
 case $cmd in 
     init)
         work=$2
         [ -z "$work" ] && usage
         init_work $work
+        [ -z $3 ] || create_work "$3"
         ;;
     new)
         ilang=$2
-        check_sdk $ilang
-        work=$(get_work_name)
-        $framework_dir/$ilang/work.sh new $work || exit
-        lowcase=$(echo "$work" | awk '{print tolower($0)}')
-        test_file=${lowcase}.input
-        [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
+        [ -z "$ilang" ] && usage
+        create_work $ilang
         ;;
     run)
         # prepare sdk
