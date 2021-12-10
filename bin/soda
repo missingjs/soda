@@ -1,58 +1,131 @@
 #!/bin/bash
 
-self_dir=$(cd $(dirname $0) && pwd)
-top_dir=$(dirname $self_dir)
-export SODA_FRAMEWORK_DIR=$top_dir/framework
-framework_dir=$SODA_FRAMEWORK_DIR
-
 usage()
 {
-    cat>&2 << EOF
+    local cmd=$(basename $0)
+    cat << EOF
 usage:
-    $(basename $0) <lang> [options]
-
-lang: 
-    python, cpp, java, scala, ruby, go
+    $cmd init <work> [lang]
+    $cmd new  <lang>
+    $cmd run  <lang>
+    $cmd tool <lang> [options]
 EOF
     exit 1
 }
 
-do_run()
+self_dir=$(cd $(dirname $0) && pwd)
+soda_dir=$(dirname $self_dir)
+framework_dir=$soda_dir/framework
+export SODA_FRAMEWORK_DIR=$framework_dir
+project_file=soda.prj.yml
+
+cmd=$1
+
+function init_work()
 {
-    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
-    runner=soda.engine.main
-    python3 -m $runner "$@" --script "$framework_dir/$language/work.sh"
+    local work=$1
+    [ -e $project_file ] && { echo "$project_file already exists"; exit 2; }
+    cat >$project_file << eof
+soda:
+  version: 2.0.1
+  work_name: $work
+  run:
+    java:
+      mode: normal
+eof
+    echo $project_file generated
 }
 
-language=$1
-[ -z $language ] && usage
+function get_work_name()
+{
+    python3 << eof
+import yaml
+with open("$project_file", "rt") as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
+    print(config['soda']['work_name'])
+eof
+}
 
-shift
+function check_sdk()
+{
+    ilang=$1
+    [ -z "$ilang" ] && usage
+    sdk_dir=$framework_dir/$ilang
+    [ -e $sdk_dir ] || { echo "language '$ilang' not supported"; exit 3; }
+}
 
-case $language in
-    scala | ruby)
-        bash $framework_dir/$language/work.sh "$@"
+function execute()
+{
+    local work=$1
+    local ilang=$2
+    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+    runner=soda.engine.main
+    python3 -m $runner $work --script "$framework_dir/$ilang/work.sh"
+}
+
+function get_java_running_mode()
+{
+    python3 << eof
+import yaml
+with open("$project_file", "rt") as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
+    print(config['soda']['run']['java']['mode'])
+eof
+}
+
+function create_work()
+{
+    ilang=$1
+    check_sdk $ilang
+    work=$(get_work_name)
+    $framework_dir/$ilang/work.sh new $work || exit
+    lowcase=$(echo "$work" | awk '{print tolower($0)}')
+    test_file=${lowcase}.input
+    [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
+}
+
+case $cmd in 
+    init)
+        work=$2
+        [ -z "$work" ] && usage
+        init_work $work
+        [ -z $3 ] || create_work "$3"
         ;;
-    cpp | go | python | java)
-        cmd=$1
-        if [ "$cmd" == "run" ]; then
-            shift
-            do_run "$@"
-        elif [ "$cmd" == "go" ]; then
-            shift
-            bash $framework_dir/$language/work.sh make $1 && do_run "$@"
-        else
-            bash $framework_dir/$language/work.sh "$@"
-            if [ "$cmd" == "new" ]; then
-                testname=$2
-                testname=$(echo "$testname" | awk '{print tolower($0)}')
-                input_file=${testname}.input
-                [ -e $input_file ] || echo -e '#@format=case\n' > $input_file
+    new)
+        ilang=$2
+        [ -z "$ilang" ] && usage
+        create_work $ilang
+        ;;
+    run)
+        # prepare sdk
+        ilang=$2
+        check_sdk $ilang
+        script=$framework_dir/$ilang/work.sh
+        work=$(get_work_name)
+        # build executable
+        $script make $work || exit 
+        # run test cases
+        export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+        runner=soda.engine.main
+        if [ "$ilang" == "java" ]; then
+            mode=$(get_java_running_mode)
+            if [ "$mode" == "server" ]; then
+                python3 -m $runner $work --full-command --script "$script run $work -server"
+            else
+                python3 -m $runner $work --script $script
             fi
+        else
+            python3 -m $runner $work --script $script
         fi
+        ;;
+    tool)
+        ilang=$2
+        check_sdk $ilang
+        script=$framework_dir/$ilang/work.sh
+        shift; shift;
+        $script "$@"
         ;;
     *)
         usage
         ;;
 esac
-

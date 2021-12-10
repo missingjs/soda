@@ -1,0 +1,58 @@
+#!/bin/bash
+
+self_dir=$(cd $(dirname $0) && pwd)
+top_dir=$(dirname $self_dir)
+export SODA_FRAMEWORK_DIR=$top_dir/framework
+framework_dir=$SODA_FRAMEWORK_DIR
+
+usage()
+{
+    cat>&2 << EOF
+usage:
+    $(basename $0) <lang> [options]
+
+lang: 
+    python, cpp, java, scala, ruby, go
+EOF
+    exit 1
+}
+
+do_run()
+{
+    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+    runner=soda.engine.main
+    python3 -m $runner "$@" --script "$framework_dir/$language/work.sh"
+}
+
+language=$1
+[ -z $language ] && usage
+
+shift
+
+case $language in
+    scala | ruby)
+        bash $framework_dir/$language/work.sh "$@"
+        ;;
+    cpp | go | python | java)
+        cmd=$1
+        if [ "$cmd" == "run" ]; then
+            shift
+            do_run "$@"
+        elif [ "$cmd" == "go" ]; then
+            shift
+            bash $framework_dir/$language/work.sh make $1 && do_run "$@"
+        else
+            bash $framework_dir/$language/work.sh "$@"
+            if [ "$cmd" == "new" ]; then
+                testname=$2
+                testname=$(echo "$testname" | awk '{print tolower($0)}')
+                input_file=${testname}.input
+                [ -e $input_file ] || echo -e '#@format=case\n' > $input_file
+            fi
+        fi
+        ;;
+    *)
+        usage
+        ;;
+esac
+
