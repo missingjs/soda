@@ -17,11 +17,18 @@ public:
 
     // FIXME: time complexity O(n^2)
     bool operator()(const std::vector<T>& v1, const std::vector<T>& v2) const {
+        if (v1.size() != v2.size()) {
+            return false;
+        }
+
+        vector<int> used(v1.size());
         for (auto& e1 : v1) {
             bool exist = false;
-            for (auto& e2 : v2) {
-                if (is_equal(e1, e2)) {
+            for (int i = 0; i < int(v2.size()); ++i) {
+                auto& e2 = v2[i];
+                if (is_equal(e1, e2) && !used[i]) {
                     exist = true;
+                    used[i] = 1;
                     break;
                 }
             }
