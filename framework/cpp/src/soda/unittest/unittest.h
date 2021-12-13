@@ -3,6 +3,7 @@
 
 #include "middleware.h"
 #include "job.h"
+#include "validate.h"
 #include "work.h"
 
 #endif
