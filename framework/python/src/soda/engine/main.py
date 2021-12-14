@@ -119,8 +119,12 @@ def execute(script, testname, config, testobj, *, full_command=False):
 
     print(ColorText.green('SUCCESS'))
     if config.showResult:
-        print('output:')
-        print(json.dumps(response['result']))
+        print('output: ' + json.dumps(response['result']))
+        expected = testobj['expected']
+        if expected is not None:
+            print('expect: ' + json.dumps(expected))
+        else:
+            print('expect: -')
 
     print('----')
     elapse = response['elapse']
