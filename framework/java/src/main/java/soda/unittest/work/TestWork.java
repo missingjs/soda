@@ -3,7 +3,7 @@ package soda.unittest.work;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import soda.unittest.work.parse.ParserFactory;
@@ -28,7 +28,7 @@ public class TestWork {
 	
 	private Function<?,?> resultParser;
 	
-	private BiFunction<?,?,Boolean> validator;
+	private BiPredicate<?,?> validator;
 	
 	private boolean compareSerial = false;
 	
@@ -74,7 +74,7 @@ public class TestWork {
 		resultSerializer = s;
 	}
 	
-	public void setValidator(BiFunction<?,?,Boolean> v) {
+	public void setValidator(BiPredicate<?,?> v) {
 		validator = v;
 	}
 	
@@ -106,7 +106,7 @@ public class TestWork {
 		if (input.expected != null) {
 			if (!compareSerial) {
 				var expect = ((Function<Object,Object>)resultParser).apply(input.expected);
-				success = ((BiFunction<Object,Object,Boolean>)validator).apply(expect, result);
+				success = ((BiPredicate<Object,Object>)validator).test(expect, result);
 			} else {
 				success = input.expected.equals(serialResult);
 			}
