@@ -7,7 +7,7 @@ cd $self_dir
 
 [ -e soda-lib ] && rm -r soda-lib
 
-mvn clean package install
+mvn clean && mvn package && mvn install
 
 cp target/soda-java-*.jar soda-lib/
 
