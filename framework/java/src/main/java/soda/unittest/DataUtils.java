@@ -56,20 +56,26 @@ public class DataUtils {
 			throw new IllegalArgumentException("object must be an collection");
 		}
 		int[] sizes = new int[D];
-		getSizeOnDimensions(collection, sizes, 0);
+//		getSizeOnDimensions(collection, sizes, 0);
+		sizes[0] = ((Collection<Object>) collection).size();
 		Object array = Array.newInstance(elementType, sizes);
-		fillMultipleDimension((Collection<Object>) collection, array, D);
+		fillMultipleDimension((Collection<Object>) collection, array, D, elementType);
 		return array;
 	}
 	
-	private static void fillMultipleDimension(Collection<Object> coll, Object array, int k) {
+	private static void fillMultipleDimension(Collection<Object> coll, Object array, int k, Class<?> elementType) {
 		Iterator<Object> iter = coll.iterator();
 		for (int i = 0; i < Array.getLength(array); ++i) {
 			Object element = iter.next();
-			if (k == 1) {
+			if (k <= 1) {
 				Array.set(array, i, element);
 			} else {
-				fillMultipleDimension((Collection<Object>) element, Array.get(array, i), k-1);
+				Collection<Object> C = (Collection<Object>) element;
+				int[] sizes = new int[k-1];
+				sizes[0] = C.size();
+				Object a = Array.newInstance(elementType, sizes);
+				Array.set(array, i, a);
+				fillMultipleDimension((Collection<Object>) element, a, k-1, elementType);
 			}
 		}
 	}
