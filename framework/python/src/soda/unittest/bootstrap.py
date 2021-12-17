@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     init_logging()
+    from soda.unittest import Validators
     from soda.unittest.work import TestWork
 
     # step [2]: setup function
