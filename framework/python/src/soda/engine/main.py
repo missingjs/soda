@@ -49,12 +49,32 @@ def parse_input(fp):
                 with open(incFile, 'r') as incFp:
                     _content = list(filter(lambda s: len(s) > 0, map(lambda s: s.strip(), incFp)))
                     lines.extend(_content[:numArgs+1])
+            elif arg1.startswith('Input:'):
+                lines.extend(parse_input_one_line(arg1))
+                nextLine = lineIter.next()
+                if nextLine.startswith('Output:'):
+                    lines.append(nextLine.strip()[len('Output: '):])
+                else:
+                    lines.append(nextLine)
             else:
                 lines.append(arg1)
                 # include result line
                 for i in range(numArgs):
                     lines.append(lineIter.next())
             yield (config, build_test_object(lines))
+
+def parse_input_one_line(line):
+    decoder = json.JSONDecoder()
+    line = line.strip()[len('Input: '):]
+    args = []
+    while line:
+        line = line.split('=', 1)[1].strip()
+        _, index = decoder.raw_decode(line)
+        args.append(line[:index])
+        line = line[index:].strip()
+        if line and line[0] == ',':
+            line = line[1:].strip()
+    return args
 
 def execute(script, testname, config, testobj, *, full_command=False):
     seq_number = testobj['id']
