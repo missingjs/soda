@@ -128,7 +128,7 @@ public class TestWork {
 		return arguments;
 	}
 	
-	private static Method findMethod(Class<?> jobClass, String methodName) {
+	public static Method findMethod(Class<?> jobClass, String methodName) {
 		Method[] methods = jobClass.getMethods();
 		for (Method m : methods) {
 			if (m.getName().equals(methodName)) {
@@ -136,6 +136,10 @@ public class TestWork {
 			}
 		}
 		throw new RuntimeException(new NoSuchMethodException(methodName));
+	}
+
+	public static TestWork forStruct(Class<?> structClass) {
+		return StructTester.createTestWork(structClass);
 	}
 	
 }
