@@ -87,7 +87,7 @@ def execute(script, testname, config, testobj, *, full_command=False):
 
     if config.showArgs:
         print('input:')
-        print(*list(map(json.dumps, testobj['args'])))
+        print(*list(map(lambda s: s if len(s) < 100 else s[:100] + f'...[size:{len(s)}]', map(json.dumps, testobj['args']))))
 
     if config.skip:
         print(ColorText.red('SKIP') + '\n')
