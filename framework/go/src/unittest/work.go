@@ -2,8 +2,8 @@ package unittest
 
 import (
     "bufio"
-    "fmt"
     "encoding/json"
+    "fmt"
     "os"
     "reflect"
     "time"
@@ -63,9 +63,9 @@ func regSerializer(function interface{}) {
 }
 
 type TestInput struct {
-    Id int                   `json:"id"`
-    Args []json.RawMessage   `json:"args"`
-    Expected json.RawMessage `json:"expected"`
+    Id       int               `json:"id"`
+    Args     []json.RawMessage `json:"args"`
+    Expected json.RawMessage   `json:"expected"`
 }
 
 func (t *TestInput) HasExpected() bool {
@@ -73,19 +73,19 @@ func (t *TestInput) HasExpected() bool {
 }
 
 type TestOutput struct {
-    Id int              `json:"id"`
+    Id      int         `json:"id"`
     Success bool        `json:"success"`
-    Result interface{}  `json:"result"`
-    Elapse float64      `json:"elapse"`
+    Result  interface{} `json:"result"`
+    Elapse  float64     `json:"elapse"`
 }
 
 type TestWork struct {
-    Function reflect.Value
+    Function      reflect.Value
     ArgumentTypes []reflect.Type
-    ReturnType reflect.Type
+    ReturnType    reflect.Type
     CompareSerial bool
 
-    argumentParsers  []reflect.Value
+    argumentParsers []reflect.Value
     // function values
     resultSerializer reflect.Value
     resultParser     reflect.Value
@@ -96,6 +96,11 @@ func CreateWork(fn interface{}) *TestWork {
     work := new(TestWork)
     work.initialize(fn)
     return work
+}
+
+func CreateWorkForStruct(structFact interface{}) *TestWork {
+    st := newStructTester(structFact)
+    return CreateWork(st.test)
 }
 
 func (work *TestWork) SetResultSerializer(fn interface{}) {
@@ -126,7 +131,7 @@ func printErr(format string, a ...interface{}) (n int, err error) {
     return fmt.Fprintf(os.Stderr, format, a...)
 }
 
-func (work *TestWork) initialize (fn interface{}) *TestWork {
+func (work *TestWork) initialize(fn interface{}) *TestWork {
     work.Function = reflect.ValueOf(fn)
     funcType := work.Function.Type()
 
@@ -183,7 +188,7 @@ func toSerial(obj reflect.Value, serializer reflect.Value) reflect.Value {
 
 func (work *TestWork) Run() {
     input := readStdin()
-    testInput := TestInput {}
+    testInput := TestInput{}
     if err := json.Unmarshal([]byte(input), &testInput); err != nil {
         printErr("JSON unmarshaling failed: %s\n", err)
         return
@@ -201,7 +206,7 @@ func (work *TestWork) Run() {
 
     serialValue := toSerial(resultValue, work.resultSerializer)
 
-    out := TestOutput {}
+    out := TestOutput{}
     out.Id = testInput.Id
     out.Result = serialValue.Interface()
     out.Elapse = elapseMillis
@@ -235,4 +240,3 @@ func readStdin() string {
     }
     return content
 }
-
