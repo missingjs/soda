@@ -53,6 +53,11 @@ class TestWork:
         self.default_validator = lambda x, y: x == y
         self.validator = self.default_validator
 
+    @classmethod
+    def forStruct(cls, structClass):
+        from .structure import structTester
+        return cls(structTester(structClass))
+
     def setArgumentParser(self, index, parser):
         self.argumentParsers[index] = parser
 
