@@ -130,14 +130,14 @@ def execute(command, testname, config, testobj):
                 print('Error: result and expected is not the same type')
                 return False
 
-            if isinstance(res, list):
-                diff.with_list(expected, res)
-            else:
-                info = f'Wrong answer {json.dumps(res)}, but {json.dumps(expected)} expected'
-                print(info)
+            # if isinstance(res, list):
+            #     diff.with_list(expected, res)
+            # else:
+            #     info = f'Wrong answer {json.dumps(res)}, but {json.dumps(expected)} expected'
+            #     print(info)
         else:
-            info = f'Wrong answer {json.dumps(res)}'
-            print(info)
+            print('expected: [not present]', )
+            print('result:', omit_too_long(json.dumps(res)))
         return False
 
     print(ColorText.green('SUCCESS'))
