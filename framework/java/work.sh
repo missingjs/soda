@@ -37,6 +37,7 @@ testname=$2
 assert_testname() {
     [ -z $testname ] && usage
 }
+testname=$(python3 -c "print('$testname'.capitalize())")
 
 exec_test()
 {
