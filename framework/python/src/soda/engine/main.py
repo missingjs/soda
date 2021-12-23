@@ -76,7 +76,7 @@ def parse_input_one_line(line):
             line = line[1:].strip()
     return args
 
-def execute(script, testname, config, testobj, *, full_command=False):
+def execute(command, testname, config, testobj):
     seq_number = testobj['id']
     print(f'**[{seq_number}]**')
     print(f'* {config.inputFile} <{config.seqNum}>')
@@ -94,10 +94,6 @@ def execute(script, testname, config, testobj, *, full_command=False):
         return True
 
     try:
-        if not full_command:
-            command = f'{script} run {testname}'
-        else:
-            command = script
         begin_time = time.time()
         response = call_process(command, testobj, config.timeout)
         end_time = time.time()
@@ -159,8 +155,7 @@ def main():
     parser.add_argument('--testcase')
     parser.add_argument('--delim', default=',')
     parser.add_argument('--verbose', action='store_true', default=False)
-    parser.add_argument('--script', required=True)
-    parser.add_argument('--full-command', action='store_true', default=False)
+    parser.add_argument('--command', required=True)
 
     args = parser.parse_args()
 
@@ -189,7 +184,7 @@ def main():
                 testobj['id'] = counter
                 config.inputFile = infile
                 config.seqNum = seq_in_file
-                if not execute(args.script, testname, config, testobj, full_command=args.full_command):
+                if not execute(args.command, testname, config, testobj):
                     sys.exit(3)
 
 if __name__ == '__main__':

@@ -107,16 +107,11 @@ case $cmd in
         # run test cases
         export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
         runner=soda.engine.main
-        if [ "$ilang" == "java" ]; then
-            mode=$(get_java_running_mode)
-            if [ "$mode" == "server" ]; then
-                python3 -m $runner $work --full-command --script "$script run $work -server"
-            else
-                python3 -m $runner $work --script $script
-            fi
-        else
-            python3 -m $runner $work --script $script
+        commandStr="$script run $work"
+        if [ "$ilang" == "java" -a "$(get_java_running_mode)" == "server" ]; then
+            commandStr="$script run $work -server"
         fi
+        python3 -m $runner $work --command "$commandStr"
         ;;
     tool)
         ilang=$2
