@@ -2,6 +2,7 @@ package unittest
 
 import (
     "bufio"
+    "bytes"
     "encoding/json"
     "fmt"
     "os"
@@ -187,11 +188,10 @@ func toSerial(obj reflect.Value, serializer reflect.Value) reflect.Value {
 }
 
 func (work *TestWork) Run() {
-    input := readStdin()
-    testInput := TestInput{}
-    if err := json.Unmarshal([]byte(input), &testInput); err != nil {
-        printErr("JSON unmarshaling failed: %s\n", err)
-        return
+    var testInput TestInput
+    input := bytesFromStdin()
+    if err := json.Unmarshal(input, &testInput); err != nil {
+        panic(fmt.Sprintf("Failed to unmarshal input: %s\n", err))
     }
 
     args := make([]reflect.Value, len(work.ArgumentTypes))
@@ -225,18 +225,22 @@ func (work *TestWork) Run() {
 
     jstring, err := json.Marshal(out)
     if err != nil {
-        printErr("JSON marshaling failed: %s\n", err)
-        return
+        panic(fmt.Sprintf("JSON marshaling failed: %s\n", err))
     }
     fmt.Print(string(jstring))
 }
 
-func readStdin() string {
-    scanner := bufio.NewScanner(os.Stdin)
-    content := ""
-    for scanner.Scan() {
-        line := scanner.Text()
-        content += line
+func bytesFromStdin() []byte {
+    var buffer bytes.Buffer
+    reader := bufio.NewReader(os.Stdin)
+    p := make([]byte, 1024 * 50)
+    for {
+        n, err := reader.Read(p)
+        buffer.Write(p[:n])
+        if n == 0 || err != nil {
+            break
+        }
     }
-    return content
+    return buffer.Bytes()
 }
+
