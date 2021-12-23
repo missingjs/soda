@@ -76,6 +76,13 @@ def parse_input_one_line(line):
             line = line[1:].strip()
     return args
 
+def omit_too_long(s, prefix=60, suffix=10):
+    size = len(s)
+    if size < 100:
+        return s
+    else:
+        return s[:prefix] + f'...({size-prefix-suffix} chars)...' + s[-suffix:]
+
 def execute(command, testname, config, testobj):
     seq_number = testobj['id']
     print(f'**[{seq_number}]**')
@@ -87,13 +94,7 @@ def execute(command, testname, config, testobj):
 
     if config.showArgs:
         print('input:')
-        def omit_str(s):
-            size = len(s)
-            if size < 100:
-                return s
-            else:
-                return s[:60] + f'...({size-70} chars)...' + s[-10:]
-        print(*list(map(omit_str, map(json.dumps, testobj['args']))))
+        print(*list(map(omit_too_long, map(json.dumps, testobj['args']))))
 
     if config.skip:
         print(ColorText.red('SKIP') + '\n')
@@ -120,8 +121,8 @@ def execute(command, testname, config, testobj):
                 print('Error: result is null')
                 return False
 
-            print('expected:', json.dumps(expected))
-            print('result:', json.dumps(res))
+            print('expected:', omit_too_long(json.dumps(expected)))
+            print('result:', omit_too_long(json.dumps(res)))
 
             def not_numeric(v):
                 return type(v) not in (int, float)
@@ -141,10 +142,10 @@ def execute(command, testname, config, testobj):
 
     print(ColorText.green('SUCCESS'))
     if config.showResult:
-        print('output: ' + json.dumps(response['result']))
+        print('output: ' + omit_too_long(json.dumps(response['result'])))
         expected = testobj['expected']
         if expected is not None:
-            print('expect: ' + json.dumps(expected))
+            print('expect: ' + omit_too_long(json.dumps(expected)))
         else:
             print('expect: -')
 
