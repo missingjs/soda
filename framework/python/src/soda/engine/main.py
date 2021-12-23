@@ -87,7 +87,13 @@ def execute(command, testname, config, testobj):
 
     if config.showArgs:
         print('input:')
-        print(*list(map(lambda s: s if len(s) < 100 else s[:100] + f'...[size:{len(s)}]', map(json.dumps, testobj['args']))))
+        def omit_str(s):
+            size = len(s)
+            if size < 100:
+                return s
+            else:
+                return s[:60] + f'...({size-70} chars)...' + s[-10:]
+        print(*list(map(omit_str, map(json.dumps, testobj['args']))))
 
     if config.skip:
         print(ColorText.red('SKIP') + '\n')
