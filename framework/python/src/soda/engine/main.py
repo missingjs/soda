@@ -77,6 +77,9 @@ def parse_input_one_line(line):
     return args
 
 def omit_too_long(s, prefix=60, suffix=10):
+    switch = os.environ.get('OMIT_TOO_LONG')
+    if switch == 'no' or switch == 'false':
+        return s
     size = len(s)
     if size < 100:
         return s
