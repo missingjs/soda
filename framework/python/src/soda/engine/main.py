@@ -94,7 +94,8 @@ def execute(command, testname, config, testobj):
 
     if config.showArgs:
         print('input:')
-        print(*list(map(omit_too_long, map(json.dumps, testobj['args']))))
+        for s in map(omit_too_long, map(json.dumps, testobj['args'])):
+            print(s)
 
     if config.skip:
         print(ColorText.red('SKIP') + '\n')
