@@ -34,6 +34,8 @@ public class TestWork {
 	
 	private WorkSerializer workSerializer = new JacksonWorkSerializer();
 
+    private Object expectedOutput;
+
 	public TestWork(Object su, String methodName) {
 		this(su, findMethod(su.getClass(), methodName));
 	}
@@ -85,6 +87,10 @@ public class TestWork {
 	public void setWorkSerializer(WorkSerializer ws) {
 		workSerializer = ws;
 	}
+
+    public Object getExpectedOutput() {
+        return expectedOutput;
+    }
 	
 	@SuppressWarnings("unchecked")
 	public void run() throws Exception {
@@ -106,7 +112,8 @@ public class TestWork {
 		if (input.expected != null) {
 			if (!compareSerial) {
 				var expect = ((Function<Object,Object>)resultParser).apply(input.expected);
-				success = ((BiPredicate<Object,Object>)validator).test(expect, result);
+                expectedOutput = expect;
+                success = ((BiPredicate<Object, Object>) validator).test(expect, result);
 			} else {
 				success = input.expected.equals(serialResult);
 			}
