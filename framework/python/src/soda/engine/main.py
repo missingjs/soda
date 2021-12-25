@@ -40,7 +40,11 @@ def parse_input(fp):
                     if key == '%args':
                         numArgs = int(value)
                 else:
-                    config.set(key, json.loads(value))
+                    try:
+                        jvalue = json.loads(value)
+                        config.set(key, jvalue)
+                    except:
+                        config.set(key, value)
             lines = []
             arg1 = lineIter.next()
             if arg1.startswith('@include'):
@@ -89,7 +93,8 @@ def omit_too_long(s, prefix=60, suffix=10):
 def execute(command, testname, config, testobj):
     seq_number = testobj['id']
     print(f'**[{seq_number}]**')
-    print(f'* {config.inputFile} <{config.seqNum}>')
+    tag_str = f'[{config.tag}]' if config.tag else ''
+    print(f'* {config.inputFile} <{config.seqNum}> {tag_str}')
 
     if verbose:
         print('config:', json.dumps(config.cfg))
@@ -167,6 +172,7 @@ def main():
     parser.add_argument('--delim', default=',')
     parser.add_argument('--verbose', action='store_true', default=False)
     parser.add_argument('--command', required=True)
+    parser.add_argument('--tags')
 
     args = parser.parse_args()
 
@@ -185,6 +191,10 @@ def main():
         logger.error('No test case specified')
         sys.exit(2)
 
+    include_tags = set()
+    if args.tags:
+        include_tags = set(args.tags.split(','))
+
     counter = 0
     for infile in input_files:
         seq_in_file = 0
@@ -195,6 +205,9 @@ def main():
                 testobj['id'] = counter
                 config.inputFile = infile
                 config.seqNum = seq_in_file
+                if include_tags:
+                    if str(counter) not in include_tags and config.tag not in include_tags:
+                        continue
                 if not execute(args.command, testname, config, testobj):
                     sys.exit(3)
 

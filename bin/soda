@@ -7,7 +7,7 @@ usage()
 usage:
     $cmd init <work> [lang]
     $cmd new  <lang>
-    $cmd run  <lang>
+    $cmd run  <lang> [-i <tag>]
     $cmd tool <lang> [options]
 EOF
     exit 1
@@ -84,6 +84,22 @@ function create_work()
     [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
 }
 
+function parse_run_args()
+{
+    local args=("$@")
+    local i=0
+    while [ $i -lt "${#args[@]}" ]; do
+        local t=${args[$i]}
+        if [ $t == "-i" ]; then
+            ((i++))
+            tags=${args[$i]}
+        fi
+        ((i++))
+    done
+}
+
+tags=
+
 case $cmd in 
     init)
         work=$2
@@ -111,7 +127,9 @@ case $cmd in
         if [ "$ilang" == "java" -a "$(get_java_running_mode)" == "server" ]; then
             commandStr="$script run $work -server"
         fi
-        python3 -m $runner $work --command "$commandStr"
+        parse_run_args "$@"
+        [ -z "$tags" ] || tag_options="--tags $tags"
+        python3 -m $runner $work --command "$commandStr" $tag_options
         ;;
     tool)
         ilang=$2
