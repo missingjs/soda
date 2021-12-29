@@ -47,4 +47,12 @@ public class DefaultNestedInteger implements NestedInteger {
     public List<NestedInteger> getList() {
         return Collections.unmodifiableList(list);
     }
+
+    @Override
+    public String toString() {
+        if (isInteger()) {
+            return String.valueOf(value);
+        }
+        return list.toString();
+    }
 }
