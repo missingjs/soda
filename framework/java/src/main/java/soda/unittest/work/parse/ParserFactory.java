@@ -1,52 +1,78 @@
 package soda.unittest.work.parse;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-import soda.leetcode.ListHelper;
-import soda.leetcode.ListNode;
-import soda.leetcode.TreeFactory;
-import soda.leetcode.TreeNode;
+import soda.leetcode.*;
 import soda.unittest.job.codec.CodecFactory;
-import soda.unittest.job.codec.ICodec;
 
 public class ParserFactory {
-	
-	private static Map<Class<?>, Function<?,?>> parserMap;
-	
-	private static Map<Class<?>, Function<?,?>> serialMap;
+
+	private static final Map<Type, Supplier<ObjectConverter<?,?>>> factoryMap = new HashMap<>();
+
+	private static void registerFactory(TypeRef<?> ref, Supplier<ObjectConverter<?,?>> factory) {
+		registerFactory(ref.getRefType(), factory);
+	}
+
+	private static void registerFactory(Type type, Supplier<ObjectConverter<?,?>> factory) {
+		factoryMap.put(type, factory);
+	}
+
+	private static <R,J> void registerFactory(TypeRef<R> ref, Function<J,R> parser, Function<R,J> unparser) {
+		registerFactory(ref.getRefType(), parser, unparser);
+	}
+
+	private static <R,J> void registerFactory(Type type, Function<J,R> parser, Function<R,J> unparser) {
+		registerFactory(type, () -> new ObjectConverter<R, J>() {
+			@Override
+			public R fromJsonSerializable(J j) {
+				return parser.apply(j);
+			}
+
+			@Override
+			public J toJsonSerializable(R r) {
+				return unparser.apply(r);
+			}
+		});
+	}
+
+	private static Supplier<ObjectConverter<?,?>> getFactory(Type type) {
+		return factoryMap.get(type);
+	}
 	
 	static {
-		parserMap = new HashMap<>();
-		serialMap = new HashMap<>();
-		
-		parserMap.put(ListNode.class, (List<Integer> L) -> ListHelper.create(L));
-		serialMap.put(ListNode.class, (ListNode head) -> ListHelper.dump(head));
-		
-		parserMap.put(TreeNode.class, (List<Integer> L) -> TreeFactory.create(L));
-		serialMap.put(TreeNode.class, (TreeNode root) -> TreeFactory.dump(root));
+		registerFactory(ListNode.class, ListHelper::create, ListHelper::dump);
+		registerFactory(TreeNode.class, TreeFactory::create, TreeFactory::dump);
+		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Function<?,?> createParser(Class<?> klass) throws Exception {
-		Function<?,?> parser = parserMap.get(klass);
-		if (parser == null) {
-			ICodec<Object,Object> codec = (ICodec<Object,Object>) CodecFactory.create(klass);
-			parser = (Object obj) -> { return codec.decode(obj); };
-		}
-		return parser;
+	public static Function<?,?> createParser(Type type) {
+		return ((ObjectConverter<Object, Object>) createConverter(type))::fromJsonSerializable;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static Function<?,?> createSerializer(Class<?> klass) throws Exception {
-		Function<?,?> parser = serialMap.get(klass);
-		if (parser == null) {
-			ICodec<Object,Object> codec = (ICodec<Object,Object>) CodecFactory.create(klass);
-			parser = (Object obj) -> { return codec.encode(obj); };
+	public static Function<?,?> createSerializer(Type type) {
+		return ((ObjectConverter<Object, Object>) createConverter(type))::toJsonSerializable;
+	}
+
+	private static ObjectConverter<?,?> createConverter(Type type) {
+		var factory = getFactory(type);
+		if (factory != null) {
+			return factory.get();
 		}
-		return parser;
+		try {
+			if (type instanceof Class) {
+				return new CodecWrapConverter(CodecFactory.create((Class<?>) type));
+			}
+			return new DefaultObjectConverter();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 	
 }

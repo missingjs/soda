@@ -1,6 +1,7 @@
 package soda.unittest.work;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -14,9 +15,9 @@ public class TestWork {
 	
 	private Method method;
 	
-	private Class<?> returnType;
+	private Type returnType;
 	
-	private Class<?>[] argumentTypes;
+	private Type[] argumentTypes;
 	
 	private final int numArguments;
 	
@@ -44,8 +45,8 @@ public class TestWork {
 		this.solution = su;
 		this.method = method;
 		method.setAccessible(true);
-		returnType = method.getReturnType();
-		argumentTypes = method.getParameterTypes();
+		returnType = method.getGenericReturnType();
+		argumentTypes = method.getGenericParameterTypes();
 		numArguments = argumentTypes.length;
 		argumentParsers = new ArrayList<>();
 		for (int i = 0; i < numArguments; ++i) {
