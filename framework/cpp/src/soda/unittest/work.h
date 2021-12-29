@@ -56,7 +56,7 @@ struct default_validator {
 template <typename T>
 struct default_validator<T, typename std::enable_if<use_custom_serializer<T>::value>::type> {
     bool operator() (const T& t1, const T& t2) {
-        std::cerr << "Warn: you use macro USE_CUSTOM_SERIALIZER, but not custom validator specified\n";
+        std::cerr << "Warn: you use macro USE_CUSTOM_SERIALIZER, but no custom validator specified\n";
         return false;
     }
 };
