@@ -1,246 +1,161 @@
 package unittest
 
 import (
-    "bufio"
-    "bytes"
-    "encoding/json"
-    "fmt"
-    "os"
-    "reflect"
-    "time"
-
-    lc "missingjs.com/soda/leetcode"
+	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
+	"time"
 )
 
-// object real type -> function parse data from json serial
-var dataParsers map[reflect.Type]reflect.Value
-
-// object real type -> function serialize data to json serial
-var dataSerializers map[reflect.Type]reflect.Value
-
-func init() {
-    dataParsers = make(map[reflect.Type]reflect.Value)
-    dataSerializers = make(map[reflect.Type]reflect.Value)
-
-    // dataParsers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListCreate)
-    // dataSerializers[reflect.TypeOf(new(lc.ListNode))] = reflect.ValueOf(lc.ListDump)
-    regParser(lc.ListCreate)
-    regSerializer(lc.ListDump)
-
-    // dataParsers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeCreate)
-    // dataSerializers[reflect.TypeOf(new(lc.TreeNode))] = reflect.ValueOf(lc.TreeDump)
-    regParser(lc.TreeCreate)
-    regSerializer(lc.TreeDump)
-
-    regParser(DecodeByteSlice)
-    regSerializer(EncodeByteSlice)
-
-    regParser(DecodeByteSlice2D)
-    regSerializer(EncodeByteSlice2D)
-}
-
-func regParser(function interface{}) {
-    funcType := reflect.TypeOf(function)
-    if funcType.Kind() != reflect.Func {
-        panic(fmt.Sprintf("input param must be a function"))
-    }
-    if funcType.NumIn() != 1 || funcType.NumOut() != 1 {
-        panic(fmt.Sprintf("parser function must be one in one out"))
-    }
-    outputType := funcType.Out(0)
-    dataParsers[outputType] = reflect.ValueOf(function)
-}
-
-func regSerializer(function interface{}) {
-    funcType := reflect.TypeOf(function)
-    if funcType.Kind() != reflect.Func {
-        panic(fmt.Sprintf("input param must be a function"))
-    }
-    if funcType.NumIn() != 1 || funcType.NumOut() != 1 {
-        panic(fmt.Sprintf("serializer function must be one in one out"))
-    }
-    inputType := funcType.In(0)
-    dataSerializers[inputType] = reflect.ValueOf(function)
-}
-
 type TestInput struct {
-    Id       int               `json:"id"`
-    Args     []json.RawMessage `json:"args"`
-    Expected json.RawMessage   `json:"expected"`
+	Id       int               `json:"id"`
+	Args     []json.RawMessage `json:"args"`
+	Expected json.RawMessage   `json:"expected"`
 }
 
 func (t *TestInput) HasExpected() bool {
-    return len(t.Expected) > 0 && string(t.Expected) != "null"
+	return len(t.Expected) > 0 && string(t.Expected) != "null"
 }
 
 type TestOutput struct {
-    Id      int         `json:"id"`
-    Success bool        `json:"success"`
-    Result  interface{} `json:"result"`
-    Elapse  float64     `json:"elapse"`
+	Id      int         `json:"id"`
+	Success bool        `json:"success"`
+	Result  interface{} `json:"result"`
+	Elapse  float64     `json:"elapse"`
 }
 
 type TestWork struct {
-    Function      reflect.Value
-    ArgumentTypes []reflect.Type
-    ReturnType    reflect.Type
-    CompareSerial bool
+	Function      reflect.Value
+	ArgumentTypes []reflect.Type
+	ReturnType    reflect.Type
+	CompareSerial bool
 
-    argumentParsers []reflect.Value
-    // function values
-    resultSerializer reflect.Value
-    resultParser     reflect.Value
-    validator        reflect.Value
+	argumentParsers []reflect.Value
+	// function values
+	resultSerializer reflect.Value
+	resultParser     reflect.Value
+	validator        reflect.Value
 }
 
 func CreateWork(fn interface{}) *TestWork {
-    work := new(TestWork)
-    work.initialize(fn)
-    return work
+	work := new(TestWork)
+	work.initialize(fn)
+	return work
 }
 
 func CreateWorkForStruct(structFact interface{}) *TestWork {
-    st := newStructTester(structFact)
-    return CreateWork(st.test)
+	st := newStructTester(structFact)
+	return CreateWork(st.test)
 }
 
 func (work *TestWork) SetResultSerializer(fn interface{}) {
-    work.resultSerializer = reflect.ValueOf(fn)
+	work.resultSerializer = reflect.ValueOf(fn)
 }
 
 func (work *TestWork) SetResultParser(fn interface{}) {
-    work.resultParser = reflect.ValueOf(fn)
+	work.resultParser = reflect.ValueOf(fn)
 }
 
 func (work *TestWork) SetValidator(fn interface{}) {
-    work.validator = reflect.ValueOf(fn)
+	work.validator = reflect.ValueOf(fn)
 }
 
 func (work *TestWork) SetArgParser(index int, fn interface{}) {
-    work.argumentParsers[index] = reflect.ValueOf(fn)
-}
-
-func convByType(untyped json.RawMessage, rtype reflect.Type) reflect.Value {
-    v := reflect.New(rtype)
-    if err := json.Unmarshal(untyped, v.Interface()); err != nil {
-        printErr("Failed parse json: %s\n", err)
-    }
-    return v.Elem()
-}
-
-func printErr(format string, a ...interface{}) (n int, err error) {
-    return fmt.Fprintf(os.Stderr, format, a...)
+	work.argumentParsers[index] = reflect.ValueOf(fn)
 }
 
 func (work *TestWork) initialize(fn interface{}) *TestWork {
-    work.Function = reflect.ValueOf(fn)
-    funcType := work.Function.Type()
+	work.Function = reflect.ValueOf(fn)
+	funcType := work.Function.Type()
 
-    numArgs := funcType.NumIn()
-    work.ArgumentTypes = make([]reflect.Type, numArgs)
-    for i := 0; i < numArgs; i++ {
-        work.ArgumentTypes[i] = funcType.In(i)
-    }
+	numArgs := funcType.NumIn()
+	work.ArgumentTypes = make([]reflect.Type, numArgs)
+	for i := 0; i < numArgs; i++ {
+		work.ArgumentTypes[i] = funcType.In(i)
+	}
 
-    work.argumentParsers = make([]reflect.Value, numArgs)
-    work.ReturnType = funcType.Out(0)
-    valid := func(x, y interface{}) bool {
-        return reflect.DeepEqual(x, y)
-    }
-    work.validator = reflect.ValueOf(valid)
-    return work
+	work.argumentParsers = make([]reflect.Value, numArgs)
+	work.ReturnType = funcType.Out(0)
+	valid := func(x, y interface{}) bool {
+		return reflect.DeepEqual(x, y)
+	}
+	work.validator = reflect.ValueOf(valid)
+	return work
 }
 
 func vals(values ...reflect.Value) []reflect.Value {
-    return values
+	return values
 }
 
 func compareByJsonSerial(a interface{}, b interface{}) bool {
-    dataA, _ := json.Marshal(a)
-    dataB, _ := json.Marshal(b)
-    return reflect.DeepEqual(dataA, dataB)
+	dataA, _ := json.Marshal(a)
+	dataB, _ := json.Marshal(b)
+	return reflect.DeepEqual(dataA, dataB)
 }
 
-func fromSerial(ser json.RawMessage, workType reflect.Type, parser reflect.Value) reflect.Value {
-    if !parser.IsValid() {
-        parser = dataParsers[workType]
-    }
-
-    if parser.IsValid() {
-        fromType := parser.Type().In(0)
-        fromValue := convByType(ser, fromType)
-        return parser.Call(vals(fromValue))[0]
-    } else {
-        return convByType(ser, workType)
-    }
+func unmarshal(raw json.RawMessage, objType reflect.Type) interface{} {
+	return getConverter(objType).FromRawBytes(raw)
 }
 
-func toSerial(obj reflect.Value, serializer reflect.Value) reflect.Value {
-    if !serializer.IsValid() {
-        serializer = dataSerializers[obj.Type()]
-    }
-
-    if serializer.IsValid() {
-        return serializer.Call(vals(obj))[0]
-    } else {
-        return obj
-    }
+func marshal(obj interface{}, objType reflect.Type) interface{} {
+	return getConverter(objType).ToJsonSerializable(obj)
 }
 
 func (work *TestWork) Run() {
-    var testInput TestInput
-    input := bytesFromStdin()
-    if err := json.Unmarshal(input, &testInput); err != nil {
-        panic(fmt.Sprintf("Failed to unmarshal input: %s\n", err))
-    }
+	var testInput TestInput
+	input := bytesFromStdin()
+	if err := json.Unmarshal(input, &testInput); err != nil {
+		panic(fmt.Sprintf("Failed to unmarshal input: %s\n", err))
+	}
 
-    args := make([]reflect.Value, len(work.ArgumentTypes))
-    for i := 0; i < len(testInput.Args); i++ {
-        args[i] = fromSerial(testInput.Args[i], work.ArgumentTypes[i], work.argumentParsers[i])
-    }
+	args := make([]reflect.Value, len(work.ArgumentTypes))
+	for i := 0; i < len(testInput.Args); i++ {
+		args[i] = reflect.ValueOf(unmarshal(testInput.Args[i], work.ArgumentTypes[i]))
+	}
 
-    startTime := time.Now()
-    resultValue := work.Function.Call(args)[0]
-    duration := time.Since(startTime)
-    elapseMillis := float64(duration.Microseconds()) / 1000.0
+	startTime := time.Now()
+	resultValue := work.Function.Call(args)[0]
+	duration := time.Since(startTime)
+	elapseMillis := float64(duration.Microseconds()) / 1000.0
+	serialObject := marshal(resultValue.Interface(), work.ReturnType)
 
-    serialValue := toSerial(resultValue, work.resultSerializer)
+	out := TestOutput{}
+	out.Id = testInput.Id
+	out.Result = serialObject
+	out.Elapse = elapseMillis
 
-    out := TestOutput{}
-    out.Id = testInput.Id
-    out.Result = serialValue.Interface()
-    out.Elapse = elapseMillis
+	success := true
+	if testInput.HasExpected() {
+		if !work.CompareSerial {
+			expectValue := reflect.ValueOf(unmarshal(testInput.Expected, work.ReturnType))
+			success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
+		} else {
+			success = compareByJsonSerial(testInput.Expected, serialObject)
+		}
+	}
 
-    success := true
-    if testInput.HasExpected() {
-        if !work.CompareSerial {
-            expectValue := fromSerial(testInput.Expected, work.ReturnType, work.resultParser)
-            success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
-        } else {
-            success = compareByJsonSerial(testInput.Expected, serialValue.Interface())
-        }
-    }
+	out.Success = success
 
-    out.Success = success
-
-    jstring, err := json.Marshal(out)
-    if err != nil {
-        panic(fmt.Sprintf("JSON marshaling failed: %s\n", err))
-    }
-    fmt.Print(string(jstring))
+	jstring, err := json.Marshal(out)
+	if err != nil {
+		panic(fmt.Sprintf("JSON marshaling failed: %s\n", err))
+	}
+	fmt.Print(string(jstring))
 }
 
 func bytesFromStdin() []byte {
-    var buffer bytes.Buffer
-    reader := bufio.NewReader(os.Stdin)
-    p := make([]byte, 1024 * 50)
-    for {
-        n, err := reader.Read(p)
-        buffer.Write(p[:n])
-        if n == 0 || err != nil {
-            break
-        }
-    }
-    return buffer.Bytes()
+	var buffer bytes.Buffer
+	reader := bufio.NewReader(os.Stdin)
+	p := make([]byte, 1024*50)
+	for {
+		n, err := reader.Read(p)
+		buffer.Write(p[:n])
+		if n == 0 || err != nil {
+			break
+		}
+	}
+	return buffer.Bytes()
 }
-
