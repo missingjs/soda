@@ -1,10 +1,9 @@
 import json
 import sys
 import time
-from typing import *
+from typing import get_type_hints
 
-from soda.leetcode.linklist import ListNode, ListFactory
-from soda.leetcode.bitree import TreeNode, TreeFactory
+from .registry import getConverter
 
 class TestInput:
 
@@ -22,21 +21,6 @@ class TestInput:
     @property
     def args(self):
         return self.obj['args']
-
-dataConv = {
-    ListNode: {
-        'p': ListFactory.create,
-        's': ListFactory.dump
-    },
-    TreeNode: {
-        'p': TreeFactory.create,
-        's': TreeFactory.dump
-    },
-    '*': {
-        'p': lambda x: x,
-        's': lambda x: x
-    }
-}
 
 class TestWork:
 
@@ -63,15 +47,14 @@ class TestWork:
 
     def run(self):
         testInput = TestInput(json.load(sys.stdin))
-        arguments = tuple(self.fromSerial(v,t,p) for v,t,p in zip(
-                    testInput.args, self.argumentTypes, self.argumentParsers))
+        arguments = tuple(self.parse(v,t) for v,t in zip(testInput.args, self.argumentTypes))
 
         startTime = time.time()
         result = self.function(*arguments)
         endTime = time.time()
         elapseMillis = (endTime - startTime) * 1000
 
-        resultSerial = self.toSerial(result, self.returnType, self.resultSerializer)
+        resultSerial = self.serialize(result, self.returnType)
 
         output = {
             'id': testInput.id,
@@ -84,19 +67,15 @@ class TestWork:
             if self.validator == self.default_validator and self.compareSerial:
                 success = (testInput.expected == resultSerial)
             else:
-                expect = self.fromSerial(testInput.expected, self.returnType, self.resultParser)
+                expect = self.parse(testInput.expected, self.returnType)
                 success = self.validator(expect, result)
 
         output['success'] = success
         print(json.dumps(output))
 
-    def toSerial(self, workValue, workType, serializer):
-        if serializer is None:
-            serializer = dataConv.get(workType, dataConv['*'])['s']
-        return serializer(workValue)
+    def parse(self, serialValue, typeHint):
+        return getConverter(typeHint).fromJsonSerializable(serialValue)
 
-    def fromSerial(self, jsonValue, workType, parser):
-        if parser is None:
-            parser = dataConv.get(workType, dataConv['*'])['p']
-        return parser(jsonValue)
+    def serialize(self, obj, typeHint):
+        return getConverter(typeHint).toJsonSerializable(obj)
 
