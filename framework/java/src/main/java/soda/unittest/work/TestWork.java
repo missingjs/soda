@@ -2,12 +2,11 @@ package soda.unittest.work;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 
-import soda.unittest.work.parse.ParserFactory;
+import soda.unittest.work.parse.ObjectConverter;
+import soda.unittest.work.parse.ConverterFactory;
 
 public class TestWork {
 	
@@ -22,12 +21,6 @@ public class TestWork {
 	private final int numArguments;
 	
 	private TestLoader testLoader = new StdioTestLoader();
-	
-	private List<Function<?,?>> argumentParsers;
-	
-	private Function<?,?> resultSerializer;
-	
-	private Function<?,?> resultParser;
 	
 	private BiPredicate<?,?> validator;
 	
@@ -48,33 +41,11 @@ public class TestWork {
 		returnType = method.getGenericReturnType();
 		argumentTypes = method.getGenericParameterTypes();
 		numArguments = argumentTypes.length;
-		argumentParsers = new ArrayList<>();
-		for (int i = 0; i < numArguments; ++i) {
-			argumentParsers.add(null);
-		}
-		try {
-			resultSerializer = ParserFactory.createSerializer(returnType);
-			resultParser = ParserFactory.createParser(returnType);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
 		validator = (a, b) -> { return a != null ? a.equals(b) : a == b; };
 	}
 	
 	public void setTestLoader(TestLoader loader) {
 		testLoader = loader;
-	}
-	
-	public void setArgumentParser(int index, Function<?,?> parser) {
-		argumentParsers.set(index, parser);
-	}
-	
-	public void setResultParser(Function<?,?> parser) {
-		resultParser = parser;
-	}
-	
-	public void setResultSerializer(Function<?,?> s) {
-		resultSerializer = s;
 	}
 	
 	public void setValidator(BiPredicate<?,?> v) {
@@ -96,14 +67,15 @@ public class TestWork {
 	@SuppressWarnings("unchecked")
 	public void run() throws Exception {
 		WorkInput input = workSerializer.parse(testLoader.load());
-		Object[] arguments = parseArguments(input);
+		Object[] arguments = parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
 		Object result = method.invoke(solution, arguments);
 		long endNano = System.nanoTime();
 		double elapseMillis = (endNano - startNano) / 1e6;
 
-		Object serialResult = ((Function<Object,Object>)resultSerializer).apply(result);
+		var resConv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(returnType);
+		Object serialResult = resConv.toJsonSerializable(result);
 		var output = new WorkOutput();
 		output.id = input.id;
 		output.result = serialResult;
@@ -112,7 +84,7 @@ public class TestWork {
 		boolean success = true;
 		if (input.expected != null) {
 			if (!compareSerial) {
-				var expect = ((Function<Object,Object>)resultParser).apply(input.expected);
+				var expect = resConv.fromJsonSerializable(input.expected);
                 expectedOutput = expect;
                 success = ((BiPredicate<Object, Object>) validator).test(expect, result);
 			} else {
@@ -124,14 +96,11 @@ public class TestWork {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Object[] parseArguments(WorkInput input) throws Exception {
-		Object[] arguments = new Object[numArguments];
+	static Object[] parseArguments(Type[] types, List<Object> rawParams) throws Exception {
+		Object[] arguments = new Object[types.length];
 		for (int i = 0; i < arguments.length; ++i) {
-			Function<?, ?> parser = argumentParsers.get(i);
-			if (parser == null) {
-				parser = ParserFactory.createParser(argumentTypes[i]);
-			}
-			arguments[i] = ((Function<Object, Object>) parser).apply(input.args.get(i));
+			var conv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(types[i]);
+			arguments[i] = conv.fromJsonSerializable(rawParams.get(i));
 		}
 		return arguments;
 	}

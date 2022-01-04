@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import soda.leetcode.*;
 import soda.unittest.job.codec.CodecFactory;
 
-public class ParserFactory {
+public class ConverterFactory {
 
 	private static final Map<Type, Supplier<ObjectConverter<?,?>>> factoryMap = new HashMap<>();
 
@@ -50,17 +50,7 @@ public class ParserFactory {
 		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Function<?,?> createParser(Type type) {
-		return ((ObjectConverter<Object, Object>) createConverter(type))::fromJsonSerializable;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static Function<?,?> createSerializer(Type type) {
-		return ((ObjectConverter<Object, Object>) createConverter(type))::toJsonSerializable;
-	}
-
-	private static ObjectConverter<?,?> createConverter(Type type) {
+	public static ObjectConverter<?,?> createConverter(Type type) {
 		var factory = getFactory(type);
 		if (factory != null) {
 			return factory.get();
