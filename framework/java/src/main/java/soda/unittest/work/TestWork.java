@@ -38,9 +38,12 @@ public class TestWork {
 		this.solution = su;
 		this.method = method;
 		method.setAccessible(true);
-		returnType = method.getGenericReturnType();
 		argumentTypes = method.getGenericParameterTypes();
 		numArguments = argumentTypes.length;
+		returnType = method.getGenericReturnType();
+		if (returnType.equals(void.class)) {
+			returnType = argumentTypes[0];
+		}
 		validator = (a, b) -> { return a != null ? a.equals(b) : a == b; };
 	}
 	
@@ -71,6 +74,9 @@ public class TestWork {
 		
 		long startNano = System.nanoTime();
 		Object result = method.invoke(solution, arguments);
+		if (method.getGenericReturnType().equals(void.class)) {
+			result = arguments[0];
+		}
 		long endNano = System.nanoTime();
 		double elapseMillis = (endNano - startNano) / 1e6;
 

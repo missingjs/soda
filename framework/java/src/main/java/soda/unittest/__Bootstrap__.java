@@ -17,11 +17,9 @@ public class __Bootstrap__ implements Supplier<TestWork> {
     @Override
     public TestWork get() {
         var work = new TestWork(new Solution(), "METHOD");
+        // var work = TestWork.forStruct(Struct.class);
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
-        // work.setArgumentParser(index, a -> { ... });
-        // work.setResultParser(r -> { ... });
-        // work.setResultSerializer(r -> {...});
         return work;
     }
 
