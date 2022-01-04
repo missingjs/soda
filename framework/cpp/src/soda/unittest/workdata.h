@@ -25,6 +25,8 @@ public:
 
     JsonProxy getArg(int index) const;
 
+    JsonProxy getArguments() const;
+
 };
 
 class WorkOutput {

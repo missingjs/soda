@@ -46,7 +46,12 @@ JsonProxy WorkInput::getExpected() const
 
 JsonProxy WorkInput::getArg(int index) const
 {
-    return proxy["args"][index];
+    return getArguments()[index];
+}
+
+JsonProxy WorkInput::getArguments() const
+{
+    return proxy["args"];
 }
 
 WorkOutput::WorkOutput(): proxy{} {}
