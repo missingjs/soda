@@ -1,0 +1,11 @@
+#@format=case
+
+@args=1
+
+@case
+2
+1
+
+@case
+10
+36

@@ -1,0 +1,15 @@
+#@format=case
+
+@args=1
+
+@case
+["a","Z","k"]
+["a","Z","k","a","Z","k"]
+
+@case
+[]
+[]
+
+@case
+["x"]
+["x","x"]

@@ -1,0 +1,11 @@
+#@format=case
+
+@args=1
+
+@case
+"a"
+"b"
+
+@case
+"L"
+"M"

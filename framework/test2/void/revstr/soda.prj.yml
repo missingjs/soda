@@ -1,0 +1,6 @@
+soda:
+  version: 2.0.1
+  work_name: revstr
+  run:
+    java:
+      mode: normal

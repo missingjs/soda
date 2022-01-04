@@ -1,0 +1,15 @@
+#@format=case
+
+@args=1
+
+@case
+Input: s = "hello"
+Output: "holle"
+
+@case
+Input: s = "leetcode"
+Output: "leotcede"
+
+@case
+"aA"
+"Aa"
