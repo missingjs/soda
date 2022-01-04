@@ -21,14 +21,6 @@ namespace {
     }();
 }
 
-// [optional] use custom type with parser and serializer,
-// and if you use this macro, may be you should define your own validator
-// USE_CUSTOM_SERIALIZER(type)
-
-// [optional] instantiate json access type. This will increase compile time
-// #include "soda/unittest/json_access.h"
-// SODA_JSON_ACCESS_TYPE(type)
-
 int main()
 {
     // [1] create by class member function
@@ -37,12 +29,14 @@ int main()
     //
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
+    //
+    // [3] or, create for struct tester
+    // auto tester = NEW_STRUCT_TESTER(Class,Args...)
+    // ADD_FUNCTION(tester, funcname)
+    // auto worker = WorkFactory::forStruct(tester);
 
     // work->setValidator(validate);
     work->setCompareSerial(true);
-    // work->setArgParser<0,from_type>(parse_func);
-    // work->setResultParser<from_type>(parse_func);
-    // work->setResultSerializer(serial_func);
     work->run();
     delete work;
     return 0;
