@@ -1,150 +1,41 @@
 #ifndef _SODA_UNITTEST_WORK_H_
 #define _SODA_UNITTEST_WORK_H_
 
-#include <array>
 #include <chrono>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
+#include "convert.h"
 #include "loader.h"
-#include "parse.h"
-#include "special_convert.h"
+#include "struct.h"
+#include "util.h"
 #include "workdata.h"
 
 namespace soda::unittest {
 
-template <int Index, typename PL, typename Tuple>
-void do_load_arg(PL& parserList, WorkInput& wd, Tuple& args) {
-    using elem_t = typename std::tuple_element<Index, Tuple>::type;
-    using parser_t = TypedDataParser<elem_t>;
-    DataParser* ap = parserList[Index];
-    if (!ap) {
-        ap = new parser_t;
-    }
-    std::get<Index>(args) = static_cast<parser_t*>(ap)->parse(wd.getArg(Index));
-    if (!parserList[Index]) {
-        delete ap;
-    }
-}
-
-template <int Index, typename PL, typename Tuple>
-struct arg_loader {
-    static void load(PL& parserList, WorkInput& wd, Tuple& args) {
-        do_load_arg<Index>(parserList, wd, args);
-        arg_loader<Index-1,PL,Tuple>::load(parserList, wd, args);
-    }
-};
-
-template <typename PL, typename Tuple>
-struct arg_loader<0,PL,Tuple> {
-    static void load(PL& parserList, WorkInput& wd, Tuple& args) {
-        do_load_arg<0>(parserList, wd, args);
-    }
-};
-
-template <typename T, typename Enable = void>
-struct default_validator {
-    bool operator() (const T& t1, const T& t2) {
-        return t1 == t2;
-    }
-};
-
-template <typename T>
-struct default_validator<T, typename std::enable_if<use_custom_serializer<T>::value>::type> {
-    bool operator() (const T& t1, const T& t2) {
-        std::cerr << "Warn: you use macro USE_CUSTOM_SERIALIZER, but no custom validator specified\n";
-        return false;
-    }
-};
-
 template <typename Return, typename... Args>
 class TestWork {
-
-    using arguments_t = std::tuple<std::remove_reference_t<Args>...>;
-
-    constexpr static int numArgs = std::tuple_size<arguments_t>::value;
 
     std::function<Return(Args...)> func;
 
     std::shared_ptr<WorkLoader> loader;
 
-    std::array<DataParser*, numArgs> argParsers;
-
-    TypedDataSerializer<Return>* resultSerializer;
-
-    TypedDataParser<Return>* resultParser;
-
-    std::function<bool(Return&,Return&)> validator;
+    std::function<bool(const Return&, const Return&)> validator;
 
     bool compareSerial{false};
 
 public:
-    TestWork(Return (*pFunc)(Args...)): func(pFunc) {
-        initialize();
-    }
-
-    template <typename Class>
-    TestWork(Class* obj, Return (Class::*memFunc)(Args...)) {
-        auto fn = std::mem_fn(memFunc);
-        func = [=](Args&&... args) {
-            return (obj->*memFunc)(std::forward<Args>(args)...);
-        };
-        initialize();
-    }
-
     template <typename Func>
     TestWork(Func fn): func(fn) {
         initialize();
     }
 
-    ~TestWork() {
-        for (auto it = argParsers.begin(); it != argParsers.end(); ++it) {
-            delete *it;
-        }
-        delete resultSerializer;
-        delete resultParser;
-    }
-
-    template <int N, typename From, typename Func>
-    void setArgParser(Func fn) {
-        if (argParsers[N]) {
-            delete argParsers[N];
-        }
-        using to_type = std::tuple_element_t<N, arguments_t>;
-        argParsers[N] = new CustomDataParser<From, to_type, Func>(fn);
-    }
-
-    template <int N>
-    void setArgParser(TypedDataParser<std::tuple_element_t<N, arguments_t>>* parser) {
-        if (argParsers[N]) {
-            delete argParsers[N];
-        }
-        argParsers[N] = parser;
-    }
-
-    template <typename From, typename Func>
-    void setResultParser(Func fn) {
-        if (resultParser) {
-            delete resultParser;
-        }
-        resultParser = new CustomDataParser<From, Return, Func>(fn);
-    }
-
-    template <typename Func>
-    void setResultSerializer(Func fn) {
-        if (resultSerializer) {
-            delete resultSerializer;
-        }
-        resultSerializer = new CustomDataSerializer<Return, Func>(fn);
-    }
-
     template <typename Func>
     void setValidator(Func fn) {
-        validator = [=](Return& e, Return& r) -> bool { return fn(e, r); };
+        validator = [=](const Return& e, const Return& r) -> bool { return fn(e, r); };
     }
 
     void setCompareSerial(bool b) {
@@ -153,8 +44,7 @@ public:
 
     void run() {
         WorkInput input {loader->load()};
-        arguments_t arguments;
-        loadArgs(input, arguments);
+        auto arguments = ArgumentLoader<Args...>::load(input.getArguments());
 
         auto caller = [&](auto&&... args) {
             return func(std::forward<decltype(args)>(args)...);
@@ -167,7 +57,8 @@ public:
         auto elapseMicro = duration_cast<microseconds>(endMicro - startMicro).count();
         auto elapseMillis = elapseMicro / 1000.0;
 
-        auto json_res = resultSerializer->serialize(result);
+        auto resConv = ConverterFactory::create<Return>();
+        auto json_res = resConv->toJsonSerializable(result);
 
         WorkOutput output;
         output.setId(input.getId());
@@ -177,7 +68,7 @@ public:
         bool success = true;
         if (input.hasExpected()) {
             if (!compareSerial) {
-                auto expect = resultParser->parse(input.getExpected());
+                auto expect = resConv->fromJsonSerializable(input.getExpected());
                 success = validator(expect, result);
             } else {
                 success = (input.getExpected() == json_res);
@@ -191,17 +82,7 @@ public:
 private:
     void initialize() {
         loader = LoaderFactory::byStdin();
-        for (auto it = argParsers.begin(); it != argParsers.end(); ++it) {
-            *it = nullptr;
-        }
-        resultSerializer = new TypedDataSerializer<Return>();
-        resultParser = new TypedDataParser<Return>();
-        // validator = [](Return& e, Return& r) { return e == r; };
-        validator = default_validator<Return>();
-    }
-
-    void loadArgs(WorkInput& wd, arguments_t& args) {
-        arg_loader<numArgs-1,decltype(argParsers),arguments_t>::load(argParsers, wd, args);
+        setValidator([](const Return& e, const Return& r) { return e == r; });
     }
 
 };
@@ -215,12 +96,15 @@ public:
 
     template <typename Return, typename...Args, typename Class>
     static TestWork<Return,Args...>* create(Class* obj, Return (Class::*memFunc)(Args...)) {
-        return new TestWork<Return,Args...>(obj, memFunc);
+        auto fn = [=](Args&&... args) {
+            return (obj->*memFunc)(std::forward<Args>(args)...);
+        };
+        return new TestWork<Return,Args...>(fn);
     }
 
     template <typename Return, typename...Args, typename Class>
     static TestWork<Return,Args...>* create(Class& obj, Return (Class::*memFunc)(Args...)) {
-        return new TestWork<Return,Args...>(&obj, memFunc);
+        return create(&obj, memFunc);
     }
 
     template <typename Return, typename...Args, typename Func>
@@ -232,8 +116,37 @@ public:
     static decltype(auto) createByFunctor(FClass fn) {
         return create(fn, &FClass::operator());
     }
+
+    template <typename Arg, typename Class>
+    static decltype(auto) create(Class* obj, void(Class::*memFunc)(Arg&)) {
+        auto fn = [=](Arg& arg) -> Arg {
+            (obj->*memFunc)(arg);
+            return arg;
+        };
+        return new TestWork<Arg,Arg&>(fn);
+    }
+
+    template <typename Arg, typename Class>
+    static decltype(auto) create(Class& obj, void(Class::*memFunc)(Arg&)) {
+        return create(&obj, memFunc);
+    }
+
+    template <typename T, typename... Args>
+    static StructTester<T>* createStructTester() {
+        auto st = new StructTester<T>();
+        st->withConstructorArgs(ArgTypes<Args...>{});
+        return st;
+    }
+
+    template <typename T>
+    static decltype(auto) forStruct(StructTester<T>* st) {
+        return create(st, &StructTester<T>::test);
+    }
 };
 
 } // namespace soda::unittest
+
+#define NEW_STRUCT_TESTER(T, ...) WorkFactory::createStructTester<T,__VA_ARGS__>();
+#define ADD_FUNCTION(ts, name) ts->withFunction(#name, &StructTypeT<decltype(ts)>::name);
 
 #endif
