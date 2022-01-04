@@ -86,6 +86,16 @@ public:
 
     std::string dump() const;
 
+    bool isArray() const;
+
+    bool isBoolean() const;
+
+    bool isNumber() const;
+
+    bool isObject() const;
+
+    bool isString() const;
+
 private:
     JsonProxy expandTail();
 

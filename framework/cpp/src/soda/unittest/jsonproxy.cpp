@@ -31,6 +31,31 @@ bool JsonProxy::isNull() const
     return obj->isNull();
 }
 
+bool JsonProxy::isArray() const
+{
+    return obj->isArray();
+}
+
+bool JsonProxy::isBoolean() const
+{
+    return obj->isBoolean();
+}
+
+bool JsonProxy::isNumber() const
+{
+    return obj->isNumber();
+}
+
+bool JsonProxy::isObject() const
+{
+    return obj->isObject();
+}
+
+bool JsonProxy::isString() const
+{
+    return obj->isString();
+}
+
 bool JsonProxy::contains(const std::string& key) const
 {
     return obj->contains(key);

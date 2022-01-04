@@ -72,6 +72,31 @@ JsonObject JsonObject::array()
     return obj;
 }
 
+bool JsonObject::isArray() const
+{
+    return ptr->is_array();
+}
+
+bool JsonObject::isBoolean() const
+{
+    return ptr->is_boolean();
+}
+
+bool JsonObject::isNumber() const
+{
+    return ptr->is_number();
+}
+
+bool JsonObject::isObject() const
+{
+    return ptr->is_object();
+}
+
+bool JsonObject::isString() const
+{
+    return ptr->is_string();
+}
+
 } // namespace nmjson
 
 } // namespace soda::unittest
