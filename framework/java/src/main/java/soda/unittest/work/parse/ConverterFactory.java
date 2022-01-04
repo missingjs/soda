@@ -49,6 +49,7 @@ public class ConverterFactory {
 		registerFactory(TreeNode.class, TreeFactory::create, TreeFactory::dump);
 		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
 		registerFactory(new TypeRef<List<Character>>() {}, CharListConverter::new);
+		registerFactory(new TypeRef<List<List<Character>>>() {}, CharList2dConverter::new);
 	}
 
 	public static ObjectConverter<?,?> createConverter(Type type) {
