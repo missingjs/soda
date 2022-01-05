@@ -11,8 +11,8 @@ options:
     new <testname>
         create source file with name <testname>.go
 
-    make <testname> 
-        build executable
+    make <testname> [-f]
+        build executable, force rebuild if -f present
 
     run <testname>
         run executable
@@ -32,12 +32,7 @@ testname=$2
 srcfile=${testname}.go
 execfile=${srcfile}.out
 
-exec_test()
-{
-    shift; shift  # skip <cmd> <testname>
-    [ -e $execfile ] || { echo "$execfile not exist" >&2; exit; }
-    run_test go $execfile "$@"
-}
+force_rebuild=$3
 
 assert_testname()
 {
@@ -57,7 +52,7 @@ case $cmd in
         go mod edit -replace "$package_name=$self_dir/src"
         ;;
     make)
-#        [ -e $execfile ] && rm $execfile
+        [ "$force_rebuild" == "-f" ] && [ -e $execfile ] && rm $execfile
         if [[ ! -e $execfile ]] || [[ $srcfile -nt $execfile ]]; then
             go build -o $execfile $srcfile && echo "Build success."
         fi
