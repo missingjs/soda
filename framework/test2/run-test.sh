@@ -17,12 +17,16 @@ languages=$1
 [ -z $languages ] && usage
 [ "$languages" == "all" ] && languages="cpp python java go"
 
-while read path; do
-    directory=$(dirname $path)
-    cd $directory && echo "Enter $directory"
-    name=$(grep work_name $prj_file | awk '{print $2}')
-    for lang in $languages; do
-        soda run $lang || exit
-    done
-    cd .. && echo "Leave $directory"
-done < <(find $self_dir -name $prj_file)
+for lang in $languages; do
+    while read path; do
+        directory=$(dirname $path)
+        cd $directory && echo "[$lang] Enter $directory"
+        name=$(grep work_name $prj_file | awk '{print $2}')
+        if [ "$lang" == "go" -a "$2" == "-f" ]; then
+            soda run go -f || exit
+        else
+            soda run $lang || exit
+        fi
+        cd .. && echo -e "[$lang] Leave $directory\n"
+    done < <(find $self_dir -name $prj_file)
+done
