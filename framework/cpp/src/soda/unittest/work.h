@@ -67,11 +67,11 @@ public:
 
         bool success = true;
         if (input.hasExpected()) {
-            if (!compareSerial) {
-                auto expect = resConv->fromJsonSerializable(input.getExpected());
-                success = validator(expect, result);
-            } else {
+            if (compareSerial && !validator) {
                 success = (input.getExpected() == json_res);
+            } else {
+                auto expect = resConv->fromJsonSerializable(input.getExpected());
+                success = validator ? validator(expect, result) : expect == result;
             }
         }
         output.setSuccess(success);
@@ -82,7 +82,6 @@ public:
 private:
     void initialize() {
         loader = LoaderFactory::byStdin();
-        setValidator([](const Return& e, const Return& r) { return e == r; });
     }
 
 };
