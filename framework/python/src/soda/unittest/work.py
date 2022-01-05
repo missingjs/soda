@@ -51,6 +51,8 @@ class TestWork:
 
         startTime = time.time()
         result = self.function(*arguments)
+        if self.returnType is type(None):
+            result = arguments[0]
         endTime = time.time()
         elapseMillis = (endTime - startTime) * 1000
 
