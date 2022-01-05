@@ -44,7 +44,6 @@ public class TestWork {
 		if (returnType.equals(void.class)) {
 			returnType = argumentTypes[0];
 		}
-		validator = (a, b) -> { return a != null ? a.equals(b) : a == b; };
 	}
 	
 	public void setTestLoader(TestLoader loader) {
@@ -89,12 +88,16 @@ public class TestWork {
 		
 		boolean success = true;
 		if (input.expected != null) {
-			if (!compareSerial) {
-				var expect = resConv.fromJsonSerializable(input.expected);
-                expectedOutput = expect;
-                success = ((BiPredicate<Object, Object>) validator).test(expect, result);
-			} else {
+			if (compareSerial && validator == null) {
 				success = input.expected.equals(serialResult);
+			} else {
+				var expect = resConv.fromJsonSerializable(input.expected);
+				expectedOutput = expect;
+				if (validator != null) {
+					success = ((BiPredicate<Object, Object>) validator).test(expect, result);
+				} else {
+					success = expect.equals(result);
+				}
 			}
 		}
 		output.success = success;
