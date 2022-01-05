@@ -63,10 +63,10 @@ func (work *TestWork) initialize(fn interface{}) *TestWork {
 	if funcType.NumOut() > 0 {
 		work.ReturnType = funcType.Out(0)
 	}
-	valid := func(x, y interface{}) bool {
-		return reflect.DeepEqual(x, y)
-	}
-	work.validator = reflect.ValueOf(valid)
+	//valid := func(x, y interface{}) bool {
+	//	return reflect.DeepEqual(x, y)
+	//}
+	//work.validator = reflect.ValueOf(valid)
 	return work
 }
 
@@ -121,11 +121,15 @@ func (work *TestWork) Run() {
 
 	success := true
 	if testInput.HasExpected() {
-		if !work.CompareSerial {
-			expectValue := reflect.ValueOf(unmarshal(testInput.Expected, retType))
-			success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
-		} else {
+		if work.CompareSerial && !work.validator.IsValid() {
 			success = compareByJsonSerial(testInput.Expected, serialObject)
+		} else {
+			expectValue := reflect.ValueOf(unmarshal(testInput.Expected, retType))
+			if work.validator.IsValid() {
+				success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
+			} else {
+				success = reflect.DeepEqual(expectValue.Interface(), resultValue.Interface())
+			}
 		}
 	}
 
