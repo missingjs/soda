@@ -50,6 +50,7 @@ public class ConverterFactory {
 		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
 		registerFactory(new TypeRef<List<Character>>() {}, CharListConverter::new);
 		registerFactory(new TypeRef<List<List<Character>>>() {}, CharList2dConverter::new);
+		registerFactory(new TypeRef<List<ListNode>>() {}, ListNode1dConverter::new);
 	}
 
 	public static ObjectConverter<?,?> createConverter(Type type) {

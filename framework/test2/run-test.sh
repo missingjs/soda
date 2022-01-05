@@ -19,10 +19,10 @@ languages=$1
 
 while read path; do
     directory=$(dirname $path)
-    cd $directory
+    cd $directory && echo "Enter $directory"
     name=$(grep work_name $prj_file | awk '{print $2}')
     for lang in $languages; do
         soda run $lang || exit
     done
-    cd ..
+    cd .. && echo "Leave $directory"
 done < <(find $self_dir -name $prj_file)
