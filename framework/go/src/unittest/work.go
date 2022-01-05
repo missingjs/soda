@@ -32,12 +32,7 @@ type TestWork struct {
 	ArgumentTypes []reflect.Type
 	ReturnType    reflect.Type
 	CompareSerial bool
-
-	argumentParsers []reflect.Value
-	// function values
-	resultSerializer reflect.Value
-	resultParser     reflect.Value
-	validator        reflect.Value
+	validator     reflect.Value
 }
 
 func CreateWork(fn interface{}) *TestWork {
@@ -51,20 +46,8 @@ func CreateWorkForStruct(structFact interface{}) *TestWork {
 	return CreateWork(st.test)
 }
 
-func (work *TestWork) SetResultSerializer(fn interface{}) {
-	work.resultSerializer = reflect.ValueOf(fn)
-}
-
-func (work *TestWork) SetResultParser(fn interface{}) {
-	work.resultParser = reflect.ValueOf(fn)
-}
-
 func (work *TestWork) SetValidator(fn interface{}) {
 	work.validator = reflect.ValueOf(fn)
-}
-
-func (work *TestWork) SetArgParser(index int, fn interface{}) {
-	work.argumentParsers[index] = reflect.ValueOf(fn)
 }
 
 func (work *TestWork) initialize(fn interface{}) *TestWork {
@@ -77,8 +60,9 @@ func (work *TestWork) initialize(fn interface{}) *TestWork {
 		work.ArgumentTypes[i] = funcType.In(i)
 	}
 
-	work.argumentParsers = make([]reflect.Value, numArgs)
-	work.ReturnType = funcType.Out(0)
+	if funcType.NumOut() > 0 {
+		work.ReturnType = funcType.Out(0)
+	}
 	valid := func(x, y interface{}) bool {
 		return reflect.DeepEqual(x, y)
 	}
@@ -117,10 +101,18 @@ func (work *TestWork) Run() {
 	}
 
 	startTime := time.Now()
-	resultValue := work.Function.Call(args)[0]
+	var resultValue reflect.Value
+	retType := work.ReturnType
+	if retType != nil {
+		resultValue = work.Function.Call(args)[0]
+	} else {
+		work.Function.Call(args)
+		retType = work.ArgumentTypes[0]
+		resultValue = args[0]
+	}
 	duration := time.Since(startTime)
 	elapseMillis := float64(duration.Microseconds()) / 1000.0
-	serialObject := marshal(resultValue.Interface(), work.ReturnType)
+	serialObject := marshal(resultValue.Interface(), retType)
 
 	out := TestOutput{}
 	out.Id = testInput.Id
@@ -130,7 +122,7 @@ func (work *TestWork) Run() {
 	success := true
 	if testInput.HasExpected() {
 		if !work.CompareSerial {
-			expectValue := reflect.ValueOf(unmarshal(testInput.Expected, work.ReturnType))
+			expectValue := reflect.ValueOf(unmarshal(testInput.Expected, retType))
 			success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
 		} else {
 			success = compareByJsonSerial(testInput.Expected, serialObject)
