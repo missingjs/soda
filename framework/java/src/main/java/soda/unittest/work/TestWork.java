@@ -41,9 +41,9 @@ public class TestWork {
 		argumentTypes = method.getGenericParameterTypes();
 		numArguments = argumentTypes.length;
 		returnType = method.getGenericReturnType();
-		if (returnType.equals(void.class)) {
-			returnType = argumentTypes[0];
-		}
+//		if (returnType.equals(void.class)) {
+//			returnType = argumentTypes[0];
+//		}
 	}
 	
 	public void setTestLoader(TestLoader loader) {
@@ -72,14 +72,16 @@ public class TestWork {
 		Object[] arguments = parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
+		var retType = returnType;
 		Object result = method.invoke(solution, arguments);
-		if (method.getGenericReturnType().equals(void.class)) {
+		if (retType.equals(void.class)) {
+			retType = argumentTypes[0];
 			result = arguments[0];
 		}
 		long endNano = System.nanoTime();
 		double elapseMillis = (endNano - startNano) / 1e6;
 
-		var resConv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(returnType);
+		var resConv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(retType);
 		Object serialResult = resConv.toJsonSerializable(result);
 		var output = new WorkOutput();
 		output.id = input.id;

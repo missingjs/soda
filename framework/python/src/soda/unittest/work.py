@@ -32,8 +32,6 @@ class TestWork:
         self.compareSerial = False
 
         self.argumentParsers = [None] * len(self.argumentTypes)
-        self.resultSerializer = None
-        self.resultParser = None
         self.default_validator = lambda x, y: x == y
         self.validator = self.default_validator
 
@@ -50,13 +48,15 @@ class TestWork:
         arguments = tuple(self.parse(v,t) for v,t in zip(testInput.args, self.argumentTypes))
 
         startTime = time.time()
+        ret_type = self.returnType
         result = self.function(*arguments)
-        if self.returnType is type(None):
+        if ret_type is type(None):
+            ret_type = self.argumentTypes[0]
             result = arguments[0]
         endTime = time.time()
         elapseMillis = (endTime - startTime) * 1000
 
-        resultSerial = self.serialize(result, self.returnType)
+        resultSerial = self.serialize(result, ret_type)
 
         output = {
             'id': testInput.id,
@@ -69,7 +69,7 @@ class TestWork:
             if self.validator == self.default_validator and self.compareSerial:
                 success = (testInput.expected == resultSerial)
             else:
-                expect = self.parse(testInput.expected, self.returnType)
+                expect = self.parse(testInput.expected, ret_type)
                 success = self.validator(expect, result)
 
         output['success'] = success
