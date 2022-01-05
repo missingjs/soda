@@ -18,6 +18,21 @@ logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
 # class Solution: pass
+class Solution:
+    def integerBreak(self, n: int) -> int:
+        self.memo = [0] * 59
+        return self.solve(n)
+
+    def solve(self, n):
+        if n == 1:
+            return 1
+        if self.memo[n] > 0:
+            return self.memo[n]
+        res = 0
+        for i in range(1, n):
+            res = max(i * (n-i), i * self.solve(n-i), res)
+        self.memo[n] = res
+        return res
 
 if __name__ == '__main__':
     init_logging()
@@ -26,7 +41,7 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().FUNCTION)
+    work = TestWork(Solution().integerBreak)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 

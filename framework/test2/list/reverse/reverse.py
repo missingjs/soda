@@ -18,6 +18,15 @@ logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
 # class Solution: pass
+class Solution:
+    def reverse(self, head: ListNode) -> ListNode:
+        h = None
+        while head:
+            Next = head.next
+            head.next = h
+            h = head
+            head = Next
+        return h
 
 if __name__ == '__main__':
     init_logging()
@@ -26,7 +35,7 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().FUNCTION)
+    work = TestWork(Solution().reverse)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 

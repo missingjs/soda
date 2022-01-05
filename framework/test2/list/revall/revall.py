@@ -18,6 +18,27 @@ logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
 # class Solution: pass
+class Solution:
+    def reverseAll(self, lists: List[ListNode]) -> List[ListNode]:
+        for i in range(len(lists)):
+            lists[i] = self.reverse(lists[i])
+        i, j = 0, len(lists) - 1
+        while i < j:
+            temp = lists[i]
+            lists[i] = lists[j]
+            lists[j] = temp
+            i += 1
+            j -= 1
+        return lists
+
+    def reverse(self, head: ListNode) -> ListNode:
+        h = None
+        while head:
+            Next = head.next
+            head.next = h
+            h = head
+            head = Next
+        return h
 
 if __name__ == '__main__':
     init_logging()
@@ -26,7 +47,7 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().FUNCTION)
+    work = TestWork(Solution().reverseAll)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 

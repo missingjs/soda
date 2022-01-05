@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
 # class Solution: pass
+class Solution:
+    def doubleList(self, chars: List[str]) -> List[str]:
+        return chars + chars
 
 if __name__ == '__main__':
     init_logging()
@@ -26,7 +29,7 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().FUNCTION)
+    work = TestWork(Solution().doubleList)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 

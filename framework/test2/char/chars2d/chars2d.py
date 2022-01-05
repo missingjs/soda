@@ -18,6 +18,13 @@ logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
 # class Solution: pass
+class Solution:
+    def toUpper(self, matrix: List[List[str]]) -> List[List[str]]:
+        diff = ord('a') - ord('A')
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                matrix[i][j] = chr(ord(matrix[i][j]) - diff)
+        return matrix
 
 if __name__ == '__main__':
     init_logging()
@@ -26,7 +33,7 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().FUNCTION)
+    work = TestWork(Solution().toUpper)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 
