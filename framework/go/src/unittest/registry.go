@@ -18,6 +18,7 @@ func init() {
 	regConverter(DecodeByteSlice2D, EncodeByteSlice2D)
 	regConverter(lc.ParseNestedIntegers, lc.SerializeNestedIntegers)
 	regConverter(func(s string) byte { return s[0] }, func(c byte) string { return string([]byte{c}) })
+	regConverter(lc.ListFactory.CreateSlice, lc.ListFactory.DumpSlice)
 }
 
 func checkFunction(v reflect.Value) {
