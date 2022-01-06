@@ -3,8 +3,11 @@ package soda.unittest.work;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import soda.unittest.LoggerHelper;
 import soda.unittest.work.parse.ObjectConverter;
 import soda.unittest.work.parse.ConverterFactory;
 
@@ -30,6 +33,8 @@ public class TestWork {
 
     private Object expectedOutput;
 
+	private static ObjectMapper objectMapper = new ObjectMapper();
+
 	public TestWork(Object su, String methodName) {
 		this(su, findMethod(su.getClass(), methodName));
 	}
@@ -41,9 +46,6 @@ public class TestWork {
 		argumentTypes = method.getGenericParameterTypes();
 		numArguments = argumentTypes.length;
 		returnType = method.getGenericReturnType();
-//		if (returnType.equals(void.class)) {
-//			returnType = argumentTypes[0];
-//		}
 	}
 	
 	public void setTestLoader(TestLoader loader) {
@@ -91,14 +93,16 @@ public class TestWork {
 		boolean success = true;
 		if (input.expected != null) {
 			if (compareSerial && validator == null) {
-				success = input.expected.equals(serialResult);
+				String a = objectMapper.writeValueAsString(input.expected);
+				String b = objectMapper.writeValueAsString(serialResult);
+				success = Objects.equals(a, b);
 			} else {
 				var expect = resConv.fromJsonSerializable(input.expected);
 				expectedOutput = expect;
 				if (validator != null) {
 					success = ((BiPredicate<Object, Object>) validator).test(expect, result);
 				} else {
-					success = expect.equals(result);
+					success = Objects.equals(expect, result);
 				}
 			}
 		}
