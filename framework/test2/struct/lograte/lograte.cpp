@@ -53,9 +53,11 @@ int main()
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
 
-    auto strtester = WorkFactory::createStructTester<Logger>();
-    strtester->withFunction("shouldPrintMessage", &Logger::shouldPrintMessage);
-    auto work = WorkFactory::forStruct(strtester);
+    auto tester = WorkFactory::createStructTester<Logger>();
+    // strtester->withFunction("shouldPrintMessage", &Logger::shouldPrintMessage);
+    ADD_FUNCTION(tester, shouldPrintMessage)
+    auto work = WorkFactory::forStruct(tester);
+
     // work->setValidator(validate);
     work->setCompareSerial(true);
     work->run();

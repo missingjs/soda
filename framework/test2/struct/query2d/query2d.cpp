@@ -71,11 +71,12 @@ int main()
     //
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
-
-    // auto tester = WorkFactory::createStructTester<NumMatrix,vector<vector<int>>>();
-    // tester->withFunction("update", &NumMatrix::update);
-    // tester->withFunction("sumRegion", &NumMatrix::sumRegion);
-    auto tester = NEW_STRUCT_TESTER(NumMatrix,vector<vector<int>>)
+    //
+    // [3] or, create for struct tester
+    // auto tester = WorkFactory::createStructTester<Class,Args...>();
+    // ADD_FUNCTION(tester, funcname)
+    // auto worker = WorkFactory::forStruct(tester);
+    auto tester = WorkFactory::createStructTester<NumMatrix,vector<vector<int>>>();
     ADD_FUNCTION(tester, update)
     ADD_FUNCTION(tester, sumRegion)
     auto work = WorkFactory::forStruct(tester);
