@@ -1,5 +1,8 @@
 package soda.unittest.work;
 
+import soda.unittest.work.parse.ConverterFactory;
+import soda.unittest.work.parse.ObjectConverter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,8 @@ public class StructTester {
             method.setAccessible(true);
             var params = TestWork.parseArguments(method.getGenericParameterTypes(), (List<Object>) parameters.get(i));
             var r = method.invoke(obj, params);
-            res.add(r);
+            var conv = (ObjectConverter<Object,Object>) ConverterFactory.createConverter(method.getGenericReturnType());
+            res.add(conv.toJsonSerializable(r));
         }
         return res;
     }
