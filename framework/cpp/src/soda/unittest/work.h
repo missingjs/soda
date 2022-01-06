@@ -145,7 +145,6 @@ public:
 
 } // namespace soda::unittest
 
-// #define NEW_STRUCT_TESTER(T, ...) WorkFactory::createStructTester<T,__VA_ARGS__>();
 #define ADD_FUNCTION(ts, name) ts->withFunction(#name, &StructTypeT<decltype(ts)>::name);
 
 #endif

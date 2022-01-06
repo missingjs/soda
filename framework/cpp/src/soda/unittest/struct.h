@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "convert.h"
 #include "jsonproxy.h"
 #include "util.h"
 
@@ -61,7 +62,8 @@ public:
             };
             auto args = ArgumentLoader<Args...>::load(params);
             auto r = std::apply(caller, args);
-            return JsonProxy::fromData(r);
+            auto resConv = ConverterFactory::create<Ret>();
+            return resConv->toJsonSerializable(r);
         };
     }
 
