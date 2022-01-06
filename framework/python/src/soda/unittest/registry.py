@@ -17,7 +17,9 @@ def getConverter(typeHint):
     return converterFactoryMap.get(typeHint, defaultConverter)
 
 register(ListNode, ListFactory.create, ListFactory.dump)
+register(Optional[ListNode], ListFactory.create, ListFactory.dump)
 register(TreeNode, TreeFactory.create, TreeFactory.dump)
+register(Optional[TreeNode], TreeFactory.create, TreeFactory.dump)
 register(List[NestedInteger], parseNestedIntegers, serializeNestedIntegers)
 register(List[ListNode], lambda L: list(map(ListFactory.create, L)), lambda L: list(map(ListFactory.dump, L)))
 
