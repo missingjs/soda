@@ -130,7 +130,7 @@ def execute(command, testname, config, testobj):
                 print('Error: result is null')
                 return False
 
-            print('expected:', omit_too_long(json.dumps(expected)))
+            print('expect:', omit_too_long(json.dumps(expected)))
             print('result:', omit_too_long(json.dumps(res)))
 
             def not_numeric(v):
