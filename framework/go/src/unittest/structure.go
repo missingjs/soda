@@ -2,7 +2,6 @@ package unittest
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 	"strings"
 )
@@ -30,7 +29,8 @@ func (s *structTester) test(operations []string, parameters [][]json.RawMessage)
 		}
 		r := invokeFunction(m, parameters[i])
 		if r.IsValid() {
-			res[i] = r.Interface()
+			resType := m.Type().Out(0)
+			res[i] = marshal(r.Interface(), resType)
 		}
 	}
 	return res
@@ -41,12 +41,7 @@ func invokeFunction(fn reflect.Value, args []json.RawMessage) reflect.Value {
 	fnArgs := make([]reflect.Value, funcType.NumIn())
 	for i := 0; i < funcType.NumIn(); i++ {
 		argType := funcType.In(i)
-		argValue := reflect.New(argType)
-		if err := json.Unmarshal(args[i], argValue.Interface()); err != nil {
-			msg := fmt.Sprintf("failed to unmarshal for type %v, with content %v: %v", argType, args[i], err)
-			panic(msg)
-		}
-		fnArgs[i] = argValue.Elem()
+		fnArgs[i] = reflect.ValueOf(unmarshal(args[i], argType))
 	}
 	r := fn.Call(fnArgs)
 	if len(r) > 0 {
