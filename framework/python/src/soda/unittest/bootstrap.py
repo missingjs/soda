@@ -12,6 +12,7 @@ import sys
 from soda.leetcode.bitree import *
 from soda.leetcode.graph import *
 from soda.leetcode.linklist import *
+from soda.leetcode.nest import *
 from soda.unittest.util import init_logging
 
 logger = logging.getLogger(__name__)
