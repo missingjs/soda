@@ -1,29 +1,4 @@
-#include <cstddef>
-#include <optional>
-#include <sstream>
-
 #include "workdata.h"
-#include "json_access.h"  // must included after workdata.h
-
-using namespace std;
-
-SODA_JSON_ACCESS_TYPE(bool)
-SODA_JSON_ACCESS_TYPE(short)
-SODA_JSON_ACCESS_TYPE(int)
-SODA_JSON_ACCESS_TYPE(long long)
-SODA_JSON_ACCESS_TYPE(float)
-SODA_JSON_ACCESS_TYPE(double)
-SODA_JSON_ACCESS_TYPE(long double)
-SODA_JSON_ACCESS_TYPE(string)
-SODA_JSON_ACCESS_TYPE(nullptr_t)
-
-SODA_JSON_ACCESS_TYPE(vector<int>)
-SODA_JSON_ACCESS_TYPE(vector<vector<int>>)
-SODA_JSON_ACCESS_TYPE(vector<optional<int>>)
-SODA_JSON_ACCESS_TYPE(vector<string>)
-SODA_JSON_ACCESS_TYPE(vector<vector<string>>)
-SODA_JSON_ACCESS_TYPE(vector<optional<string>>)
-SODA_JSON_ACCESS_TYPE(vector<bool>)
 
 namespace soda::unittest {
 
@@ -82,3 +57,4 @@ std::string WorkOutput::toJSONString() const
 }
 
 } // namespace soda::unittest
+
