@@ -50,7 +50,7 @@ int main()
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
 
-    work->setValidator(Validators::vector1d<int>());
+    work->setValidator(Validators::forVector<int>(false));
     // work->setCompareSerial(true);
     work->run();
     delete work;

@@ -1,0 +1,11 @@
+#@format=case
+
+@args=1
+
+@case
+["a","bc","def"]
+[["def"],["a"],["bc"]]
+
+@case
+["d","e","g","hj","xy","vpn","nba","xcvf","reio"]
+[["reio","xcvf"],["hj","xy"],["g","d","e"],["vpn","nba"]]
