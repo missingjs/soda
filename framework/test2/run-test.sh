@@ -22,15 +22,9 @@ for lang in $languages; do
         directory=$(dirname $path)
         cd $directory && echo "[$lang] Enter $directory"
         if [ "$2" == "--clean" ]; then
-            soda clean $lang || exit
+            soda clean $lang
         fi
         soda run $lang || exit
-#        name=$(grep work_name $prj_file | awk '{print $2}')
-#        if [ "$lang" == "go" -a "$2" == "-f" ]; then
-#            soda run go -f || exit
-#        else
-#            soda run $lang || exit
-#        fi
         cd .. && echo -e "[$lang] Leave $directory\n"
     done < <(find $self_dir -name $prj_file)
 done

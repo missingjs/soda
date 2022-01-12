@@ -35,7 +35,7 @@ func main() {
     work := unittest.CreateWork(intersection)
     // OR create by struct factory
     // work := unittest.CreateWorkForStruct(Constructor)
-    work.SetValidator(unittest.Validators.Slice1d())
+    work.SetValidator(unittest.Validators.ForSlice(nil, false))
     work.CompareSerial = true
     work.Run()
 }
