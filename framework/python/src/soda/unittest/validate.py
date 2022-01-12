@@ -144,18 +144,32 @@ class UnorderListFeature(ObjectFeature):
     def isEqual(self, a: List[Any], b: List[Any]) -> bool:
         return StrategyFactory.unorderList(self.elemFeat)(a, b)
 
+class FloatFeature(ObjectFeature):
+
+    def hash(self, val: float) -> int:
+        return hash(val)
+
+    def isEqual(self, a: float, b: float) -> bool:
+        return abs(a - b) < 1e-6
+
 class Validators:
 
     @classmethod
-    def forList(cls, ordered: bool):
+    def forList(cls, objType: type, ordered: bool):
         f = StrategyFactory
-        d = GenericFeature()
+        d = cls._createFeature(objType)
         return f.list(d) if ordered else f.unorderList(d)
 
     @classmethod
-    def forList2d(cls, dim1Ordered: bool, dim2Ordered: bool):
+    def forList2d(cls, objType: type, dim1Ordered: bool, dim2Ordered: bool):
         f = StrategyFactory
-        elemFeat = GenericFeature()
+        elemFeat = cls._createFeature(objType)
         d = ListFeature(elemFeat) if dim2Ordered else UnorderListFeature(elemFeat)
         return f.list(d) if dim1Ordered else f.unorderList(d)
+
+    @classmethod
+    def _createFeature(cls, objType: type) -> ObjectFeature:
+        if objType == float:
+            return FloatFeature()
+        return GenericFeature()
 
