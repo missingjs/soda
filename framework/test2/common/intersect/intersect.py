@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # work = TestWork.forStruct(CLASS)
 
     # step [3]: setup other options
-    work.validator = Validators.forList(False)
+    work.validator = Validators.forList(int, False)
     work.compareSerial = True
     work.run()
 

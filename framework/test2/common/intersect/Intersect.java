@@ -35,7 +35,7 @@ public class Intersect implements Supplier<TestWork> {
     public TestWork get() {
         var work = new TestWork(new Solution(), "intersection");
         // var work = TestWork.forStruct(Struct.class);
-        work.setValidator(Validators.list1d());
+        work.setValidator(Validators.forList(Integer.class, false));
         // work.setCompareSerial(true);
         return work;
     }
