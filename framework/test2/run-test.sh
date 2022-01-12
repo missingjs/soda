@@ -27,4 +27,5 @@ for lang in $languages; do
         soda run $lang || exit
         cd .. && echo -e "[$lang] Leave $directory\n"
     done < <(find $self_dir -name $prj_file)
+    echo -e "[$lang] DONE\n"
 done
