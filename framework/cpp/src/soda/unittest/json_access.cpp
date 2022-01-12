@@ -39,6 +39,8 @@ SODA_JSON_ACCESS_TYPE(vector<string>)
 SODA_JSON_ACCESS_TYPE(vector<vector<string>>)
 SODA_JSON_ACCESS_TYPE(vector<optional<string>>)
 SODA_JSON_ACCESS_TYPE(vector<bool>)
+SODA_JSON_ACCESS_TYPE(vector<double>)
+SODA_JSON_ACCESS_TYPE(vector<vector<double>>)
 
 } // namespace soda::unittest
 

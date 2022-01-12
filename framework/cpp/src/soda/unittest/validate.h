@@ -23,6 +23,20 @@ public:
     }
 };
 
+template <>
+class GenericFeature<double> {
+public:
+    using ObjectType = double;
+
+    size_t hash(double d) const {
+        return std::hash<double>()(d);
+    }
+
+    bool isEqual(double a, double b) const {
+        return std::abs(a-b) < 1e-6;
+    }
+};
+
 template <typename Key, typename Value, typename Feature>
 class XMap {
     struct XEntry {
@@ -205,22 +219,22 @@ private:
 };
 
 class Validators {
+public:
     template <typename T>
     using Vect = std::vector<T>;
 
     template <typename T>
     using Vect2d = std::vector<std::vector<T>>;
 
-public:
     template <typename T>
     static std::function<bool(const Vect<T>&,const Vect<T>&)> forVector(bool ordered) {
         GenericFeature<T> feat;
         if (ordered) {
-            return [=](const std::vector<T>& a, const std::vector<T>& b) {
+            return [=](const Vect<T>& a, const Vect<T>& b) {
                 return StrategyFactory::list(feat)(a, b);
             };
         } else {
-            return [=](const std::vector<T>& a, const std::vector<T>& b) {
+            return [=](const Vect<T>& a, const Vect<T>& b) {
                 return StrategyFactory::unorderList(feat)(a, b);
             };
         }
