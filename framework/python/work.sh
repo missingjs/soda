@@ -17,6 +17,9 @@ options:
     run <testname>
         run test case
 
+    clean <testname>
+        do nothing
+
 EOF
     exit 1
 }
@@ -41,7 +44,7 @@ case $cmd in
         template_file=$self_dir/src/soda/unittest/bootstrap.py
         create_source_file $template_file $execfile
         ;;
-    make)
+    make | clean)
         # Don't remove. Just for interface compatible
         ;;
     run)

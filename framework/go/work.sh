@@ -17,6 +17,9 @@ options:
     run <testname>
         run executable
 
+    clean <testname>
+        remove executable file
+
 EOF
     exit 1
 }
@@ -59,6 +62,10 @@ case $cmd in
         ;;
     run)
         ./$execfile
+        ;;
+
+    clean)
+        [ -e $execfile ] && rm -v $execfile
         ;;
     *)
         usage

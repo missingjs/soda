@@ -5,10 +5,11 @@ usage()
     local cmd=$(basename $0)
     cat << EOF
 usage:
-    $cmd init <work> [lang]
-    $cmd new  <lang>
-    $cmd run  <lang> [-i <tag>]
-    $cmd tool <lang> [options]
+    $cmd init  <work> [lang]
+    $cmd new   <lang>
+    $cmd run   <lang> [-i <tag>]
+    $cmd clean <lang>
+    $cmd tool  <lang> [options]
 EOF
     exit 1
 }
@@ -138,6 +139,13 @@ case $cmd in
         fi
         [ -z "$tags" ] || tag_options="--tags $tags"
         python3 -m $runner $work --command "$commandStr" $tag_options
+        ;;
+    clean)
+        ilang=$2
+        check_sdk $ilang
+        script=$framework_dir/$ilang/work.sh
+        work=$(get_work_name)
+        $script clean $work
         ;;
     tool)
         ilang=$2

@@ -17,6 +17,9 @@ options:
     run <testname> [-server]
         run test case
 
+    clean <testname>
+        remove all class files under current directory
+
     server (start|stop|restart)
         server management
 EOF
@@ -90,6 +93,11 @@ case $cmd in
             assert_framework
             java -cp $(get_classpath) $classname
         fi
+        ;;
+    clean)
+        assert_testname
+        classfile=${testname}.class
+        [ -e $classfile ] && rm -v *.class
         ;;
     server)
         operation=$2
