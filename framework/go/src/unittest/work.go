@@ -32,6 +32,7 @@ type TestWork struct {
 	ArgumentTypes []reflect.Type
 	ReturnType    reflect.Type
 	CompareSerial bool
+	Arguments     []interface{}
 	validator     reflect.Value
 }
 
@@ -63,10 +64,6 @@ func (work *TestWork) initialize(fn interface{}) *TestWork {
 	if funcType.NumOut() > 0 {
 		work.ReturnType = funcType.Out(0)
 	}
-	//valid := func(x, y interface{}) bool {
-	//	return reflect.DeepEqual(x, y)
-	//}
-	//work.validator = reflect.ValueOf(valid)
 	return work
 }
 
@@ -95,9 +92,11 @@ func (work *TestWork) Run() {
 		panic(fmt.Sprintf("Failed to unmarshal input: %s\n", err))
 	}
 
+	work.Arguments = make([]interface{}, len(work.ArgumentTypes))
 	args := make([]reflect.Value, len(work.ArgumentTypes))
 	for i := 0; i < len(testInput.Args); i++ {
-		args[i] = reflect.ValueOf(unmarshal(testInput.Args[i], work.ArgumentTypes[i]))
+		work.Arguments[i] = unmarshal(testInput.Args[i], work.ArgumentTypes[i])
+		args[i] = reflect.ValueOf(work.Arguments[i])
 	}
 
 	startTime := time.Now()
