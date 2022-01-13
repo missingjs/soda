@@ -33,6 +33,8 @@ public class TestWork {
 
     private Object expectedOutput;
 
+	private Object[] arguments;
+
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
 	public TestWork(Object su, String methodName) {
@@ -67,11 +69,15 @@ public class TestWork {
     public Object getExpectedOutput() {
         return expectedOutput;
     }
+
+	public Object[] getArguments() {
+		return arguments;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void run() throws Exception {
 		WorkInput input = workSerializer.parse(testLoader.load());
-		Object[] arguments = parseArguments(argumentTypes, input.args);
+		arguments = parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
 		var retType = returnType;
