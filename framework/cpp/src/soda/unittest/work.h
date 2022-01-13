@@ -18,7 +18,10 @@ namespace soda::unittest {
 
 template <typename Return, typename... Args>
 class TestWork {
+public:
+    using arguments_t = std::tuple<std::remove_const_t<std::remove_reference_t<Args>>...>;
 
+private:
     std::function<Return(Args...)> func;
 
     std::shared_ptr<WorkLoader> loader;
@@ -26,6 +29,8 @@ class TestWork {
     std::function<bool(const Return&, const Return&)> validator;
 
     bool compareSerial{false};
+
+    arguments_t arguments;
 
 public:
     template <typename Func>
@@ -42,9 +47,13 @@ public:
         compareSerial = b;
     }
 
+    arguments_t getArguments() const {
+        return arguments;
+    }
+
     void run() {
         WorkInput input {loader->load()};
-        auto arguments = ArgumentLoader<Args...>::load(input.getArguments());
+        arguments = ArgumentLoader<Args...>::load(input.getArguments());
 
         auto caller = [&](auto&&... args) {
             return func(std::forward<decltype(args)>(args)...);
