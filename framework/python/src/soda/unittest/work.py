@@ -31,21 +31,19 @@ class TestWork:
         self.returnType = hints[-1]
         self.compareSerial = False
 
-        self.argumentParsers = [None] * len(self.argumentTypes)
         self.default_validator = lambda x, y: x == y
         self.validator = self.default_validator
+        self.arguments = None
 
     @classmethod
     def forStruct(cls, structClass):
         from .structure import structTester
         return cls(structTester(structClass))
 
-    def setArgumentParser(self, index, parser):
-        self.argumentParsers[index] = parser
-
     def run(self):
         testInput = TestInput(json.load(sys.stdin))
         arguments = tuple(self.parse(v,t) for v,t in zip(testInput.args, self.argumentTypes))
+        self.arguments = arguments
 
         startTime = time.time()
         ret_type = self.returnType
