@@ -55,20 +55,26 @@ class NestedInteger:
         """
         return list(self.elements) if not self.isInteger() else []
 
-def parseNestedIntegers(data: List) -> List[NestedInteger]:
-    def parseNI(d):
+class NestedIntegerFactory:
+
+    @classmethod
+    def parse(cls, d) -> NestedInteger:
         if isinstance(d, int):
             return NestedInteger(d)
         ni = NestedInteger()
         for sub in d:
-            ni.add(parseNI(sub))
+            ni.add(cls.parse(sub))
         return ni
-    return list(map(parseNI, data))
 
-def serializeNestedIntegers(nestedList: List[NestedInteger]) -> List:
-    def serializeNI(ni):
+    @classmethod
+    def serialize(cls, ni: NestedInteger):
         if ni.isInteger():
             return ni.getInteger()
-        return list(map(serializeNI, ni.getList()))
-    return list(map(serializeNI, nestedList))
+        return list(map(cls.serialize, ni.getList()))
+
+def parseNestedIntegers(data: List) -> List[NestedInteger]:
+    return list(map(NestedIntegerFactory.parse, data))
+
+def serializeNestedIntegers(nestedList: List[NestedInteger]) -> List:
+    return list(map(NestedIntegerFactory.serialize, nestedList))
 
