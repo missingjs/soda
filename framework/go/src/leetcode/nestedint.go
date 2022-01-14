@@ -57,12 +57,12 @@ func (n *NestedInteger) GetList() []*NestedInteger {
 func ParseNestedIntegers(raw []json.RawMessage) []*NestedInteger {
 	res := make([]*NestedInteger, 0)
 	for _, r := range raw {
-		res = append(res, unmarshalNestedInteger(r))
+		res = append(res, UnmarshalNestedInteger(r))
 	}
 	return res
 }
 
-func unmarshalNestedInteger(raw json.RawMessage) *NestedInteger {
+func UnmarshalNestedInteger(raw json.RawMessage) *NestedInteger {
 	if raw[0] != '[' {
 		val, err := strconv.Atoi(string(raw))
 		if err != nil {
@@ -77,7 +77,7 @@ func unmarshalNestedInteger(raw json.RawMessage) *NestedInteger {
 	}
 	ni := NewNestedInteger()
 	for _, r := range rawList {
-		ni.Add(unmarshalNestedInteger(r))
+		ni.Add(UnmarshalNestedInteger(r))
 	}
 	return ni
 }
@@ -85,18 +85,18 @@ func unmarshalNestedInteger(raw json.RawMessage) *NestedInteger {
 func SerializeNestedIntegers(ns []*NestedInteger) []interface{} {
 	res := make([]interface{}, 0)
 	for _, ni := range ns {
-		res = append(res, marshalNestedInteger(ni))
+		res = append(res, MarshalNestedInteger(ni))
 	}
 	return res
 }
 
-func marshalNestedInteger(ni *NestedInteger) interface{} {
+func MarshalNestedInteger(ni *NestedInteger) interface{} {
 	if ni.IsInteger() {
 		return ni.GetInteger()
 	}
 	list := make([]interface{}, 0)
 	for _, i := range ni.GetList() {
-		list = append(list, marshalNestedInteger(i))
+		list = append(list, MarshalNestedInteger(i))
 	}
 	return list
 }

@@ -16,6 +16,7 @@ func init() {
 	regConverter(lc.TreeCreate, lc.TreeDump)
 	regConverter(DecodeByteSlice, EncodeByteSlice)
 	regConverter(DecodeByteSlice2D, EncodeByteSlice2D)
+	regConverter(lc.UnmarshalNestedInteger, lc.MarshalNestedInteger)
 	regConverter(lc.ParseNestedIntegers, lc.SerializeNestedIntegers)
 	regConverter(func(s string) byte { return s[0] }, func(c byte) string { return string([]byte{c}) })
 	regConverter(lc.ListFactory.CreateSlice, lc.ListFactory.DumpSlice)
