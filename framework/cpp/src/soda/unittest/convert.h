@@ -34,12 +34,27 @@ public:
 };
 
 template <>
+class ObjectConverter<NestedInteger> {
+public:
+    NestedInteger fromJsonSerializable(const JsonProxy& v) {
+        return parse(v);
+    }
+
+    JsonProxy toJsonSerializable(const NestedInteger& data) {
+        return serialize(data);
+    }
+
+    static NestedInteger parse(const JsonProxy& p);
+    static JsonProxy serialize(const NestedInteger& ni);
+};
+
+template <>
 class ObjectConverter<std::vector<NestedInteger>> {
 public:
     std::vector<NestedInteger> fromJsonSerializable(const JsonProxy& v) {
         std::vector<NestedInteger> res;
         for (int i = 0; i < v.size(); ++i) {
-            res.push_back(parse(v[i]));
+            res.push_back(ObjectConverter<NestedInteger>::parse(v[i]));
         }
         return res;
     }
@@ -47,31 +62,7 @@ public:
     JsonProxy toJsonSerializable(const std::vector<NestedInteger>& nestedList) {
         JsonProxy jp;
         for (auto& ni : nestedList) {
-            jp.append(serialize(ni));
-        }
-        return jp;
-    }
-
-private:
-    NestedInteger parse(const JsonProxy& p) {
-        if (p.isNumber()) {
-            return NestedInteger(p.get<int>());
-        }
-        NestedInteger ni;
-        for (int i = 0; i < p.size(); ++i) {
-            ni.add(parse(p[i]));
-        }
-        return ni;
-    }
-
-    JsonProxy serialize(const NestedInteger& ni) {
-        JsonProxy jp;
-        if (ni.isInteger()) {
-            jp.set(ni.getInteger());
-        } else {
-            for (auto& j : ni.getList()) {
-                jp.append(serialize(j));
-            }
+            jp.append(ObjectConverter<NestedInteger>::serialize(ni));
         }
         return jp;
     }

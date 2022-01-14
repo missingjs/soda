@@ -6,7 +6,7 @@
 namespace soda::leetcode {
 
 class NestedInteger {
-  public:
+public:
     // Constructor initializes an empty nested list.
     NestedInteger();
 
@@ -30,7 +30,13 @@ class NestedInteger {
     // The result is undefined if this NestedInteger holds a single integer
     const std::vector<NestedInteger> &getList() const;
 
-  private:
+    bool operator==(const NestedInteger& other) const;
+
+    bool operator!=(const NestedInteger& other) const;
+
+    int size() const;
+
+private:
     bool isAtomic;
     int  value;
     std::vector<NestedInteger> nestedList;
