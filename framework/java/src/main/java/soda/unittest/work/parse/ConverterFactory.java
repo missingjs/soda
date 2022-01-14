@@ -47,6 +47,7 @@ public class ConverterFactory {
 	static {
 		registerFactory(ListNode.class, ListHelper::create, ListHelper::dump);
 		registerFactory(TreeNode.class, TreeFactory::create, TreeFactory::dump);
+		registerFactory(NestedInteger.class, NestedIntegerConverter::new);
 		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
 		registerFactory(new TypeRef<List<Character>>() {}, CharListConverter::new);
 		registerFactory(new TypeRef<List<List<Character>>>() {}, CharList2dConverter::new);
