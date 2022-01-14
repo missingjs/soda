@@ -20,8 +20,12 @@ JsonProxy ObjectConverter<NestedInteger>::serialize(const NestedInteger& ni)
     if (ni.isInteger()) {
         jp.set(ni.getInteger());
     } else {
-        for (auto& j : ni.getList()) {
-            jp.append(serialize(j));
+        if (ni.getList().size() > 0) {
+            for (auto& j : ni.getList()) {
+                jp.append(serialize(j));
+            }
+        } else {
+            jp = JsonProxy::array();
         }
     }
     return jp;

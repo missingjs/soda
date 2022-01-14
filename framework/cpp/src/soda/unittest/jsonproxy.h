@@ -45,6 +45,8 @@ public:
         return jp;
     }
 
+    static JsonProxy array();
+
     JsonProxy& operator=(const JsonProxy& jp);
 
     bool operator==(const JsonProxy& jp) const;

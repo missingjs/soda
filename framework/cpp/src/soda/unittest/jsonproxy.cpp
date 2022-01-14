@@ -13,6 +13,13 @@ JsonProxy::JsonProxy(std::shared_ptr<js_obj_t> p): obj{p} {}
 
 JsonProxy::JsonProxy(const JsonProxy& jp): obj{jp.obj} {}
 
+JsonProxy JsonProxy::array()
+{
+    JsonProxy jp;
+    *jp.obj = js_obj_t::array();
+    return jp;
+}
+
 JsonProxy& JsonProxy::operator=(const JsonProxy& jp)
 {
     if (this != &jp) {
