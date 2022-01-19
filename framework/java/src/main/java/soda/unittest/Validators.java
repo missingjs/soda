@@ -9,12 +9,8 @@ import java.util.stream.Collectors;
 
 public class Validators {
 
-    @SuppressWarnings("unchecked")
     private static <T> ObjectFeature<T> createFeature(Class<T> klass) {
-        if (klass == Double.class) {
-            return (ObjectFeature<T>) new DoubleFeature();
-        }
-        return new GenericFeature<>();
+        return FeatureFactory.create(klass);
     }
 
     public static <T> BiPredicate<List<T>, List<T>> forList(Class<T> klass, boolean ordered) {
@@ -98,48 +94,6 @@ public class Validators {
 
     private static <T> List<List<T>> toList2d(T[][] arr2d) {
         return Arrays.stream(arr2d).map(Validators::toList).collect(Collectors.toList());
-    }
-
-    // ----
-
-    public static <T> BiPredicate<List<T>,List<T>> list1d() {
-        return new ListEqual<>((a, b) -> a != null ? a.equals(b) : a == b);
-    }
-
-    public static <T> BiPredicate<List<List<T>>, List<List<T>>> list2d() {
-        return new ListEqual<>(list1d());
-    }
-
-    public static <T> BiPredicate<T[], T[]> array1d() {
-        return new ArrayEqual<>((a, b) -> a != null ? a.equals(b) : a == b);
-    }
-
-    public static <T> BiPredicate<T[][], T[][]> array2d() {
-        return new ArrayEqual<>(array1d());
-    }
-
-    public static BiPredicate<int[], int[]> intArray1d() {
-        return new IntArrayEqual();
-    }
-
-    public static BiPredicate<int[][], int[][]> intArray2d() {
-        return new ArrayEqual<int[]>(intArray1d());
-    }
-
-    public static BiPredicate<long[], long[]> longArray1d() {
-        return new LongArrayEqual();
-    }
-
-    public static BiPredicate<long[][], long[][]> longArray2d() {
-        return new ArrayEqual<long[]>(longArray1d());
-    }
-
-    public static BiPredicate<double[], double[]> doubleArray1d() {
-        return new DoubleArrayEqual();
-    }
-
-    public static BiPredicate<double[][], double[][]> doubleArray2d() {
-        return new ArrayEqual<double[]>(doubleArray1d());
     }
 
 }

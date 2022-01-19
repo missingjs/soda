@@ -8,6 +8,8 @@ import java.util.function.BiPredicate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import soda.unittest.LoggerHelper;
+import soda.unittest.validate.FeatureFactory;
+import soda.unittest.validate.ValidatorFactory;
 import soda.unittest.work.parse.ObjectConverter;
 import soda.unittest.work.parse.ConverterFactory;
 
@@ -108,7 +110,7 @@ public class TestWork {
 				if (validator != null) {
 					success = ((BiPredicate<Object, Object>) validator).test(expect, result);
 				} else {
-					success = Objects.equals(expect, result);
+					success = ValidatorFactory.create(returnType).test(expect, result);
 				}
 			}
 		}
