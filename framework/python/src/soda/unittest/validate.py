@@ -155,13 +155,13 @@ class FloatFeature(ObjectFeature):
 class Validators:
 
     @classmethod
-    def forList(cls, objType: type, ordered: bool):
+    def forList(cls, objType: type, ordered: bool) -> Callable[[Any,Any],bool]:
         f = StrategyFactory
         d = cls._createFeature(objType)
         return f.list(d) if ordered else f.unorderList(d)
 
     @classmethod
-    def forList2d(cls, objType: type, dim1Ordered: bool, dim2Ordered: bool):
+    def forList2d(cls, objType: type, dim1Ordered: bool, dim2Ordered: bool) -> Callable[[Any,Any],bool]:
         f = StrategyFactory
         elemFeat = cls._createFeature(objType)
         d = ListFeature(elemFeat) if dim2Ordered else UnorderListFeature(elemFeat)
@@ -169,7 +169,27 @@ class Validators:
 
     @classmethod
     def _createFeature(cls, objType: type) -> ObjectFeature:
-        if objType == float:
-            return FloatFeature()
-        return GenericFeature()
+        return FeatureFactory.create(objType)
+
+featureFactoryMap = {}
+featureFactoryMap[float] = FloatFeature
+
+class FeatureFactory:
+
+    @classmethod
+    def create(cls, objType: type) -> ObjectFeature:
+        return featureFactoryMap.get(objType, GenericFeature)()
+
+validFactoryMap = {}
+validFactoryMap[List[float]] = lambda: Validators.forList(float,True)
+validFactoryMap[List[List[float]]] = lambda: Validators.forList2d(float,True,True)
+
+class ValidatorFactory:
+
+    @classmethod
+    def create(cls, objType: type) -> Callable[[Any,Any],bool]:
+        fact = validFactoryMap.get(objType)
+        if fact:
+            return fact()
+        return lambda x, y: FeatureFactory.create(objType).isEqual(x, y)
 

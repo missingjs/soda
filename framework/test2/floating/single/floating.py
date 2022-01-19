@@ -18,9 +18,10 @@ from soda.unittest.util import init_logging
 logger = logging.getLogger(__name__)
 
 # step [1]: implement class Solution
+# class Solution: pass
 class Solution:
-    def multiply(self, a: List[float], b: List[float]) -> List[float]:
-        return list(i * j for i, j in zip(a, b))
+    def divide(self, a: float, b: float) -> float:
+        return a / b
 
 if __name__ == '__main__':
     init_logging()
@@ -29,12 +30,12 @@ if __name__ == '__main__':
 
     # step [2]: setup function
     # Attention! FUNCTION must use type hint, including arguments and return type
-    work = TestWork(Solution().multiply)
+    work = TestWork(Solution().divide)
     # OR use struct tester
     # work = TestWork.forStruct(CLASS)
 
     # step [3]: setup other options
-    # work.validator = Validators.forList(float, True)
+    # work.validator = (e,r) => bool
     # work.compareSerial = True
     work.run()
 

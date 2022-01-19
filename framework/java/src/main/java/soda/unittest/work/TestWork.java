@@ -110,7 +110,7 @@ public class TestWork {
 				if (validator != null) {
 					success = ((BiPredicate<Object, Object>) validator).test(expect, result);
 				} else {
-					success = ValidatorFactory.create(returnType).test(expect, result);
+					success = ValidatorFactory.create(retType).test(expect, result);
 				}
 			}
 		}

@@ -4,6 +4,7 @@ import time
 from typing import get_type_hints
 
 from .registry import getConverter
+from .validate import ValidatorFactory
 
 class TestInput:
 
@@ -31,8 +32,7 @@ class TestWork:
         self.returnType = hints[-1]
         self.compareSerial = False
 
-        self.default_validator = lambda x, y: x == y
-        self.validator = self.default_validator
+        self.validator = None
         self.arguments = None
 
     @classmethod
@@ -64,11 +64,14 @@ class TestWork:
 
         success = True
         if testInput.expected is not None:
-            if self.validator == self.default_validator and self.compareSerial:
+            if self.validator is None and self.compareSerial:
                 success = (testInput.expected == resultSerial)
             else:
                 expect = self.parse(testInput.expected, ret_type)
-                success = self.validator(expect, result)
+                if self.validator:
+                    success = self.validator(expect, result)
+                else:
+                    success = ValidatorFactory.create(ret_type)(expect, result)
 
         output['success'] = success
         print(json.dumps(output))
