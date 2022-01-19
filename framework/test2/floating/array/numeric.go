@@ -1,7 +1,6 @@
 package main
 
 import (
-    "reflect"
     . "missingjs.com/soda/leetcode"
     "missingjs.com/soda/unittest"
     "missingjs.com/soda/util"
@@ -23,7 +22,7 @@ func main() {
     work := unittest.CreateWork(multiply)
     // OR create by struct factory
     // work := unittest.CreateWorkForStruct(Constructor)
-    work.SetValidator(unittest.Validators.ForSlice(reflect.TypeOf(float64(0)), true))
-    work.CompareSerial = true
+    // work.SetValidator(unittest.Validators.ForSlice(reflect.TypeOf(float64(0)), true))
+    // work.CompareSerial = true
     work.Run()
 }

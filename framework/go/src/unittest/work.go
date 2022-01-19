@@ -127,7 +127,8 @@ func (work *TestWork) Run() {
 			if work.validator.IsValid() {
 				success = work.validator.Call(vals(expectValue, resultValue))[0].Bool()
 			} else {
-				success = reflect.DeepEqual(expectValue.Interface(), resultValue.Interface())
+				//success = reflect.DeepEqual(expectValue.Interface(), resultValue.Interface())
+				success = ValidatorFactory.Create(retType)(expectValue.Interface(), resultValue.Interface())
 			}
 		}
 	}

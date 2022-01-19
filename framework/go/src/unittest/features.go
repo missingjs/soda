@@ -74,3 +74,45 @@ func (f UnorderListFeature) Hash(obj interface{}) uint64 {
 func (f UnorderListFeature) IsEqual(a, b interface{}) bool {
 	return StrategyFactory.UnorderList(f.ElemFeat)(a, b)
 }
+
+type FeatureFactoryFunc func() ObjectFeature
+type ValidatorFunc func(interface{}, interface{}) bool
+type ValidFactoryFunc func() ValidatorFunc
+
+var featureFactoryMap = make(map[reflect.Type]FeatureFactoryFunc)
+var validFactoryMap = make(map[reflect.Type]ValidFactoryFunc)
+
+func init() {
+	featureFactoryMap[reflect.TypeOf(float64(0))] = func() ObjectFeature { return Float64Feature{} }
+
+	validFactoryMap[reflect.TypeOf([]float64{})] = func() ValidatorFunc {
+		return ValidatorFunc(Validators.ForSlice(reflect.TypeOf(float64(0)), true))
+	}
+	validFactoryMap[reflect.TypeOf([][]float64{})] = func() ValidatorFunc {
+		return ValidatorFunc(Validators.ForSlice2d(reflect.TypeOf(float64(0)), true, true))
+	}
+}
+
+type FeatureFactoryType struct{}
+
+var FeatureFactory FeatureFactoryType
+
+func (f *FeatureFactoryType) Create(objType reflect.Type) ObjectFeature {
+	if fact, ok := featureFactoryMap[objType]; ok {
+		return fact()
+	}
+	return GenericFeature{}
+}
+
+type ValidatorFactoryType struct{}
+
+var ValidatorFactory ValidatorFactoryType
+
+func (v *ValidatorFactoryType) Create(objType reflect.Type) ValidatorFunc {
+	if fact, ok := validFactoryMap[objType]; ok {
+		return fact()
+	}
+	return func(a, b interface{}) bool {
+		return FeatureFactory.Create(objType).IsEqual(a, b)
+	}
+}
