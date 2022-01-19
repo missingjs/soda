@@ -11,28 +11,24 @@ import soda.unittest.work.TestWork;
 import static soda.unittest.LoggerHelper.logger;
 
 class Solution {
-    public double[] multiply(double[] a, double[] b) {
-        var res = new double[a.length];
-        for (int i = 0; i < res.length; ++i) {
-            res[i] = a[i] * b[i];
-        }
-        return res;
+    public double divide(double a, double b) {
+        return a / b;
     }
 }
 
-public class Numeric implements Supplier<TestWork> {
+public class Floating implements Supplier<TestWork> {
 
     @Override
     public TestWork get() {
-        var work = new TestWork(new Solution(), "multiply");
+        var work = new TestWork(new Solution(), "divide");
         // var work = TestWork.forStruct(Struct.class);
-        work.setValidator(Validators.forDoubleArray(true));
-        work.setCompareSerial(true);
+        // work.setValidator((e, r) -> {...});
+        // work.setCompareSerial(true);
         return work;
     }
 
     public static void main(String[] args) throws Exception {
-        new Numeric().get().run();
+        new Floating().get().run();
     }
 
 }
