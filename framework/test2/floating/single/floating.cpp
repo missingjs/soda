@@ -11,12 +11,11 @@ using namespace soda::leetcode;
 using namespace soda::unittest;
 
 // step [1]: implement class Solution
+// class Solution {};
 class Solution {
 public:
-    vector<double> multiply(vector<double>& a, vector<double>& b) {
-        vector<double> res;
-        transform(a.begin(), a.end(), b.begin(), back_inserter(res), std::multiplies<>{});
-        return res;
+    double divide(double a, double b) {
+        return a / b;
     }
 };
 
@@ -32,7 +31,7 @@ int main()
 {
     // [1] create by class member function
     Solution su;
-    auto work = WorkFactory::create(su, &Solution::multiply);
+    auto work = WorkFactory::create(su, &Solution::divide);
     //
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
@@ -42,7 +41,7 @@ int main()
     // ADD_FUNCTION(tester, funcname)
     // auto work = WorkFactory::forStruct(tester);
 
-    // work->setValidator(Validators::forVector<double>(true));
+    // work->setValidator(validate);
     // work->setCompareSerial(true);
     work->run();
     delete work;

@@ -80,7 +80,11 @@ public:
                 success = (input.getExpected() == json_res);
             } else {
                 auto expect = resConv->fromJsonSerializable(input.getExpected());
-                success = validator ? validator(expect, result) : expect == result;
+                if (validator) {
+                    success = validator(expect, result);
+                } else {
+                    success = ValidatorFactory::create<Return>()(expect, result);
+                }
             }
         }
         output.setSuccess(success);

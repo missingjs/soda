@@ -10,7 +10,7 @@
 namespace soda::unittest {
 
 template <typename T>
-class GenericFeature {
+class ObjectFeature {
 public:
     using ObjectType = T;
 
@@ -24,7 +24,7 @@ public:
 };
 
 template <>
-class GenericFeature<double> {
+class ObjectFeature<double> {
 public:
     using ObjectType = double;
 
@@ -34,6 +34,14 @@ public:
 
     bool isEqual(double a, double b) const {
         return std::abs(a-b) < 1e-6;
+    }
+};
+
+class FeatureFactory {
+public:
+    template <typename T>
+    static ObjectFeature<T> create() {
+        return ObjectFeature<T>{};
     }
 };
 
@@ -228,7 +236,7 @@ public:
 
     template <typename T>
     static std::function<bool(const Vect<T>&,const Vect<T>&)> forVector(bool ordered) {
-        GenericFeature<T> feat;
+        auto feat = FeatureFactory::create<T>();
         if (ordered) {
             return [=](const Vect<T>& a, const Vect<T>& b) {
                 return StrategyFactory::list(feat)(a, b);
@@ -243,7 +251,7 @@ public:
     template <typename T>
     static auto forVector2d(bool dim1Ordered, bool dim2Ordered) {
         using func_t = std::function<bool(const Vect2d<T>&,const Vect2d<T>&)>;
-        GenericFeature<T> elemFeat;
+        auto elemFeat = FeatureFactory::create<T>();
         auto factory = [=](bool order, auto feat) -> func_t {
             if (order) {
                 return [=](const Vect2d<T>& a, const Vect2d<T>& b) {
@@ -260,6 +268,30 @@ public:
             : factory(dim1Ordered, UnorderListFeature{elemFeat});
     }
 };
+
+class ValidatorFactory {
+public:
+    template <typename T>
+    static std::function<bool(const T&, const T&)> create() {
+        return [](const T& a, const T& b) {
+            return FeatureFactory::create<T>().isEqual(a, b);
+        };
+    }
+};
+
+template <>
+std::function<bool(const std::vector<double>&, const std::vector<double>&)>
+ValidatorFactory::create<std::vector<double>>()
+{
+    return Validators::forVector<double>(true);
+}
+
+template <>
+std::function<bool(const std::vector<std::vector<double>>&, const std::vector<std::vector<double>>&)>
+ValidatorFactory::create<std::vector<std::vector<double>>>()
+{
+    return Validators::forVector2d<double>(true, true);
+}
 
 } // namespace soda::unittest
 

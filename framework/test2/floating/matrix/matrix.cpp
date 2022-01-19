@@ -11,11 +11,21 @@ using namespace soda::leetcode;
 using namespace soda::unittest;
 
 // step [1]: implement class Solution
+// class Solution {};
 class Solution {
 public:
-    vector<double> multiply(vector<double>& a, vector<double>& b) {
-        vector<double> res;
-        transform(a.begin(), a.end(), b.begin(), back_inserter(res), std::multiplies<>{});
+    vector<vector<double>> matrixMultiply(vector<vector<double>>& a, vector<vector<double>>& b) {
+        int rows = int(a.size()), cols = int(b[0].size());
+        vector<vector<double>> res(rows, vector<double>(cols));
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                double c = 0.0;
+                for (int k = 0; k < int(b.size()); ++k) {
+                    c += a[i][k] * b[k][j];
+                }
+                res[i][j] = c;
+            }
+        }
         return res;
     }
 };
@@ -32,7 +42,7 @@ int main()
 {
     // [1] create by class member function
     Solution su;
-    auto work = WorkFactory::create(su, &Solution::multiply);
+    auto work = WorkFactory::create(su, &Solution::matrixMultiply);
     //
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
@@ -42,7 +52,7 @@ int main()
     // ADD_FUNCTION(tester, funcname)
     // auto work = WorkFactory::forStruct(tester);
 
-    // work->setValidator(Validators::forVector<double>(true));
+    // work->setValidator(validate);
     // work->setCompareSerial(true);
     work->run();
     delete work;
