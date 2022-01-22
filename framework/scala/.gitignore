@@ -1,4 +1,6 @@
 /.bsp
 /project/project/target
 /project/target
+/setup_env.sh
+/soda-lib
 /target
