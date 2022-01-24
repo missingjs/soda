@@ -1,8 +1,13 @@
 package soda.scala.unittest
 
+import scala.reflect.runtime.universe.typeOf
+
+class Solution {}
+// object Solution { ... }
+
 class __Bootstrap__ {
   def get(): TestWork = {
-    new TestWork()
+    new TestWork(typeOf[Solution], "METHOD")
   }
 }
 

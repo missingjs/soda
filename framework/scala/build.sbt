@@ -25,7 +25,22 @@ version := "0.1.0"
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
+val playVersion = "2.9.2"
+
+libraryDependencies ++= Seq(
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.0.0",
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  "com.typesafe.play" %% "play-json" % playVersion
+)
+
+//val circeVersion = "0.14.1"
+
+//libraryDependencies ++= Seq(
+//  "io.circe" %% "circe-core",
+//  "io.circe" %% "circe-generic",
+//  "io.circe" %% "circe-parser"
+//).map(_ % circeVersion)
+
 
 enablePlugins(PackPlugin)
 
