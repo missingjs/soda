@@ -2,11 +2,12 @@ package soda.scala.unittest
 
 import scala.io.StdIn.readLine
 import scala.reflect.runtime.universe._
-//import scala.util.parsing.combinator
+
+import play.api.libs.json._
 
 class TestWork(val solutionType: Type, val methodName: String) {
 
-  private val methodMirror = getMethodMirror()
+  private val methodMirror = getMethodMirror
 
   private val methodType = getEtaExpandedMethodType(methodMirror)
 
@@ -18,13 +19,32 @@ class TestWork(val solutionType: Type, val methodName: String) {
 
   var compareSerial = false
 
-  def run() = {
+  def run(): Unit = {
+
     val input = LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
     val workInput = new WorkInput(input)
-    System.err.println("from scala: " + input);
-    System.err.println("id: " + workInput.id)
-    System.err.println("has expected: " + workInput.hasExpected)
-//    println(input)
+    arguments = parseArguments(argumentTypes, workInput.arguments)
+
+    val startNano = System.nanoTime()
+    var retType = returnType
+    var result = methodMirror.apply(arguments: _*)
+
+    if (retType == typeOf[Unit]) {
+      retType = argumentTypes.head
+      result = arguments(0)
+    }
+    val endNano = System.nanoTime()
+    val elapseMillis = (endNano - startNano) / 1e6
+
+    
+  }
+
+  private def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
+    val args = Array.fill[Any](types.size)(null)
+    for (i <- types.indices) {
+      args(i) = ConverterFactory.create(types(i)).fromJsonSerializable(rawParams(i))
+    }
+    args
   }
 
   private def getEtaExpandedMethodType(methodSymbol: MethodSymbol): Type = {
@@ -51,7 +71,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
     getEtaExpandedMethodType(methodMirror.symbol)
   }
 
-  private def getMethodMirror() = {
+  private def getMethodMirror = {
     val rMirror = runtimeMirror(getClass.getClassLoader)
     val instMirror = rMirror.reflect(
       rMirror.reflectModule(solutionType.typeSymbol.asClass.companion.asModule).instance
