@@ -1,5 +1,6 @@
 package soda.scala.unittest
 
+import scala.collection.mutable
 import scala.reflect.runtime.universe.typeOf
 
 class Solution {}
@@ -7,7 +8,11 @@ class Solution {}
 
 class __Bootstrap__ {
   def get(): TestWork = {
-    new TestWork(typeOf[Solution], "METHOD")
+    val work = new TestWork(typeOf[Solution], "METHOD")
+    // val work = TestWork.forStruct(...)
+    // work.setValidator((R, R) => Boolean)
+    work.compareSerial = true
+    work
   }
 }
 

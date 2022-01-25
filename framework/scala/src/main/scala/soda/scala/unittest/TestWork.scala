@@ -19,7 +19,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
 
   var compareSerial = false
 
-  var validator: Option[(_, _) => Boolean] = None
+  private var validator: Option[(_, _) => Boolean] = None
 
   var expectedOutput: Option[Any] = None
 
@@ -48,7 +48,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
 
     var success = true
     if (input.hasExpected) {
-      if (compareSerial && validator == null) {
+      if (compareSerial && validator.isEmpty) {
         val a = Json.stringify(input.expected)
         val b = Json.stringify(serialResult)
         success = a == b
@@ -64,6 +64,10 @@ class TestWork(val solutionType: Type, val methodName: String) {
     output.success = success
 
     println(output.jsonString)
+  }
+
+  def setValidator(v: (_, _) => Boolean): Unit = {
+    validator = Some(v)
   }
 
   private def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {

@@ -21,17 +21,18 @@ object ConverterFactory {
     }
   }
 
-  private def registerFactory[E](elemType: Type)(implicit fmt: Format[E]): Unit = {
-    registerFactory(elemType, (js: JsValue) => js.as[E], (e: E) => Json.toJson(e))
+  private def registerFactory[E](implicit fmt: Format[E], tt: TypeTag[E]): Unit = {
+    registerFactory(typeOf[E], (js: JsValue) => js.as[E], (e: E) => Json.toJson(e))
   }
 
-  registerFactory[Int](typeOf[Int])
+  registerFactory[Int]
+  registerFactory[Array[Int]]
 
   def create(elemType: Type): ObjectConverter[_] = {
     factoryMap.get(elemType) match {
       case Some(fact) => fact()
       case None => {
-        throw new RuntimeException(s"[ObjectFeature] element type is not supported: $elemType")
+        throw new RuntimeException(s"[ConverterFactory] element type is not supported: $elemType")
       }
     }
   }
