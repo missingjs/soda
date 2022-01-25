@@ -25,8 +25,32 @@ object ConverterFactory {
     registerFactory(typeOf[E], (js: JsValue) => js.as[E], (e: E) => Json.toJson(e))
   }
 
+  registerFactory[Boolean]
+  registerFactory[Short]
   registerFactory[Int]
+  registerFactory[Long]
+  registerFactory[Float]
+  registerFactory[Double]
+  registerFactory[String]
+
   registerFactory[Array[Int]]
+  registerFactory[List[Int]]
+  registerFactory[Array[Array[Int]]]
+  registerFactory[List[List[Int]]]
+
+  registerFactory[Array[String]]
+  registerFactory[List[String]]
+  registerFactory[Array[Array[String]]]
+  registerFactory[List[List[String]]]
+
+  registerFactory[Array[Boolean]]
+  registerFactory[List[Boolean]]
+
+  registerFactory[Array[Double]]
+  registerFactory[List[Double]]
+  registerFactory[Array[Array[Double]]]
+  registerFactory[List[List[Double]]]
+
 
   def create(elemType: Type): ObjectConverter[_] = {
     factoryMap.get(elemType) match {
