@@ -51,6 +51,7 @@ object ConverterFactory {
   registerFactory[Array[Array[Double]]]
   registerFactory[List[List[Double]]]
 
+  registerFactory(typeOf[Char], (js: JsValue) => js.as[String].charAt(0), (ch: Char) => Json.toJson(new String(Array(ch))))
 
   def create(elemType: Type): ObjectConverter[_] = {
     factoryMap.get(elemType) match {
