@@ -31,7 +31,7 @@ object ConverterFactory {
     factoryMap.get(elemType) match {
       case Some(fact) => fact()
       case None => {
-        throw new Exception(s"element type is not supported: $elemType")
+        throw new RuntimeException(s"[ObjectFeature] element type is not supported: $elemType")
       }
     }
   }

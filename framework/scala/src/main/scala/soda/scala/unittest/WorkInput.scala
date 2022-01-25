@@ -4,12 +4,12 @@ import play.api.libs.json._
 
 class WorkInput(jstr: String) {
 
-  private val jsValue = Json.parse(jstr)
+  private val root = Json.parse(jstr)
 
-  def id: Int = (jsValue \ "id").get.as[Int]
+  def id: Int = (root \ "id").get.as[Int]
 
   def hasExpected: Boolean = {
-    val r = (jsValue \ "expected")
+    val r = (root \ "expected")
     r.isDefined match {
       case false => false
       case true => r.get match {
@@ -20,10 +20,10 @@ class WorkInput(jstr: String) {
     }
   }
 
-  def expected: JsValue = (jsValue \ "expected").get
+  def expected: JsValue = (root \ "expected").get
 
-  def arg(index: Int): JsValue = (jsValue \ "args" \ 1).get
+  def arg(index: Int): JsValue = (root \ "args" \ 1).get
 
-  def arguments: JsValue = (jsValue \ "args").get
+  def arguments: JsValue = (root \ "args").get
 
 }

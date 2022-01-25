@@ -19,11 +19,14 @@ class TestWork(val solutionType: Type, val methodName: String) {
 
   var compareSerial = false
 
-  def run(): Unit = {
+  var validator: Option[(_, _) => Boolean] = None
 
-    val input = LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
-    val workInput = new WorkInput(input)
-    arguments = parseArguments(argumentTypes, workInput.arguments)
+  var expectedOutput: Option[Any] = None
+
+  def run(): Unit = {
+    val inputText = LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
+    val input = new WorkInput(inputText)
+    arguments = parseArguments(argumentTypes, input.arguments)
 
     val startNano = System.nanoTime()
     var retType = returnType
@@ -36,7 +39,31 @@ class TestWork(val solutionType: Type, val methodName: String) {
     val endNano = System.nanoTime()
     val elapseMillis = (endNano - startNano) / 1e6
 
-    
+    val resConv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[Any]]
+    val serialResult = resConv.toJsonSerializable(result)
+    val output = new WorkOutput
+    output.id = input.id
+    output.result = serialResult
+    output.elapse = elapseMillis
+
+    var success = true
+    if (input.hasExpected) {
+      if (compareSerial && validator == null) {
+        val a = Json.stringify(input.expected)
+        val b = Json.stringify(serialResult)
+        success = a == b
+      } else {
+        val expect = resConv.fromJsonSerializable(input.expected)
+        expectedOutput = Some(expect)
+        success = validator match {
+          case Some(va) => va.asInstanceOf[(Any,Any)=>Boolean].apply(expect, result)
+          case None => ValidatorFactory.create(retType)(expect, result)
+        }
+      }
+    }
+    output.success = success
+
+    println(output.jsonString)
   }
 
   private def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
