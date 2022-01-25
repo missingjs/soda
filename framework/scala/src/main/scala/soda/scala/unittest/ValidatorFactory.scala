@@ -7,6 +7,10 @@ object ValidatorFactory {
 
   private val factoryMap = mutable.Map[Type, () => (_, _) => Boolean]()
 
+  private def registerFactory(elemType: Type, factory: () => (_, _) => Boolean): Unit = {
+    factoryMap(elemType) = factory
+  }
+
   def create[T](elemType: Type): (T, T) => Boolean = {
     factoryMap.get(elemType) match {
       case Some(fact) => fact().asInstanceOf[(T,T)=>Boolean]
