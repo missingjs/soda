@@ -52,6 +52,16 @@ object ConverterFactory {
   registerFactory[List[List[Double]]]
 
   registerFactory(typeOf[Char], (js: JsValue) => js.as[String].charAt(0), (ch: Char) => Json.toJson(new String(Array(ch))))
+  registerFactory(typeOf[List[Char]], () => new CharListConverter)
+  registerFactory(typeOf[Array[Char]],
+    (js: JsValue) => new CharListConverter().fromJsonSerializable(js).toArray,
+    (chs: Array[Char]) => new CharListConverter().toJsonSerializable(chs.toList)
+  )
+  registerFactory(typeOf[List[List[Char]]], () => new CharList2dConverter)
+  registerFactory(typeOf[Array[Array[Char]]],
+    (js: JsValue) => new CharList2dConverter().fromJsonSerializable(js).map(_.toArray).toArray,
+    (mx: Array[Array[Char]]) => new CharList2dConverter().toJsonSerializable(mx.map(_.toList).toList)
+  )
 
   def create(elemType: Type): ObjectConverter[_] = {
     factoryMap.get(elemType) match {
