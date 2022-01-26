@@ -6,15 +6,14 @@ import play.api.libs.json._
 
 import scala.collection.immutable.ArraySeq
 
-class TestWork(val solutionType: Type, val methodName: String) {
+//class TestWork(val solutionType: Type, val methodName: String) {
+class TestWork(methodMirror: MethodMirror) {
 
-  private val methodMirror = getMethodMirror
+  //  private val methodMirror = getMethodMirror
 
-  private val methodType = getEtaExpandedMethodType(methodMirror)
+  private val argumentTypes = Utils.getParamTypes(methodMirror)
 
-  private val argumentTypes = methodType.typeArgs.dropRight(1)
-
-  private val returnType = methodType.typeArgs.last
+  private val returnType = Utils.getReturnType(methodMirror)
 
   private var arguments: Array[Any] = Array.empty
 
@@ -27,7 +26,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
   def run(): Unit = {
     val inputText = LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
     val input = new WorkInput(inputText)
-    arguments = parseArguments(argumentTypes, input.arguments)
+    arguments = TestWork.parseArguments(argumentTypes, input.arguments)
 
     val startNano = System.nanoTime()
     var retType = returnType
@@ -57,7 +56,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
         val expect = resConv.fromJsonSerializable(input.expected)
         expectedOutput = Some(expect)
         success = validator match {
-          case Some(va) => va.asInstanceOf[(Any,Any)=>Boolean].apply(expect, result)
+          case Some(va) => va.asInstanceOf[(Any, Any) => Boolean].apply(expect, result)
           case None => ValidatorFactory.create(retType)(expect, result)
         }
       }
@@ -71,7 +70,42 @@ class TestWork(val solutionType: Type, val methodName: String) {
     validator = Some(v)
   }
 
-  private def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
+  //  private def getMethodMirror = {
+  //    val rMirror = runtimeMirror(getClass.getClassLoader)
+  //    val instMirror = rMirror.reflect(
+  //      rMirror.reflectModule(solutionType.typeSymbol.asClass.companion.asModule).instance
+  //    )
+  //    instMirror.reflectMethod(
+  //      solutionType.companion.decl(TermName(methodName)).asMethod
+  //    )
+  //  }
+}
+
+object TestWork {
+
+  def forCompanion(objType: Type, methodName: String): TestWork = {
+    val rMirror = runtimeMirror(getClass.getClassLoader)
+    val instMirror = rMirror.reflect(
+      rMirror.reflectModule(objType.typeSymbol.asClass.companion.asModule).instance
+    )
+    val mm = instMirror.reflectMethod(
+      objType.companion.decl(TermName(methodName)).asMethod
+    )
+    new TestWork(mm)
+  }
+
+  def forStruct(classType: Type): TestWork = {
+    val tester = new StructTester(classType)
+    val methodName = "test"
+    val rMirror = runtimeMirror(getClass.getClassLoader)
+    val instMirror = rMirror.reflect(tester)
+    val mm = instMirror.reflectMethod(
+      instMirror.symbol.typeSignature.decl(TermName(methodName)).asMethod
+    )
+    new TestWork(mm)
+  }
+
+  def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
     val args = Array.fill[Any](types.size)(null)
     for (i <- types.indices) {
       args(i) = ConverterFactory.create(types(i)).fromJsonSerializable(rawParams(i))
@@ -79,37 +113,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
     args
   }
 
-  private def getEtaExpandedMethodType(methodSymbol: MethodSymbol): Type = {
-    val typ = methodSymbol.typeSignature
-    def paramType(paramSymbol: Symbol): Type = {
-      // TODO: handle the case where paramSymbol denotes a type parameter
-      paramSymbol.typeSignatureIn(typ)
-    }
-    def rec(paramLists: List[List[Symbol]]): Type = {
-      paramLists match {
-        case Nil => methodSymbol.returnType
-        case params :: otherParams =>
-          val functionClassSymbol = definitions.FunctionClass(params.length)
-          appliedType(functionClassSymbol, params.map(paramType) :+ rec(otherParams))
-      }
-    }
-    if (methodSymbol.paramLists.isEmpty) { // No arg method
-      appliedType(definitions.FunctionClass(0), List(methodSymbol.returnType))
-    } else {
-      rec(methodSymbol.paramLists)
-    }
-  }
-  private def getEtaExpandedMethodType(methodMirror: MethodMirror): Type = {
-    getEtaExpandedMethodType(methodMirror.symbol)
-  }
-
-  private def getMethodMirror = {
-    val rMirror = runtimeMirror(getClass.getClassLoader)
-    val instMirror = rMirror.reflect(
-      rMirror.reflectModule(solutionType.typeSymbol.asClass.companion.asModule).instance
-    )
-    instMirror.reflectMethod(
-      solutionType.companion.decl(TermName(methodName)).asMethod
-    )
-  }
+  //  def forStruct(classType: Type): TestWork = {
+  //    new StructTester(classType)
+  //  }
 }

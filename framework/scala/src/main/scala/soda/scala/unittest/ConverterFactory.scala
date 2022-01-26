@@ -97,9 +97,16 @@ object ConverterFactory {
   registerFactory(() => new NestedIntegerConverter)
   // List[NestedInteger]
   registerFactory(() => new ObjectConverter[List[NestedInteger]] {
-    override def fromJsonSerializable(js: JsValue): List[NestedInteger] = js.as[JsArray].value.map(NestedIntegerConverter.parse).toList
-    override def toJsonSerializable(element: List[NestedInteger]): JsValue = Json.toJson(element.map(NestedIntegerConverter.serialize))
+    override def fromJsonSerializable(js: JsValue): List[NestedInteger] = {
+      js.as[JsArray].value.map(NestedIntegerConverter.parse).toList
+    }
+    override def toJsonSerializable(element: List[NestedInteger]): JsValue = {
+      Json.toJson(element.map(NestedIntegerConverter.serialize))
+    }
   })
+
+  // JsValue
+  registerFactory((j: JsValue) => j, (d: JsValue) => d)
 
   def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
     create(typeOf[E]).asInstanceOf[ObjectConverter[E]]

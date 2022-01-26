@@ -12,8 +12,8 @@ class Solution {}
 
 class __Bootstrap__ {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "METHOD")
-    // val work = TestWork.forStruct(...)
+    val work = TestWork.forCompanion(typeOf[Solution], "METHOD")
+    // val work = TestWork.forStruct(typeOf[STRUCT])
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
     work
