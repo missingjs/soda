@@ -93,6 +93,14 @@ object ConverterFactory {
   // TreeNode
   registerFactory(TreeFactory.create, TreeFactory.dump)
 
+  // NestedInteger
+  registerFactory(() => new NestedIntegerConverter)
+  // List[NestedInteger]
+  registerFactory(() => new ObjectConverter[List[NestedInteger]] {
+    override def fromJsonSerializable(js: JsValue): List[NestedInteger] = js.as[JsArray].value.map(NestedIntegerConverter.parse).toList
+    override def toJsonSerializable(element: List[NestedInteger]): JsValue = Json.toJson(element.map(NestedIntegerConverter.serialize))
+  })
+
   def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
     create(typeOf[E]).asInstanceOf[ObjectConverter[E]]
   }
