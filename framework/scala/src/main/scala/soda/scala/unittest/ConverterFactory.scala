@@ -77,6 +77,11 @@ object ConverterFactory {
 
   // ListNode
   registerFactory(ListFactory.create, ListFactory.dump)
+  // List[ListNode]
+  registerFactory(
+    (data: List[List[Int]]) => data.map(ListFactory.create),
+    (heads: List[ListNode]) => heads.map(ListFactory.dump)
+  )
 
   def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
     create(typeOf[E]).asInstanceOf[ObjectConverter[E]]
@@ -94,5 +99,5 @@ object ConverterFactory {
       }
     }
   }
-  
+
 }
