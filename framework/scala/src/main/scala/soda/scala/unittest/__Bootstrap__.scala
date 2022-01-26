@@ -2,6 +2,8 @@ package soda.scala.unittest
 
 import scala.reflect.runtime.universe.typeOf
 
+import soda.scala.leetcode._
+
 import collection.mutable
 import util.control.Breaks.{break, breakable}
 // object Solution { ... }

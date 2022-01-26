@@ -2,76 +2,97 @@ package soda.scala.unittest
 
 import scala.collection.mutable
 import scala.reflect.runtime.universe._
-
 import play.api.libs.json._
+import soda.scala.leetcode._
 
 object ConverterFactory {
 
-  private val factoryMap = mutable.Map[Type, () => ObjectConverter[_]]()
+  private val factoryMap = mutable.Map[String, () => ObjectConverter[_]]()
 
   private def registerFactory[E](factory: () => ObjectConverter[E])(implicit tt: TypeTag[E]): Unit = {
-    factoryMap(typeOf[E]) = factory
+    factoryMap(typeOf[E].toString) = factory
   }
 
-  private def registerFactory[E](parser: JsValue => E, serializer: E => JsValue)(implicit tt: TypeTag[E]): Unit = {
-    registerFactory(() => new ObjectConverter[E] {
-      override def fromJsonSerializable(js: JsValue): E = parser(js)
-      override def toJsonSerializable(element: E): JsValue = serializer(element)
+  private def registerFactory[T,M](parser: M => T, serializer: T => M)(implicit tt: TypeTag[T], fmt: Format[M]): Unit = {
+    registerFactory(() => new ObjectConverter[T] {
+      override def fromJsonSerializable(js: JsValue): T = parser(js.as[M])
+      override def toJsonSerializable(element: T): JsValue = Json.toJson(serializer(element))
     })
   }
 
-  private def registerFactory[E](implicit fmt: Format[E], tt: TypeTag[E]): Unit = {
-    registerFactory((js: JsValue) => js.as[E], (e: E) => Json.toJson(e))
+  private def regFact[E](implicit tt: TypeTag[E], fmt: Format[E]): Unit = {
+    registerFactory((e: E) => e, (e: E) => e)
   }
 
-  registerFactory[Boolean]
-  registerFactory[Short]
-  registerFactory[Int]
-  registerFactory[Long]
-  registerFactory[Float]
-  registerFactory[Double]
-  registerFactory[String]
+  regFact[Boolean]
+  regFact[Short]
+  regFact[Int]
+  regFact[Long]
+  regFact[Float]
+  regFact[Double]
+  regFact[String]
 
-  registerFactory[Array[Int]]
-  registerFactory[List[Int]]
-  registerFactory[Array[Array[Int]]]
-  registerFactory[List[List[Int]]]
+  regFact[Array[Int]]
+  regFact[List[Int]]
+  regFact[Array[Array[Int]]]
+  regFact[List[List[Int]]]
 
-  registerFactory[Array[String]]
-  registerFactory[List[String]]
-  registerFactory[Array[Array[String]]]
-  registerFactory[List[List[String]]]
+  regFact[Array[String]]
+  regFact[List[String]]
+  regFact[Array[Array[String]]]
+  regFact[List[List[String]]]
 
-  registerFactory[Array[Boolean]]
-  registerFactory[List[Boolean]]
+  regFact[Array[Boolean]]
+  regFact[List[Boolean]]
 
-  registerFactory[Array[Double]]
-  registerFactory[List[Double]]
-  registerFactory[Array[Array[Double]]]
-  registerFactory[List[List[Double]]]
+  regFact[Array[Double]]
+  regFact[List[Double]]
+  regFact[Array[Array[Double]]]
+  regFact[List[List[Double]]]
 
-  registerFactory((js: JsValue) => js.as[String].charAt(0), (ch: Char) => Json.toJson(new String(Array(ch))))
-  registerFactory(() => new CharListConverter)
+  private def s2c(s: String) = s(0)
+  private def c2s(c: Char) = s"$c"
+  // Char
+  registerFactory(s2c, c2s)
+  // List[Char]
   registerFactory(
-    (js: JsValue) => new CharListConverter().fromJsonSerializable(js).toArray,
-    (chs: Array[Char]) => new CharListConverter().toJsonSerializable(chs.toList)
+    (strList: List[String]) => strList.map(s2c),
+    (charList: List[Char]) => charList.map(c2s)
   )
-  registerFactory(() => new CharList2dConverter)
+  // List[List[Char]]
   registerFactory(
-    (js: JsValue) => new CharList2dConverter().fromJsonSerializable(js).map(_.toArray).toArray,
-    (mx: Array[Array[Char]]) => new CharList2dConverter().toJsonSerializable(mx.map(_.toList).toList)
+    (strList2d: List[List[String]]) => strList2d.map(_.map(s2c)),
+    (charList2d: List[List[Char]]) => charList2d.map(_.map(c2s))
   )
+  // Array[Char]
+  registerFactory(
+    (sa: Array[String]) => sa.map(s2c),
+    (ca: Array[Char]) => ca.map(c2s)
+  )
+  // Array[Array[Char]]
+  registerFactory(
+    (sa2d: Array[Array[String]]) => sa2d.map(_.map(s2c)),
+    (ca2d: Array[Array[Char]]) => ca2d.map(_.map(c2s))
+  )
+
+  // ListNode
+  registerFactory(ListFactory.create, ListFactory.dump)
 
   def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
     create(typeOf[E]).asInstanceOf[ObjectConverter[E]]
   }
 
   def create(elemType: Type): ObjectConverter[_] = {
-    factoryMap.get(elemType) match {
+    create(elemType.toString)
+  }
+
+  def create(typeName: String): ObjectConverter[_] = {
+    factoryMap.get(typeName) match {
       case Some(fact) => fact()
       case None => {
-        throw new RuntimeException(s"[ConverterFactory] element type is not supported: $elemType")
+        throw new RuntimeException(s"[ConverterFactory] element type is not supported: $typeName")
       }
     }
   }
+  
 }
