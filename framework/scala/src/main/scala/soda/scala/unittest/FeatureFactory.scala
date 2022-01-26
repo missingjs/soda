@@ -7,8 +7,15 @@ object FeatureFactory {
 
   private val factoryMap = mutable.Map[Type, () => ObjectFeature[_]]()
 
-  private def registerFactory(elemType: Type, factory: () => ObjectFeature[_]) = {
-    factoryMap(elemType) = factory
+  private def registerFactory[T](factory: () => ObjectFeature[T])(implicit tt: TypeTag[T]): Unit = {
+    factoryMap(typeOf[T]) = factory
+//    Log.info("feature factor for " + typeOf[T])
+  }
+
+  registerFactory(() => new DoubleFeature)
+
+  def create[T]()(implicit tt: TypeTag[T]): ObjectFeature[T] = {
+    create(typeOf[T])
   }
 
   def create[T](elemType: Type): ObjectFeature[T] = {

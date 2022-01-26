@@ -9,3 +9,7 @@ trait ObjectFeature[T] {
 }
 
 class DefaultObjectFeature[T] extends ObjectFeature[T]
+
+class DoubleFeature extends ObjectFeature[Double] {
+  override def isEqual(a: Double, b: Double): Boolean = (a-b).abs < 1e-6
+}

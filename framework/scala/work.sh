@@ -13,6 +13,12 @@ options:
 
     make <testname> 
         compile test case
+        
+    run <testname>
+        run test case
+
+    clean <testname>
+        remove all class files under current directory
 
 EOF
     exit 1
@@ -62,6 +68,10 @@ case $cmd in
         classname=$testname
         assert_framework
         scala -cp $(get_classpath):$output_dir $classname
+        ;;
+    clean)
+        assert_testname
+        [ -e $output_dir ] && rm -v -r $output_dir
         ;;
     *)
         usage
