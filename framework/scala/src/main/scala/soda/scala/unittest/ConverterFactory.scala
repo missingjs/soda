@@ -83,6 +83,16 @@ object ConverterFactory {
     (heads: List[ListNode]) => heads.map(ListFactory.dump)
   )
 
+  implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]]{
+    override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
+    override def writes(o: Option[T]): JsValue = o match {
+      case Some(t) => implicitly[Writes[T]].writes(t)
+      case None => JsNull
+    }
+  }
+  // TreeNode
+  registerFactory(TreeFactory.create, TreeFactory.dump)
+
   def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
     create(typeOf[E]).asInstanceOf[ObjectConverter[E]]
   }

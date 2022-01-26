@@ -41,6 +41,7 @@ libraryDependencies ++= Seq(
 //  "io.circe" %% "circe-parser"
 //).map(_ % circeVersion)
 
+scalacOptions ++= Seq("-deprecation", "-feature")
 
 enablePlugins(PackPlugin)
 

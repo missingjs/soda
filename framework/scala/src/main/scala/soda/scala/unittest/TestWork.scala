@@ -2,8 +2,9 @@ package soda.scala.unittest
 
 import scala.io.StdIn.readLine
 import scala.reflect.runtime.universe._
-
 import play.api.libs.json._
+
+import scala.collection.immutable.ArraySeq
 
 class TestWork(val solutionType: Type, val methodName: String) {
 
@@ -30,7 +31,7 @@ class TestWork(val solutionType: Type, val methodName: String) {
 
     val startNano = System.nanoTime()
     var retType = returnType
-    var result = methodMirror.apply(arguments: _*)
+    var result = methodMirror.apply(ArraySeq.unsafeWrapArray(arguments): _*)
 
     if (retType == typeOf[Unit]) {
       retType = argumentTypes.head
