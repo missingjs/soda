@@ -1,10 +1,12 @@
 package soda.scala.unittest
 
-import scala.collection.mutable
 import scala.reflect.runtime.universe.typeOf
 
-class Solution {}
+import collection.mutable
+import util.control.Breaks.{break, breakable}
 // object Solution { ... }
+
+class Solution {}
 
 class __Bootstrap__ {
   def get(): TestWork = {
