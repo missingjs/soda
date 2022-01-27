@@ -81,7 +81,7 @@ class Solution {}
 
 class Leet {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "calcEquation")
+    val work = TestWork.forObject(typeOf[Solution], "calcEquation")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true

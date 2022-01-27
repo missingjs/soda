@@ -64,7 +64,7 @@ class Solution {}
 
 class Nestedint {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "flatNested")
+    val work = TestWork.forObject(typeOf[Solution], "flatNested")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

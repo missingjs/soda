@@ -35,7 +35,7 @@ object Solution {
 
 class Reverse {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "reverseVowels")
+    val work = TestWork.forObject(typeOf[Solution], "reverseVowels")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

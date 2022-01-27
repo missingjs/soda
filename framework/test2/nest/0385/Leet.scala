@@ -51,7 +51,7 @@ class Solution {}
 
 class Leet {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "deserialize")
+    val work = TestWork.forObject(typeOf[Solution], "deserialize")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

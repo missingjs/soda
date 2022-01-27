@@ -19,7 +19,7 @@ object Solution {
 
 class Chars2d {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "toUpper")
+    val work = TestWork.forObject(typeOf[Solution], "toUpper")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

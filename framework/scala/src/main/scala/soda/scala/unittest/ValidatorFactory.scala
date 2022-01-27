@@ -22,10 +22,7 @@ object ValidatorFactory {
 
   def create[T](elemType: Type): (T, T) => Boolean = {
     factoryMap.get(elemType) match {
-      case Some(fact) => {
-//        Log.info(s"validator for type $elemType")
-        fact().asInstanceOf[(T,T)=>Boolean]
-      }
+      case Some(fact) => fact().asInstanceOf[(T,T)=>Boolean]
       case None => (a, b) => FeatureFactory.create[T](elemType).isEqual(a, b)
     }
   }

@@ -24,7 +24,7 @@ class Solution {}
 
 class Reverse {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "reverse")
+    val work = TestWork.forObject(typeOf[Solution], "reverse")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

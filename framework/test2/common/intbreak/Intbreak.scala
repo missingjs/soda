@@ -1,6 +1,6 @@
 import soda.scala.unittest._
 
-import scala.reflect.runtime.universe.typeOf
+import scala.reflect.runtime.universe._
 
 class Solution {}
 object Solution {
@@ -24,13 +24,18 @@ object Solution {
 }
 
 class Intbreak {
-  def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "integerBreak")
-    work.compareSerial = true
-    work
+  def get(): ()=>Unit = {
+    // val work = TestWork.forObject(typeOf[Solution], "integerBreak")
+    // val work = GenericTestWork.create1(Solution.integerBreak)
+    // val work = TestWork.create1(Solution.integerBreak)
+    () => {
+      var work = GenericTestWork.create1(Solution.integerBreak)
+      work.compareSerial = true
+      work.run()
+    }
   }
 }
 
 object Intbreak extends App {
-  new Intbreak().get().run()
+  new Intbreak().get().apply()
 }

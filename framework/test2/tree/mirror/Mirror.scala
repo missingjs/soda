@@ -24,7 +24,7 @@ class Solution {}
 
 class Mirror {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "mirror")
+    val work = TestWork.forObject(typeOf[Solution], "mirror")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true

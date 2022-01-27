@@ -24,7 +24,7 @@ object Solution {
 
 class Matrix {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "matrixMultiply")
+    val work = TestWork.forObject(typeOf[Solution], "matrixMultiply")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true

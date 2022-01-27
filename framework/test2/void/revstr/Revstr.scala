@@ -20,18 +20,16 @@ object Solution {
   }
 }
 
-class Solution {}
-
 class Revstr {
-  def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "reverseString")
-    // val work = TestWork.forStruct(...)
-    // work.setValidator((R, R) => Boolean)
-    work.compareSerial = true
-    work
+  def get(): ()=>Unit = {
+    () => {
+      val work = GenericTestWork.create1u(Solution.reverseString)
+      work.compareSerial = true
+      work.run()
+    }
   }
 }
 
 object Revstr extends App {
-  new Revstr().get().run()
+  new Revstr().get().apply()
 }

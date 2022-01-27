@@ -6,10 +6,7 @@ import play.api.libs.json._
 
 import scala.collection.immutable.ArraySeq
 
-//class TestWork(val solutionType: Type, val methodName: String) {
 class TestWork(methodMirror: MethodMirror) {
-
-  //  private val methodMirror = getMethodMirror
 
   private val argumentTypes = Utils.getParamTypes(methodMirror)
 
@@ -70,20 +67,11 @@ class TestWork(methodMirror: MethodMirror) {
     validator = Some(v)
   }
 
-  //  private def getMethodMirror = {
-  //    val rMirror = runtimeMirror(getClass.getClassLoader)
-  //    val instMirror = rMirror.reflect(
-  //      rMirror.reflectModule(solutionType.typeSymbol.asClass.companion.asModule).instance
-  //    )
-  //    instMirror.reflectMethod(
-  //      solutionType.companion.decl(TermName(methodName)).asMethod
-  //    )
-  //  }
 }
 
 object TestWork {
 
-  def forCompanion(objType: Type, methodName: String): TestWork = {
+  def forObject(objType: Type, methodName: String): TestWork = {
     val rMirror = runtimeMirror(getClass.getClassLoader)
     val instMirror = rMirror.reflect(
       rMirror.reflectModule(objType.typeSymbol.asClass.companion.asModule).instance
@@ -94,15 +82,19 @@ object TestWork {
     new TestWork(mm)
   }
 
-  def forStruct(classType: Type): TestWork = {
-    val tester = new StructTester(classType)
-    val methodName = "test"
+  def forInstance(inst: Any, methodName: String): TestWork = {
     val rMirror = runtimeMirror(getClass.getClassLoader)
-    val instMirror = rMirror.reflect(tester)
+    val instMirror = rMirror.reflect(inst)
     val mm = instMirror.reflectMethod(
       instMirror.symbol.typeSignature.decl(TermName(methodName)).asMethod
     )
     new TestWork(mm)
+  }
+
+  def forStruct(classType: Type): TestWork = {
+    val tester = new StructTester(classType)
+    val methodName = "test"
+    forInstance(tester, methodName)
   }
 
   def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
@@ -112,8 +104,5 @@ object TestWork {
     }
     args
   }
-
-  //  def forStruct(classType: Type): TestWork = {
-  //    new StructTester(classType)
-  //  }
+  
 }

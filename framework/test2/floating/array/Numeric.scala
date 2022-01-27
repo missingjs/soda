@@ -16,7 +16,7 @@ object Solution {
 
 class Numeric {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "multiply")
+    val work = TestWork.forObject(typeOf[Solution], "multiply")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true

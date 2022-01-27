@@ -26,7 +26,7 @@ object Solution {
 
 class Intersect {
   def get(): TestWork = {
-    val work = new TestWork(typeOf[Solution], "intersection")
+    val work = TestWork.forObject(typeOf[Solution], "intersection")
     // val work = TestWork.forStruct(...)
     work.setValidator(Validators.forArray[Int](false))
     work.compareSerial = true
