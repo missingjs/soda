@@ -13,7 +13,6 @@ object Validators {
   def forList2d[T](dim1Ordered: Boolean, dim2Ordered: Boolean)(implicit tt: TypeTag[T]): (List[List[T]], List[List[T]]) => Boolean = {
     val elemType = typeOf[T]
     val elemFeat = FeatureFactory.create[T](elemType)
-    Log.info(s"element feat: $elemFeat, elem type: $elemType")
     val lsFeat = if (dim2Ordered) new ListFeature[T](elemFeat) else new UnorderListFeature[T](elemFeat)
     if (dim1Ordered) StrategyFactory.list(lsFeat) else StrategyFactory.unorderList(lsFeat)
   }
