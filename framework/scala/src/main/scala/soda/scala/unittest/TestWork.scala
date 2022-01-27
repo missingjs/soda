@@ -6,7 +6,7 @@ import play.api.libs.json._
 
 import scala.collection.immutable.ArraySeq
 
-class TestWork(methodMirror: MethodMirror) {
+class TestWork(methodMirror: MethodMirror) extends Validatable[Any] {
 
   private val argumentTypes = Utils.getParamTypes(methodMirror)
 
@@ -14,15 +14,8 @@ class TestWork(methodMirror: MethodMirror) {
 
   private var arguments: Array[Any] = Array.empty
 
-  var compareSerial = false
-
-  private var validator: Option[(_, _) => Boolean] = None
-
-  var expectedOutput: Option[Any] = None
-
   def run(): Unit = {
-    val inputText = LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
-    val input = new WorkInput(inputText)
+    val input = new WorkInput(Utils.fromStdin())
     arguments = TestWork.parseArguments(argumentTypes, input.arguments)
 
     val startNano = System.nanoTime()
@@ -35,36 +28,12 @@ class TestWork(methodMirror: MethodMirror) {
     }
     val endNano = System.nanoTime()
     val elapseMillis = (endNano - startNano) / 1e6
-
-    val resConv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[Any]]
-    val serialResult = resConv.toJsonSerializable(result)
-    val output = new WorkOutput
-    output.id = input.id
-    output.result = serialResult
-    output.elapse = elapseMillis
-
-    var success = true
-    if (input.hasExpected) {
-      if (compareSerial && validator.isEmpty) {
-        val a = Json.stringify(input.expected)
-        val b = Json.stringify(serialResult)
-        success = a == b
-      } else {
-        val expect = resConv.fromJsonSerializable(input.expected)
-        expectedOutput = Some(expect)
-        success = validator match {
-          case Some(va) => va.asInstanceOf[(Any, Any) => Boolean].apply(expect, result)
-          case None => ValidatorFactory.create(retType)(expect, result)
-        }
-      }
-    }
-    output.success = success
-
+    val output = validate(input, retType, result, elapseMillis)
     println(output.jsonString)
   }
 
   def setValidator(v: (_, _) => Boolean): Unit = {
-    validator = Some(v)
+    validator = Some(v.asInstanceOf[(Any,Any)=>Boolean])
   }
 
 }
@@ -104,5 +73,4 @@ object TestWork {
     }
     args
   }
-  
 }

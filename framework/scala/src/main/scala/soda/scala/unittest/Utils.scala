@@ -1,5 +1,6 @@
 package soda.scala.unittest
 
+import scala.io.StdIn.readLine
 import scala.reflect.runtime.universe._
 
 object Utils {
@@ -47,6 +48,10 @@ object Utils {
 
   def getEtaExpandedMethodType(methodMirror: MethodMirror): Type = {
     getEtaExpandedMethodType(methodMirror.symbol)
+  }
+
+  def fromStdin(): String = {
+    LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
   }
 
 }

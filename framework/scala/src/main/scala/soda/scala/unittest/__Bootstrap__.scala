@@ -5,6 +5,7 @@ import scala.reflect.runtime.universe.typeOf
 import soda.scala.leetcode._
 
 import collection.mutable
+import collection.mutable.{ArrayBuffer, ArrayDeque, PriorityQueue}
 import util.control.Breaks.{break, breakable}
 object Solution {}
 
