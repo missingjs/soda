@@ -4,11 +4,12 @@ import play.api.libs.json.JsValue
 
 import scala.reflect.runtime.universe._
 
-class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] {
+class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] with MagicWork {
 
   def run(): Unit = {
     val input = new WorkInput(Utils.fromStdin())
     val result = proxy.execute(input)
+    _arguments = proxy.arguments
     val elapseMillis = proxy.elapseMillis
     val output = validate(input, typeOf[R], result, elapseMillis)
     println(output.jsonString)
@@ -17,6 +18,8 @@ class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] {
   def setValidator(v: (R, R) => Boolean): Unit = {
     validator = Some(v)
   }
+
+  override protected var _arguments: List[Any] = _
 }
 
 object GenericTestWork {

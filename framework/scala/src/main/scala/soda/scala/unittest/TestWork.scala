@@ -6,25 +6,24 @@ import play.api.libs.json._
 
 import scala.collection.immutable.ArraySeq
 
-class TestWork(methodMirror: MethodMirror) extends Validatable[Any] {
+class TestWork(methodMirror: MethodMirror) extends Validatable[Any] with MagicWork {
 
   private val argumentTypes = Utils.getParamTypes(methodMirror)
 
   private val returnType = Utils.getReturnType(methodMirror)
 
-  private var arguments: Array[Any] = Array.empty
-
   def run(): Unit = {
     val input = new WorkInput(Utils.fromStdin())
-    arguments = TestWork.parseArguments(argumentTypes, input.arguments)
+    val args = TestWork.parseArguments(argumentTypes, input.arguments)
+    _arguments = args.toList
 
     val startNano = System.nanoTime()
     var retType = returnType
-    var result = methodMirror.apply(ArraySeq.unsafeWrapArray(arguments): _*)
+    var result = methodMirror.apply(ArraySeq.unsafeWrapArray(args): _*)
 
     if (retType == typeOf[Unit]) {
       retType = argumentTypes.head
-      result = arguments(0)
+      result = args.head
     }
     val endNano = System.nanoTime()
     val elapseMillis = (endNano - startNano) / 1e6
@@ -36,6 +35,7 @@ class TestWork(methodMirror: MethodMirror) extends Validatable[Any] {
     validator = Some(v.asInstanceOf[(Any,Any)=>Boolean])
   }
 
+  override protected var _arguments: List[Any] = _
 }
 
 object TestWork {
