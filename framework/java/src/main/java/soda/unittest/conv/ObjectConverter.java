@@ -1,4 +1,4 @@
-package soda.unittest.work.parse;
+package soda.unittest.conv;
 
 public interface ObjectConverter<R,J> {
 

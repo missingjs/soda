@@ -1,6 +1,6 @@
 package soda.unittest.validate;
 
-import soda.unittest.work.parse.TypeRef;
+import soda.unittest.conv.TypeRef;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

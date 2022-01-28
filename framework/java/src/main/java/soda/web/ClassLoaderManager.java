@@ -1,4 +1,4 @@
-package soda.unittest.web;
+package soda.web;
 
 import java.io.File;
 import java.net.MalformedURLException;

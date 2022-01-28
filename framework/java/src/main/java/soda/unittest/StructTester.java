@@ -1,7 +1,7 @@
-package soda.unittest.work;
+package soda.unittest;
 
-import soda.unittest.work.parse.ConverterFactory;
-import soda.unittest.work.parse.ObjectConverter;
+import soda.unittest.conv.ConverterFactory;
+import soda.unittest.conv.ObjectConverter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package soda.unittest.web;
+package soda.web;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import soda.unittest.work.Utils;
+import soda.unittest.Utils;
 
 public abstract class BaseHandler implements HttpHandler {
 	

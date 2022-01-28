@@ -1,4 +1,4 @@
-package soda.unittest.web;
+package soda.web;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.Callable;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 
-import soda.unittest.work.TestWork;
+import soda.unittest.TestWork;
 
 public class WorkHandler extends BaseHandler {
 	

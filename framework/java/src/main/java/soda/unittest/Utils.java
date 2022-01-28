@@ -1,4 +1,4 @@
-package soda.unittest.work;
+package soda.unittest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

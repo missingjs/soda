@@ -14,7 +14,7 @@ self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/setup_env.sh || exit
 
 work_dir=$self_dir/server
-server_class="soda.unittest.web.SodaServer"
+server_class="soda.web.SodaServer"
 port=$server_port
 prefix="http://localhost:$port"
 

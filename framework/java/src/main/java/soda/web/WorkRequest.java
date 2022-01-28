@@ -1,4 +1,4 @@
-package soda.unittest.web;
+package soda.web;
 
 public class WorkRequest {
 

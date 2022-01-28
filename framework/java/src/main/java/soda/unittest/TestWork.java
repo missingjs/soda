@@ -1,4 +1,4 @@
-package soda.unittest.work;
+package soda.unittest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -8,8 +8,8 @@ import java.util.function.BiPredicate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import soda.unittest.validate.ValidatorFactory;
-import soda.unittest.work.parse.ObjectConverter;
-import soda.unittest.work.parse.ConverterFactory;
+import soda.unittest.conv.ObjectConverter;
+import soda.unittest.conv.ConverterFactory;
 
 public class TestWork {
 	
@@ -21,15 +21,9 @@ public class TestWork {
 	
 	private Type[] argumentTypes;
 	
-//	private final int numArguments;
-	
-//	private TestLoader testLoader = new StdioTestLoader();
-	
 	private BiPredicate<?,?> validator;
 	
 	private boolean compareSerial = false;
-	
-//	private WorkSerializer workSerializer = new JacksonWorkSerializer();
 
     private Object expectedOutput;
 
@@ -46,13 +40,8 @@ public class TestWork {
 		this.method = method;
 		method.setAccessible(true);
 		argumentTypes = method.getGenericParameterTypes();
-//		numArguments = argumentTypes.length;
 		returnType = method.getGenericReturnType();
 	}
-	
-//	public void setTestLoader(TestLoader loader) {
-//		testLoader = loader;
-//	}
 	
 	public void setValidator(BiPredicate<?,?> v) {
 		validator = v;
@@ -61,10 +50,6 @@ public class TestWork {
 	public void setCompareSerial(boolean b) {
 		compareSerial = b;
 	}
-	
-//	public void setWorkSerializer(WorkSerializer ws) {
-//		workSerializer = ws;
-//	}
 
     public Object getExpectedOutput() {
         return expectedOutput;

@@ -1,6 +1,6 @@
-package soda.unittest.web;
+package soda.web;
 
-import soda.unittest.work.Utils;
+import soda.unittest.Utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

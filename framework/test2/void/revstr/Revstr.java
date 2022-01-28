@@ -6,8 +6,8 @@ import java.util.stream.*;
 
 import soda.leetcode.*;
 import soda.unittest.Validators;
-import soda.unittest.work.TestWork;
-import soda.unittest.work.Utils;
+import soda.unittest.TestWork;
+import soda.unittest.Utils;
 
 
 class Solution {

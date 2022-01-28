@@ -6,7 +6,7 @@ import java.util.stream.*;
 
 import soda.leetcode.*;
 import soda.unittest.Validators;
-import soda.unittest.work.TestWork;
+import soda.unittest.TestWork;
 
 class Solution {
     public char[][] toUpper(List<List<Character>> matrix) {

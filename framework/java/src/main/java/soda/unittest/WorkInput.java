@@ -1,4 +1,4 @@
-package soda.unittest.work;
+package soda.unittest;
 
 import java.util.List;
 
