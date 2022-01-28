@@ -77,8 +77,8 @@ remote_setup()
     local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/scala/reset?classpath=$classpath"
-    curl --connect-timeout 2 -s "$url" && echo
+    local url="http://localhost:$server_port/soda/scala/reset"
+    curl --connect-timeout 2 -X POST -d "classpath=$classpath" -s "$url" && echo
 }
 
 case $cmd in

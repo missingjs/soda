@@ -1,12 +1,13 @@
 import soda.unittest.*;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import soda.leetcode.*;
 import soda.unittest.Validators;
 import soda.unittest.work.TestWork;
+import soda.unittest.work.Utils;
 
 import static soda.unittest.LoggerHelper.logger;
 
@@ -23,21 +24,18 @@ class Solution {
     }
 }
 
-public class Revstr implements Supplier<TestWork> {
+public class Revstr implements Function<String, String> {
 
     @Override
-    public TestWork get() {
-        var work = new TestWork(new Solution(), "reverseString");
+    public String apply(String text) {
+        var work = TestWork.forObject(new Solution(), "reverseString");
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
-        // work.setArgumentParser(index, a -> { ... });
-        // work.setResultParser(r -> { ... });
-        // work.setResultSerializer(r -> {...});
-        return work;
+        return work.run(text);
     }
 
     public static void main(String[] args) throws Exception {
-        new Revstr().get().run();
+        System.out.println(new Revstr().apply(Utils.fromStdin()));
     }
 
 }

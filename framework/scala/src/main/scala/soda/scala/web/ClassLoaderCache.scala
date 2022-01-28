@@ -24,7 +24,7 @@ object ClassLoaderCache {
     }
   }
 
-  def clear(path: String): Unit = {
+  def remove(path: String): Unit = this.synchronized {
     loaderMap.remove(path)
   }
 
