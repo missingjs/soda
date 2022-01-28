@@ -4,13 +4,13 @@ import com.sun.net.httpserver.{HttpExchange, HttpHandler}
 
 abstract class BaseHandler extends HttpHandler with MessageReader with MessageWriter {
 
-  def handleJob(exchange: HttpExchange): String
+  def handleWork(exchange: HttpExchange): String
 
   override def handle(exchange: HttpExchange): Unit = {
     val method = exchange.getRequestMethod
     val uri = exchange.getRequestURI
     try {
-      val result = handleJob(exchange)
+      val result = handleWork(exchange)
       sendMessage(exchange, 200, result)
       Logger.info(s"$method $uri 200 $result")
     } catch {

@@ -3,7 +3,7 @@ package soda.scala.web
 import com.sun.net.httpserver.{HttpExchange, HttpServer}
 
 import java.net.InetSocketAddress
-import java.util.concurrent.Executors
+import java.util.concurrent.{Executors, TimeUnit}
 
 class Server(address: String, port: Int) {
 
@@ -14,9 +14,31 @@ class Server(address: String, port: Int) {
   server.setExecutor(executor)
 
   server.createContext("/soda/scala/echo", new EchoHandler)
+  server.createContext("/soda/scala/work", new WorkHandler)
+  server.createContext("/soda/scala/stop", new BaseHandler {
+    override def handleWork(exchange: HttpExchange): String = {
+      stop()
+      "stop signal sent"
+    }
+  })
 
   def start(): Unit = {
     server.start()
+  }
+
+  def stop(): Unit = {
+    val t = new Thread(() => {
+      server.stop(1)
+      executor.shutdown()
+      try {
+        executor.awaitTermination(1, TimeUnit.SECONDS)
+        Logger.info("server stopped")
+      } catch {
+        case th: Throwable =>
+          Logger.exception("error when stop server", th)
+      }
+    })
+    t.start()
   }
 
 }

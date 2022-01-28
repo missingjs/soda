@@ -44,16 +44,16 @@ object Solution {
 
 class Solution {}
 
-class Revword {
-  def get(): TestWork = {
+class Revword extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "reverseWords")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Revword extends App {
-  new Revword().get().run()
+  println(new Revword()(Utils.fromStdin()))
 }

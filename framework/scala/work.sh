@@ -14,7 +14,7 @@ options:
     make <testname> 
         compile test case
         
-    run <testname>
+    run <testname> [--remote]
         run test case
 
     clean <testname>
@@ -47,6 +47,29 @@ assert_testname() {
 testname=$(python3 -c "print('$testname'.capitalize())")
 output_dir=./scala
 
+remote_run()
+{
+    # $input must be in valid json format
+    local input="$(</dev/stdin)"
+    local classname=$1
+    local classpath=$(cd $output_dir && pwd)
+    local url="http://localhost:$server_port/soda/scala"
+    curl --connect-timeout 2 -s "$url/echo?a=b" >/dev/null || { echo "server not open" >&2; exit 2; }
+    pycode=$(cat << EOF
+import json; import sys;
+content = sys.stdin.read()
+info = {
+  "classpath": "$classpath",
+  "bootClass": "$classname",
+  "testCase" : content
+}
+print(json.dumps(info))
+EOF
+)
+    post_content=$(echo "$input" | python3 -c "$pycode")
+    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url/work"
+}
+
 case $cmd in
     new)
         assert_testname
@@ -76,8 +99,13 @@ case $cmd in
     run)
         assert_testname
         classname=$testname
-        assert_framework
-        scala -cp $(get_classpath):$output_dir $classname
+        run_mode=$3
+        if [ "$run_mode" == "--remote" ]; then
+            remote_run $classname <&0
+        else
+            assert_framework
+            scala -cp $(get_classpath):$output_dir $classname
+        fi
         ;;
     clean)
         assert_testname

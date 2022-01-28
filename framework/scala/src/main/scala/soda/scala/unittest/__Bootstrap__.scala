@@ -9,22 +9,20 @@ import collection.mutable.{ArrayBuffer, ArrayDeque, PriorityQueue}
 import util.control.Breaks.{break, breakable}
 object Solution {}
 
-class __Bootstrap__ {
-  def get(): () => Unit = {
-    () => {
-      val work = GenericTestWork.create1(Solution.eq)
-      // val work = GenericTestWork.forStruct(typeOf[STRUCT])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      // work.setValidator((R, R) => Boolean)
-      work.compareSerial = true
-      work.run()
-    }
+class __Bootstrap__ extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create1(Solution.eq)
+    // val work = GenericTestWork.forStruct(typeOf[STRUCT])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    // work.setValidator((R, R) => Boolean)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object __Bootstrap__ extends App {
-  new __Bootstrap__().get().apply()
+  println(new __Bootstrap__()(Utils.fromStdin()))
 }

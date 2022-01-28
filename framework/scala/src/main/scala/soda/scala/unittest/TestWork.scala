@@ -1,6 +1,5 @@
 package soda.scala.unittest
 
-import scala.io.StdIn.readLine
 import scala.reflect.runtime.universe._
 import play.api.libs.json._
 
@@ -12,8 +11,8 @@ class TestWork(methodMirror: MethodMirror) extends Validatable[Any] with MagicWo
 
   private val returnType = Utils.getReturnType(methodMirror)
 
-  def run(): Unit = {
-    val input = new WorkInput(Utils.fromStdin())
+  def run(text: String): String = {
+    val input = new WorkInput(text)
     val args = TestWork.parseArguments(argumentTypes, input.arguments)
     _arguments = args.toList
 
@@ -21,14 +20,18 @@ class TestWork(methodMirror: MethodMirror) extends Validatable[Any] with MagicWo
     var retType = returnType
     var result = methodMirror.apply(ArraySeq.unsafeWrapArray(args): _*)
 
-    if (retType == typeOf[Unit]) {
+    if (retType.toString == typeOf[Unit].toString) {
       retType = argumentTypes.head
       result = args.head
     }
     val endNano = System.nanoTime()
     val elapseMillis = (endNano - startNano) / 1e6
     val output = validate(input, retType, result, elapseMillis)
-    println(output.jsonString)
+    output.jsonString
+  }
+
+  def run(): Unit = {
+    println(run(Utils.fromStdin()))
   }
 
   def setValidator(v: (_, _) => Boolean): Unit = {

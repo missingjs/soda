@@ -6,13 +6,17 @@ import scala.reflect.runtime.universe._
 
 class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] with MagicWork {
 
-  def run(): Unit = {
-    val input = new WorkInput(Utils.fromStdin())
+  def run(text: String): String = {
+    val input = new WorkInput(text)
     val result = proxy.execute(input)
     _arguments = proxy.arguments
     val elapseMillis = proxy.elapseMillis
     val output = validate(input, typeOf[R], result, elapseMillis)
-    println(output.jsonString)
+    output.jsonString
+  }
+
+  def run(): Unit = {
+    println(run(Utils.fromStdin()))
   }
 
   def setValidator(v: (R, R) => Boolean): Unit = {
