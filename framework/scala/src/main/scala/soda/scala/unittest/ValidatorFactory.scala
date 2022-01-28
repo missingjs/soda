@@ -5,10 +5,10 @@ import scala.reflect.runtime.universe._
 
 object ValidatorFactory {
 
-  private val factoryMap = mutable.Map[Type, () => (_, _) => Boolean]()
+  private val factoryMap = mutable.Map[String, () => (_, _) => Boolean]()
 
   private def registerFactory[T](factory: () => (T, T) => Boolean)(implicit tt: TypeTag[T]): Unit = {
-    factoryMap(typeOf[T]) = factory
+    factoryMap(typeOf[T].toString) = factory
   }
 
   registerFactory(() => Validators.forArray[Double](ordered = true))
@@ -21,7 +21,7 @@ object ValidatorFactory {
   }
 
   def create[T](elemType: Type): (T, T) => Boolean = {
-    factoryMap.get(elemType) match {
+    factoryMap.get(elemType.toString) match {
       case Some(fact) => fact().asInstanceOf[(T,T)=>Boolean]
       case None => (a, b) => FeatureFactory.create[T](elemType).isEqual(a, b)
     }
