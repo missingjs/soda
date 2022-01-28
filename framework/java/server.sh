@@ -37,6 +37,13 @@ start_server()
     return 1
 }
 
+start_server_fg()
+{
+    classpath=$(get_classpath)
+    set -x
+    java -cp $classpath $server_class -p $port
+}
+
 test_server()
 {
     curl --connect-timeout 2 "$prefix/soda/java/echo?a=x" >/dev/null 2>&1
@@ -48,6 +55,9 @@ case $cmd in
         ;;
     stop)
         curl --connect-timeout 2 "$prefix/stop" && echo
+        ;;
+    start-fg)
+        start_server_fg
         ;;
     *)
         usage

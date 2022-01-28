@@ -25,12 +25,23 @@ public class SodaServer {
 	
 	public static void main(String[] args) throws Exception {
 		int port = 9201;
-		if (args.length > 0) {
-			port = Integer.parseInt(args[0]);
+		int i = 0;
+		while (i < args.length) {
+			var cmd = args[i];
+			if (cmd.equals("-p") || cmd.equals("--port")) {
+				++i;
+				port = Integer.parseInt(args[i]);
+			} else {
+				System.err.println("invalid option: " + cmd);
+				System.exit(1);
+			}
+			++i;
 		}
-		SodaServer ss = new SodaServer("localhost", port);
+
+		var address = "localhost";
+		SodaServer ss = new SodaServer(address, port);
 		ss.start();
-		System.out.println("server start");
+		Logger.infof("soda java server start, listening %s:%d", address, port);
 	}
 	
 	public SodaServer(String bindAddress, int port) throws IOException {
@@ -44,7 +55,7 @@ public class SodaServer {
 	
 	private class StopHandler extends BaseHandler {
 		@Override
-		public String handleJob(HttpExchange exchange) throws Exception {
+		public String handleWork(HttpExchange exchange) throws Exception {
 			stop();
 			return "Stop signal sent";
 		}
@@ -55,13 +66,13 @@ public class SodaServer {
 		server.createContext("/soda/java/echo", new EchoHandler());
 		
 		// GET
-		server.createContext("/stop", new StopHandler());
+		server.createContext("/soda/java/stop", new StopHandler());
 		
 		// POST, application/json
-		server.createContext("/soda/java/job", new JobHandler(classLoaderMgr, 5000));
+		server.createContext("/soda/java/work", new WorkHandler(classLoaderMgr, 5000));
 		
 		// POST, application/x-www-form-urlencoded
-		server.createContext("/soda/java/setup", new SetupHandler(classLoaderMgr));
+		server.createContext("/soda/java/reset", new SetupHandler(classLoaderMgr));
 	}
 	
 	public void start() {

@@ -23,15 +23,15 @@ public class TestWork {
 	
 	private Type[] argumentTypes;
 	
-	private final int numArguments;
+//	private final int numArguments;
 	
-	private TestLoader testLoader = new StdioTestLoader();
+//	private TestLoader testLoader = new StdioTestLoader();
 	
 	private BiPredicate<?,?> validator;
 	
 	private boolean compareSerial = false;
 	
-	private WorkSerializer workSerializer = new JacksonWorkSerializer();
+//	private WorkSerializer workSerializer = new JacksonWorkSerializer();
 
     private Object expectedOutput;
 
@@ -48,13 +48,13 @@ public class TestWork {
 		this.method = method;
 		method.setAccessible(true);
 		argumentTypes = method.getGenericParameterTypes();
-		numArguments = argumentTypes.length;
+//		numArguments = argumentTypes.length;
 		returnType = method.getGenericReturnType();
 	}
 	
-	public void setTestLoader(TestLoader loader) {
-		testLoader = loader;
-	}
+//	public void setTestLoader(TestLoader loader) {
+//		testLoader = loader;
+//	}
 	
 	public void setValidator(BiPredicate<?,?> v) {
 		validator = v;
@@ -64,9 +64,9 @@ public class TestWork {
 		compareSerial = b;
 	}
 	
-	public void setWorkSerializer(WorkSerializer ws) {
-		workSerializer = ws;
-	}
+//	public void setWorkSerializer(WorkSerializer ws) {
+//		workSerializer = ws;
+//	}
 
     public Object getExpectedOutput() {
         return expectedOutput;
@@ -75,10 +75,26 @@ public class TestWork {
 	public Object[] getArguments() {
 		return arguments;
 	}
-	
+
+	public void run() throws RuntimeException {
+		try {
+			System.out.println(run(Utils.fromStdin()));
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public String run(String text) throws RuntimeException {
+		try {
+			return doRun(text);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
-	public void run() throws Exception {
-		WorkInput input = workSerializer.parse(testLoader.load());
+	private String doRun(String text) throws Exception {
+		var input = objectMapper.readValue(text, WorkInput.class);
 		arguments = parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
@@ -115,7 +131,7 @@ public class TestWork {
 			}
 		}
 		output.success = success;
-		testLoader.store(workSerializer.serialize(output));
+		return objectMapper.writeValueAsString(output);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -140,6 +156,10 @@ public class TestWork {
 
 	public static TestWork forStruct(Class<?> structClass) {
 		return StructTester.createTestWork(structClass);
+	}
+
+	public static TestWork forObject(Object obj, String method) {
+		return new TestWork(obj, method);
 	}
 	
 }

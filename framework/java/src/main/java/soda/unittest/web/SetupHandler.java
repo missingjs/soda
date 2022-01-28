@@ -13,14 +13,12 @@ public class SetupHandler extends BaseHandler {
 	}
 
 	@Override
-	protected String handleJob(HttpExchange exchange) throws Exception {
+	protected String handleWork(HttpExchange exchange) throws Exception {
 		String content = getPostBody(exchange);
 		Map<String, String> params = parseQuery(content);
-		String runpath = params.get("runpath");
-		mgr.set(runpath);
-		String message = "Add Run path " + runpath;
-		System.out.println(message);
-		return message;
+		String classpath = params.get("classpath");
+		mgr.remove(classpath);
+		return "reset class loader for " + classpath;
 	}
 
 }

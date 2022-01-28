@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class EchoHandler extends BaseHandler {
 
 	@Override
-	protected String handleJob(HttpExchange exchange) throws Exception {
+	protected String handleWork(HttpExchange exchange) throws Exception {
 		return exchange.getRequestURI().getQuery();
 	}
 
