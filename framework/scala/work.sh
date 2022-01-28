@@ -18,7 +18,13 @@ options:
         run test case
 
     clean <testname>
-        remove all class files under current directory
+        remove all class files in class output directory (./scala)
+
+    server (start|stop|restart)
+        server management
+
+    server start --fg
+        start server foreground
 
 EOF
     exit 1
@@ -60,7 +66,11 @@ case $cmd in
         if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
             assert_framework
             echo "Compiling $srcfile ..."
-            scalac -d $output_dir -deprecation -cp $(get_classpath) $srcfile && echo "Compile $srcfile OK"
+            classpath=$(get_classpath)
+            set -x
+            scalac -d $output_dir $SODA_SCALA_COMPILE_OPTION -cp $classpath $srcfile || exit
+            set +x
+            echo "Compile $srcfile OK"
         fi
         ;;
     run)
@@ -72,6 +82,20 @@ case $cmd in
     clean)
         assert_testname
         [ -e $output_dir ] && rm -v -r $output_dir
+        ;;
+    server)
+        operation=$2
+        cmd=$self_dir/server.sh
+        if [ "$operation" == "start" ]; then
+            fore=$3
+            [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
+            $cmd start
+        elif [ "$operation" == "stop" ]; then
+            $cmd stop
+        elif [ "$operation" == "restart" ]; then
+            $cmd stop
+            $cmd start
+        fi
         ;;
     *)
         usage

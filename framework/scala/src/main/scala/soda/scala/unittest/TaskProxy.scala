@@ -54,3 +54,31 @@ class Task2[A1: TypeTag, A2: TypeTag, R: TypeTag](func: (A1, A2) => R) extends _
     run(argTypes, input, () => func(arg(0), arg(1)))
   }
 }
+
+class Task3[A1: TypeTag, A2: TypeTag, A3: TypeTag, R: TypeTag](func: (A1, A2, A3) => R) extends _TaskBase[R] {
+  override def execute(input: WorkInput): R = {
+    val argTypes = List(typeOf[A1], typeOf[A2], typeOf[A3])
+    run(argTypes, input, () => func(arg(0), arg(1), arg(2)))
+  }
+}
+
+class Task4[A1: TypeTag, A2: TypeTag, A3: TypeTag, A4: TypeTag, R: TypeTag](func: (A1, A2, A3, A4) => R) extends _TaskBase[R] {
+  override def execute(input: WorkInput): R = {
+    val argTypes = List(typeOf[A1], typeOf[A2], typeOf[A3], typeOf[A4])
+    run(argTypes, input, () => func(arg(0), arg(1), arg(2), arg(3)))
+  }
+}
+
+class Task5[A1: TypeTag, A2: TypeTag, A3: TypeTag, A4: TypeTag, A5: TypeTag, R: TypeTag](func: (A1, A2, A3, A4, A5) => R) extends _TaskBase[R] {
+  override def execute(input: WorkInput): R = {
+    val argTypes = List(typeOf[A1], typeOf[A2], typeOf[A3], typeOf[A4], typeOf[A5])
+    run(argTypes, input, () => func(arg(0), arg(1), arg(2), arg(3), arg(4)))
+  }
+}
+
+class Task6[A1: TypeTag, A2: TypeTag, A3: TypeTag, A4: TypeTag, A5: TypeTag, A6: TypeTag, R: TypeTag](func: (A1, A2, A3, A4, A5, A6) => R) extends _TaskBase[R] {
+  override def execute(input: WorkInput): R = {
+    val argTypes = List(typeOf[A1], typeOf[A2], typeOf[A3], typeOf[A4], typeOf[A5], typeOf[A6])
+    run(argTypes, input, () => func(arg(0), arg(1), arg(2), arg(3), arg(4), arg(5)))
+  }
+}
