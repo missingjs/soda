@@ -12,6 +12,7 @@ object ClassLoaderCache {
     val parent = Thread.currentThread().getContextClassLoader
     val loader = new URLClassLoader(Array(new File(path).toURI.toURL), parent)
     loaderMap(path) = loader
+    Logger.info(s"new class loader for $path: $loader")
   }
 
   def get(path: String): ClassLoader = this.synchronized {
@@ -21,6 +22,10 @@ object ClassLoaderCache {
         set(path)
         loaderMap(path)
     }
+  }
+
+  def clear(path: String): Unit = {
+    loaderMap.remove(path)
   }
 
 }

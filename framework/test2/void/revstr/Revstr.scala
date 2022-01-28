@@ -20,16 +20,14 @@ object Solution {
   }
 }
 
-class Revstr {
-  def get(): ()=>Unit = {
-    () => {
-      val work = GenericTestWork.create1u(Solution.reverseString)
-      work.compareSerial = true
-      work.run()
-    }
+class Revstr extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create1u(Solution.reverseString)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Revstr extends App {
-  new Revstr().get().apply()
+  println(new Revstr()(Utils.fromStdin()))
 }

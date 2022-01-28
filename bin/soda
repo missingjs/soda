@@ -134,10 +134,10 @@ case $cmd in
         export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
         runner=soda.engine.main
         commandStr="$script run $work"
-        [ "$remote_mode" == "yes" ] && commandStr="$commandStr --remote"
-#        if [ "$ilang" == "java" -a "$(get_java_running_mode)" == "server" ]; then
-#            commandStr="$script run $work -server"
-#        fi
+        if [ "$remote_mode" == "yes" ]; then
+            commandStr="$commandStr --remote"
+            $script remote-setup || exit
+        fi
         [ -z "$tags" ] || tag_options="--tags $tags"
         python3 -m $runner $work --command "$commandStr" $tag_options
         ;;

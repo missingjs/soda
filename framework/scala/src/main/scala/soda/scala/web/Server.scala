@@ -14,6 +14,7 @@ class Server(address: String, port: Int) {
   server.setExecutor(executor)
 
   server.createContext("/soda/scala/echo", new EchoHandler)
+  server.createContext("/soda/scala/reset", new ResetHandler)
   server.createContext("/soda/scala/work", new WorkHandler)
   server.createContext("/soda/scala/stop", new BaseHandler {
     override def handleWork(exchange: HttpExchange): String = {

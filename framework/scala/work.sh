@@ -26,6 +26,9 @@ options:
     server start --fg
         start server foreground
 
+    remote-setup
+        reset remote server, drop old work class
+
 EOF
     exit 1
 }
@@ -53,8 +56,6 @@ remote_run()
     local input="$(</dev/stdin)"
     local classname=$1
     local classpath=$(cd $output_dir && pwd)
-    local url="http://localhost:$server_port/soda/scala"
-    curl --connect-timeout 2 -s "$url/echo?a=b" >/dev/null || { echo "server not open" >&2; exit 2; }
     pycode=$(cat << EOF
 import json; import sys;
 content = sys.stdin.read()
@@ -67,7 +68,17 @@ print(json.dumps(info))
 EOF
 )
     post_content=$(echo "$input" | python3 -c "$pycode")
-    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url/work"
+    local url="http://localhost:$server_port/soda/scala/work"
+    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
+}
+
+remote_setup()
+{
+    local classpath=$(cd $output_dir && pwd)
+    local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
+    curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
+    local url="http://localhost:$server_port/soda/scala/reset?classpath=$classpath"
+    curl --connect-timeout 2 -s "$url" && echo
 }
 
 case $cmd in
@@ -124,6 +135,9 @@ case $cmd in
             $cmd stop
             $cmd start
         fi
+        ;;
+    remote-setup)
+        remote_setup
         ;;
     *)
         usage
