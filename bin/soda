@@ -94,7 +94,7 @@ function parse_run_args()
         if [ "$t" == "-i" ]; then
             ((i++))
             tags=${args[$i]}
-        elif [ "$t" == "-f" ]; then
+        elif [ "$t" == "--clean" ]; then
             force_rebuild=yes
         fi
         ((i++))
@@ -125,11 +125,8 @@ case $cmd in
         # parse command line options
         parse_run_args "$@"
         # build executable
-        if [ "$force_rebuild" == "yes" ]; then
-            $script make $work -f || exit
-        else
-            $script make $work || exit 
-        fi
+        [ "$force_rebuild" == "yes" ] && $script clean $work
+        $script make $work || exit 
         # run test cases
         export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
         runner=soda.engine.main
