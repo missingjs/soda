@@ -8,8 +8,6 @@ import soda.leetcode.*;
 import soda.unittest.Validators;
 import soda.unittest.work.*;
 
-import static soda.unittest.LoggerHelper.logger;
-
 class Solution {}
 
 public class __Bootstrap__ implements Function<String, String> {
