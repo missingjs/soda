@@ -23,19 +23,17 @@ object Solution {
   }
 }
 
-class Intbreak {
-  def get(): ()=>Unit = {
+class Intbreak extends (String => String) {
+  override def apply(text: String): String = {
     // val work = TestWork.forObject(typeOf[Solution], "integerBreak")
     // val work = GenericTestWork.create1(Solution.integerBreak)
     // val work = TestWork.create1(Solution.integerBreak)
-    () => {
-      var work = GenericTestWork.create1(Solution.integerBreak)
-      work.compareSerial = true
-      work.run()
-    }
+    var work = GenericTestWork.create1(Solution.integerBreak)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Intbreak extends App {
-  new Intbreak().get().apply()
+  println(new Intbreak()(Utils.fromStdin()))
 }

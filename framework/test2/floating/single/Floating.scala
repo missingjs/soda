@@ -9,16 +9,16 @@ object Solution {
 
 class Solution {}
 
-class Floating {
-  def get(): TestWork = {
+class Floating extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "divide")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Floating extends App {
-  new Floating().get().run()
+  println(new Floating()(Utils.fromStdin()))
 }

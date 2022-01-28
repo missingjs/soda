@@ -62,22 +62,20 @@ class NumMatrix(matrix: Array[Array[Int]]) {
 
 }
 
-class Query2d {
-  def get(): () => Unit = {
-    () => {
-      // val work = GenericTestWork.create1(Solution.eq)
-      val work = GenericTestWork.forStruct(typeOf[NumMatrix])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      // work.setValidator((R, R) => Boolean)
-      work.compareSerial = true
-      work.run()
-    }
+class Query2d extends (String => String) {
+  override def apply(text: String): String = {
+    // val work = GenericTestWork.create1(Solution.eq)
+    val work = GenericTestWork.forStruct(typeOf[NumMatrix])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    // work.setValidator((R, R) => Boolean)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Query2d extends App {
-  new Query2d().get().apply()
+  println(new Query2d()(Utils.fromStdin()))
 }

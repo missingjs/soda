@@ -33,22 +33,20 @@ object Solution {
   }
 }
 
-class Leet {
-  def get(): () => Unit = {
-    () => {
-      val work = GenericTestWork.create1(Solution.findLeaves)
-      // val work = GenericTestWork.forStruct(typeOf[STRUCT])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      work.setValidator(Validators.forList2d[Int](true,false))
-      work.compareSerial = true
-      work.run()
-    }
+class Leet extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create1(Solution.findLeaves)
+    // val work = GenericTestWork.forStruct(typeOf[STRUCT])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    work.setValidator(Validators.forList2d[Int](true,false))
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Leet extends App {
-  new Leet().get().apply()
+  println(new Leet()(Utils.fromStdin()))
 }

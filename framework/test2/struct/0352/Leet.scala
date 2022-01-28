@@ -70,16 +70,14 @@ class SummaryRanges() {
 
 }
 
-class Leet {
-  def get(): ()=>Unit = {
-    () => {
-      var work = GenericTestWork.forStruct(typeOf[SummaryRanges])
-      work.compareSerial = true
-      work.run()
-    }
+class Leet extends (String => String) {
+  override def apply(text: String): String = {
+    var work = GenericTestWork.forStruct(typeOf[SummaryRanges])
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Leet extends App {
-  new Leet().get().apply()
+  println(new Leet()(Utils.fromStdin()))
 }

@@ -62,16 +62,16 @@ class NestedIterator(_nestedList: List[NestedInteger]) {
 
 class Solution {}
 
-class Nestedint {
-  def get(): TestWork = {
+class Nestedint extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "flatNested")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Nestedint extends App {
-  new Nestedint().get().run()
+  println(new Nestedint()(Utils.fromStdin()))
 }

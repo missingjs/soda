@@ -18,22 +18,20 @@ object Solution {
   }
 }
 
-class List2d {
-  def get(): () => Unit = {
-    () => {
-      val work = GenericTestWork.create1(Solution.groupByLength)
-      // val work = GenericTestWork.forStruct(typeOf[STRUCT])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      work.setValidator(Validators.forArray2d[String](false, false))
-      work.compareSerial = true
-      work.run()
-    }
+class List2d extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create1(Solution.groupByLength)
+    // val work = GenericTestWork.forStruct(typeOf[STRUCT])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    work.setValidator(Validators.forArray2d[String](false, false))
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object List2d extends App {
-  new List2d().get().apply()
+  println(new List2d()(Utils.fromStdin()))
 }

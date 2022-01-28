@@ -39,16 +39,16 @@ object Solution {
 
 class Solution {}
 
-class Revall {
-  def get(): TestWork = {
+class Revall extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "reverseAll")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Revall extends App {
-  new Revall().get().run()
+  println(new Revall()(Utils.fromStdin()))
 }

@@ -16,16 +16,14 @@ object Solution {
   }
 }
 
-class Chars1d {
-  def get(): ()=>Unit = {
-    () => {
-      val work = GenericTestWork.create1(Solution.doubleList)
-      work.compareSerial = true
-      work.run()
-    }
+class Chars1d extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create1(Solution.doubleList)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Chars1d extends App {
-  new Chars1d().get().apply()
+  println(new Chars1d()(Utils.fromStdin()))
 }

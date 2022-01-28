@@ -79,16 +79,16 @@ object Solution {
 
 class Solution {}
 
-class Leet {
-  def get(): TestWork = {
+class Leet extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "calcEquation")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Leet extends App {
-  new Leet().get().run()
+  println(new Leet()(Utils.fromStdin()))
 }

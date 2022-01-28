@@ -17,16 +17,16 @@ object Solution {
   }
 }
 
-class Chars2d {
-  def get(): TestWork = {
+class Chars2d extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "toUpper")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Chars2d extends App {
-  new Chars2d().get().run()
+  println(new Chars2d()(Utils.fromStdin()))
 }

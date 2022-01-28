@@ -22,16 +22,16 @@ object Solution {
   }
 }
 
-class Matrix {
-  def get(): TestWork = {
+class Matrix extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "matrixMultiply")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Matrix extends App {
-  new Matrix().get().run()
+  println(new Matrix()(Utils.fromStdin()))
 }

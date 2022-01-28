@@ -33,22 +33,20 @@ object Solution {
   }
 }
 
-class List {
-  def get(): () => Unit = {
-    () => {
-      val work = GenericTestWork.create2(Solution.permutation)
-      // val work = GenericTestWork.forStruct(typeOf[STRUCT])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      work.setValidator(Validators.forArray[String](false))
-      work.compareSerial = true
-      work.run()
-    }
+class List extends (String => String) {
+  override def apply(text: String): String = {
+    val work = GenericTestWork.create2(Solution.permutation)
+    // val work = GenericTestWork.forStruct(typeOf[STRUCT])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    work.setValidator(Validators.forArray[String](false))
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object List extends App {
-  new List().get().apply()
+  println(new List()(Utils.fromStdin()))
 }

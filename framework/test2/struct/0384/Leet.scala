@@ -32,7 +32,7 @@ class Solution(_nums: Array[Int]) {
 
 }
 
-class Leet {
+class Leet extends (String => String) {
   import play.api.libs.json._
   def validate(work: GenericTestWork[JsValue], expect: JsValue, result: JsValue): Boolean = {
     val commands = work.arguments.head.asInstanceOf[List[String]]
@@ -54,22 +54,20 @@ class Leet {
     }
     true
   }
-  def get(): () => Unit = {
-    () => {
-      // val work = GenericTestWork.create1(Solution.eq)
-      val work = GenericTestWork.forStruct(typeOf[Solution])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      // work.setValidator((R, R) => Boolean)
-      work.setValidator((e, r) => validate(work, e, r))
-      work.compareSerial = true
-      work.run()
-    }
+  override def apply(text: String): String = {
+    // val work = GenericTestWork.create1(Solution.eq)
+    val work = GenericTestWork.forStruct(typeOf[Solution])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    // work.setValidator((R, R) => Boolean)
+    work.setValidator((e, r) => validate(work, e, r))
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Leet extends App {
-  new Leet().get().apply()
+  println(new Leet()(Utils.fromStdin()))
 }

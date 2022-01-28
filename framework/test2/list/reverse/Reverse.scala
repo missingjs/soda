@@ -22,16 +22,16 @@ object Solution {
 
 class Solution {}
 
-class Reverse {
-  def get(): TestWork = {
+class Reverse extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "reverse")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Reverse extends App {
-  new Reverse().get().run()
+  println(new Reverse()(Utils.fromStdin()))
 }

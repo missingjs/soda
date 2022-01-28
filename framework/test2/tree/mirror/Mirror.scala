@@ -22,16 +22,16 @@ object Solution {
 
 class Solution {}
 
-class Mirror {
-  def get(): TestWork = {
+class Mirror extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "mirror")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Mirror extends App {
-  new Mirror().get().run()
+  println(new Mirror()(Utils.fromStdin()))
 }

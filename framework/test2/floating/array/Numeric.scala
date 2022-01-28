@@ -14,16 +14,16 @@ object Solution {
   }
 }
 
-class Numeric {
-  def get(): TestWork = {
+class Numeric extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "multiply")
     // val work = TestWork.forStruct(...)
     // work.setValidator((R, R) => Boolean)
     // work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Numeric extends App {
-  new Numeric().get().run()
+  println(new Numeric()(Utils.fromStdin()))
 }

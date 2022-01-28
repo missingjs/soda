@@ -29,22 +29,20 @@ class Logger {
   }
 }
 
-class Lograte {
-  def get(): () => Unit = {
-    () => {
-      // val work = GenericTestWork.create1(Solution.eq)
-      val work = GenericTestWork.forStruct(typeOf[Logger])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      // work.setValidator((R, R) => Boolean)
-      work.compareSerial = true
-      work.run()
-    }
+class Lograte extends (String => String) {
+  override def apply(text: String): String = {
+    // val work = GenericTestWork.create1(Solution.eq)
+    val work = GenericTestWork.forStruct(typeOf[Logger])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    // work.setValidator((R, R) => Boolean)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Lograte extends App {
-  new Lograte().get().apply()
+  println(new Lograte()(Utils.fromStdin()))
 }

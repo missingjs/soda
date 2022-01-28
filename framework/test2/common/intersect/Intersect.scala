@@ -24,16 +24,16 @@ object Solution {
   }
 }
 
-class Intersect {
-  def get(): TestWork = {
+class Intersect extends (String => String) {
+  override def apply(text: String): String = {
     val work = TestWork.forObject(typeOf[Solution], "intersection")
     // val work = TestWork.forStruct(...)
     work.setValidator(Validators.forArray[Int](false))
     work.compareSerial = true
-    work
+    work.run(text)
   }
 }
 
 object Intersect extends App {
-  new Intersect().get().run()
+  println(new Intersect()(Utils.fromStdin()))
 }

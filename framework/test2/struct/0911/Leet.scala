@@ -45,22 +45,20 @@ class TopVotedCandidate(_persons: Array[Int], _times: Array[Int]) {
 
 }
 
-class Leet {
-  def get(): () => Unit = {
-    () => {
-      // val work = GenericTestWork.create1(Solution.eq)
-      val work = GenericTestWork.forStruct(typeOf[TopVotedCandidate])
-      // val work = TestWork.forObject(typeOf[Solution], "METHOD")
-      // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
-      // val work = TestWork.createN((...)=>R)
-      // val work = TestWork.forStruct(typeOf[STRUCT])
-      // work.setValidator((R, R) => Boolean)
-      work.compareSerial = true
-      work.run()
-    }
+class Leet extends (String => String) {
+  override def apply(text: String): String = {
+    // val work = GenericTestWork.create1(Solution.eq)
+    val work = GenericTestWork.forStruct(typeOf[TopVotedCandidate])
+    // val work = TestWork.forObject(typeOf[Solution], "METHOD")
+    // val work = TestWork.forInstance(typeOf[Solution], "METHOD")
+    // val work = TestWork.createN((...)=>R)
+    // val work = TestWork.forStruct(typeOf[STRUCT])
+    // work.setValidator((R, R) => Boolean)
+    work.compareSerial = true
+    work.run(text)
   }
 }
 
 object Leet extends App {
-  new Leet().get().apply()
+  println(new Leet()(Utils.fromStdin()))
 }
