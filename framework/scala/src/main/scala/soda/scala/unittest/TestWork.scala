@@ -41,7 +41,7 @@ class TestWork(methodMirror: MethodMirror) extends Validatable[Any] with MagicWo
 object TestWork {
 
   def forObject(objType: Type, methodName: String): TestWork = {
-    val rMirror = runtimeMirror(getClass.getClassLoader)
+    val rMirror = runtimeMirror(Thread.currentThread().getContextClassLoader)
     val instMirror = rMirror.reflect(
       rMirror.reflectModule(objType.typeSymbol.asClass.companion.asModule).instance
     )
@@ -52,7 +52,7 @@ object TestWork {
   }
 
   def forInstance(inst: Any, methodName: String): TestWork = {
-    val rMirror = runtimeMirror(getClass.getClassLoader)
+    val rMirror = runtimeMirror(Thread.currentThread.getContextClassLoader)
     val instMirror = rMirror.reflect(inst)
     val mm = instMirror.reflectMethod(
       instMirror.symbol.typeSignature.decl(TermName(methodName)).asMethod
