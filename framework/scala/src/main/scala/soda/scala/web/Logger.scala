@@ -22,7 +22,7 @@ object Logger {
   def log(level: String, message: String): Unit = {
     val dt = LocalDateTime.now().format(formatter)
     val threadName = Thread.currentThread().getName
-    println(s"$dt [$threadName] [$level] $message")
+    System.err.println(s"$dt [$threadName] [$level] $message")
   }
 
 }
