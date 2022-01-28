@@ -23,7 +23,7 @@ class StructTester(classType: Type) {
       val params = TestWork.parseArguments(Utils.getParamTypes(method), parameters(i))
       val r = method.apply(ArraySeq.unsafeWrapArray(params): _*)
       val retType = Utils.getReturnType(method)
-      if (retType != typeOf[Unit]) {
+      if (retType.toString != typeOf[Unit].toString) {
         val conv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[Any]]
         res.append(conv.toJsonSerializable(r))
       } else {
