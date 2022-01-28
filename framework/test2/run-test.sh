@@ -15,18 +15,16 @@ prj_file=soda.prj.yml
 
 location=$1
 languages=$2
+shift; shift;
 [ -z "$location" -o -z "$languages" ] && usage
 [ "$languages" == "all" ] && languages="cpp python java go"
-[ "$3" == "--clean" ] && clean=yes
+options="$@"
 
 for lang in $languages; do
     while read path; do
         directory=$(dirname $path)
         cd $directory && echo "[$lang] Enter $directory"
-        if [ "$clean" == "yes" ]; then
-            soda clean $lang
-        fi
-        soda run $lang || exit
+        soda run $lang $options || exit
         cd .. && echo -e "[$lang] Leave $directory\n"
     done < <(find $self_dir/$location -name $prj_file)
     echo -e "[$lang] DONE\n"
