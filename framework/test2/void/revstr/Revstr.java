@@ -9,7 +9,6 @@ import soda.unittest.Validators;
 import soda.unittest.work.TestWork;
 import soda.unittest.work.Utils;
 
-import static soda.unittest.LoggerHelper.logger;
 
 class Solution {
     public void reverseString(char[] s) {

@@ -8,8 +8,6 @@ import soda.leetcode.*;
 import soda.unittest.Validators;
 import soda.unittest.work.TestWork;
 
-import static soda.unittest.LoggerHelper.logger;
-
 class Solution {
     public List<Character> doubleList(char[] chars) {
         var res = new ArrayList<Character>();
