@@ -43,7 +43,14 @@ public class GenericTestWork<R> {
         return proxy.getArguments();
     }
 
-    public static <P1, R> GenericTestWork<R> create1(Function<P1, R> func) { return null; }
+    // DO NOT use this !!! It's just a placeholder in bootstrap file
+    public static <P1, R> GenericTestWork<R> create1(Function<P1, R> func) {
+        return create1(Solution.class, "METHOD", func);
+    }
+
+    public static GenericTestWork<Object> forStruct(Class<?> structClass) {
+        return create2(StructTester.class, "test", new StructTester(structClass)::test);
+    }
 
     public static <P1, R> GenericTestWork<R> create1(Class<?> workClass, String methodName, Function<P1, R> func) {
         return new GenericTestWork<>(new Task1<>(workClass, methodName, func));

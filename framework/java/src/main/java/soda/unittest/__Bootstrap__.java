@@ -7,13 +7,16 @@ import java.util.stream.*;
 import soda.leetcode.*;
 import soda.unittest.*;
 
-class Solution {}
+class Solution {
+    public int convert(int a) { return a + 10; }
+}
 
 public class __Bootstrap__ implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = TestWork.forObject(new Solution(), "METHOD");
+        var work = GenericTestWork.create1(new Solution()::convert);
+        // var work = TestWork.forObject(new Solution(), "METHOD");
         // var work = TestWork.forStruct(Struct.class);
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
