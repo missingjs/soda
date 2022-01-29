@@ -1,4 +1,4 @@
-package soda.scala.unittest
+package soda.scala.unittest.validate
 
 object StrategyFactory {
 
@@ -7,7 +7,7 @@ object StrategyFactory {
       if (a.size != b.size) {
         return false
       }
-      val xmap = new XMap[T,Int](feat)
+      val xmap = new XMap[T, Int](feat)
       for (e <- a) {
         xmap.put(e, xmap.getOrElse(e, 0) + 1)
       }
@@ -24,14 +24,14 @@ object StrategyFactory {
       }
       true
     }
+
     func
   }
 
   def list[T](feat: ObjectFeature[T]): (List[T], List[T]) => Boolean = {
-    def func(a: List[T], b: List[T]): Boolean = {
+    (a: List[T], b: List[T]) => {
       a.size == b.size && a.zip(b).forall(x => feat.isEqual(x._1, x._2))
     }
-    func
   }
 
 }

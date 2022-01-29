@@ -1,9 +1,13 @@
-package soda.scala.unittest
+package soda.scala.unittest.task
+
+import soda.scala.unittest.{Utils, WorkInput}
 
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 trait TaskProxy[R] {
+
+  def returnType: Type
 
   def argumentTypes: List[Type]
 
@@ -15,7 +19,7 @@ trait TaskProxy[R] {
 
 }
 
-abstract class _TaskBase[R] extends TaskProxy[R] {
+abstract class _TaskBase[R: TypeTag] extends TaskProxy[R] {
 
   private var _elapse: Double = -1.0
   private var _argTypes: List[Type] = List.empty
@@ -23,7 +27,7 @@ abstract class _TaskBase[R] extends TaskProxy[R] {
 
   protected def run(argTypes: List[Type], input: WorkInput, task: () => R): R = {
     _argTypes = argTypes
-    _args = TestWork.parseArguments(argTypes, input.arguments).toList
+    _args = Utils.parseArguments(argTypes, input.arguments).toList
     val startNano = System.nanoTime()
     val result = task()
     val endNano = System.nanoTime()
@@ -34,6 +38,8 @@ abstract class _TaskBase[R] extends TaskProxy[R] {
   protected def arg[A](index: Int): A = _args(index).asInstanceOf[A]
 
   override def elapseMillis: Double = _elapse
+
+  override def returnType: Type = typeOf[R]
 
   override def argumentTypes: List[universe.Type] = _argTypes
 

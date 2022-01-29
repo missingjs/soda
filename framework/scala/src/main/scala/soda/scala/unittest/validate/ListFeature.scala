@@ -1,4 +1,4 @@
-package soda.scala.unittest
+package soda.scala.unittest.validate
 
 class ListFeature[T](elemFeat: ObjectFeature[T]) extends ObjectFeature[List[T]] {
 

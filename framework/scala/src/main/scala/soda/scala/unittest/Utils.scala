@@ -3,6 +3,9 @@ package soda.scala.unittest
 import scala.io.StdIn.readLine
 import scala.reflect.runtime.universe._
 
+import play.api.libs.json.JsValue
+import soda.scala.unittest.conv.ConverterFactory
+
 object Utils {
 
   def getParamTypes(ms: MethodSymbol): List[Type] = {
@@ -52,6 +55,14 @@ object Utils {
 
   def fromStdin(): String = {
     LazyList.continually(readLine()).takeWhile(_ != null).mkString("\n")
+  }
+
+  def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
+    val args = Array.fill[Any](types.size)(null)
+    for (i <- types.indices) {
+      args(i) = ConverterFactory.create(types(i)).fromJsonSerializable(rawParams(i))
+    }
+    args
   }
 
 }

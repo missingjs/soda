@@ -2,6 +2,8 @@ package soda.scala.unittest
 
 import scala.reflect.runtime.universe._
 
+import soda.scala.unittest.validate._
+
 object Validators {
 
   def forList[T](ordered: Boolean)(implicit tt: TypeTag[T]): (List[T], List[T]) => Boolean = {

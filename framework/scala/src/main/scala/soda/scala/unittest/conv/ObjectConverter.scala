@@ -1,6 +1,6 @@
-package soda.scala.unittest
+package soda.scala.unittest.conv
 
-import play.api.libs.json._
+import play.api.libs.json.JsValue
 
 trait ObjectConverter[E] {
 

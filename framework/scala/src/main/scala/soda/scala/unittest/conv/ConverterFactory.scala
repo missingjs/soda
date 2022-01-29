@@ -1,7 +1,8 @@
-package soda.scala.unittest
+package soda.scala.unittest.conv
 
 import scala.collection.mutable
 import scala.reflect.runtime.universe._
+
 import play.api.libs.json._
 import soda.scala.leetcode._
 
@@ -13,9 +14,10 @@ object ConverterFactory {
     factoryMap(typeOf[E].toString) = factory
   }
 
-  private def registerFactory[T,M](parser: M => T, serializer: T => M)(implicit tt: TypeTag[T], fmt: Format[M]): Unit = {
+  private def registerFactory[T, M](parser: M => T, serializer: T => M)(implicit tt: TypeTag[T], fmt: Format[M]): Unit = {
     registerFactory(() => new ObjectConverter[T] {
       override def fromJsonSerializable(js: JsValue): T = parser(js.as[M])
+
       override def toJsonSerializable(element: T): JsValue = Json.toJson(serializer(element))
     })
   }
@@ -51,6 +53,7 @@ object ConverterFactory {
   regFact[List[List[Double]]]
 
   private def s2c(s: String) = s(0)
+
   private def c2s(c: Char) = s"$c"
   // Char
   registerFactory(s2c, c2s)
@@ -83,8 +86,9 @@ object ConverterFactory {
     (heads: List[ListNode]) => heads.map(ListFactory.dump)
   )
 
-  implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]]{
+  implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]] {
     override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
+
     override def writes(o: Option[T]): JsValue = o match {
       case Some(t) => implicitly[Writes[T]].writes(t)
       case None => JsNull
@@ -100,6 +104,7 @@ object ConverterFactory {
     override def fromJsonSerializable(js: JsValue): List[NestedInteger] = {
       js.as[JsArray].value.map(NestedIntegerConverter.parse).toList
     }
+
     override def toJsonSerializable(element: List[NestedInteger]): JsValue = {
       Json.toJson(element.map(NestedIntegerConverter.serialize))
     }

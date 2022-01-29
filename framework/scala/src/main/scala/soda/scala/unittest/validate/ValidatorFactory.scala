@@ -1,7 +1,9 @@
-package soda.scala.unittest
+package soda.scala.unittest.validate
 
 import scala.collection.mutable
 import scala.reflect.runtime.universe._
+
+import soda.scala.unittest.Validators
 
 object ValidatorFactory {
 
@@ -22,7 +24,7 @@ object ValidatorFactory {
 
   def create[T](elemType: Type): (T, T) => Boolean = {
     factoryMap.get(elemType.toString) match {
-      case Some(fact) => fact().asInstanceOf[(T,T)=>Boolean]
+      case Some(fact) => fact().asInstanceOf[(T, T) => Boolean]
       case None => (a, b) => FeatureFactory.create[T](elemType).isEqual(a, b)
     }
   }

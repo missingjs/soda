@@ -1,17 +1,50 @@
 package soda.scala.unittest
 
-import play.api.libs.json.JsValue
+import play.api.libs.json._
+import soda.scala.unittest.conv._
+import soda.scala.unittest.task._
+import soda.scala.unittest.validate.ValidatorFactory
 
 import scala.reflect.runtime.universe._
 
-class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] with MagicWork {
+class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) {
+
+  var compareSerial: Boolean = false
+
+  private var validator: Option[(R, R) => Boolean] = None
+
+  private var _arguments: List[Any] = List.empty
+
+  def arguments: List[Any] = _arguments
 
   def run(text: String): String = {
     val input = new WorkInput(text)
     val result = proxy.execute(input)
     _arguments = proxy.arguments
-    val elapseMillis = proxy.elapseMillis
-    val output = validate(input, typeOf[R], result, elapseMillis)
+
+    val retType = proxy.returnType
+    val resConv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[R]]
+    val serialResult = resConv.toJsonSerializable(result)
+    val output = new WorkOutput
+    output.id = input.id
+    output.result = serialResult
+    output.elapse = proxy.elapseMillis
+
+    var success = true
+    if (input.hasExpected) {
+      if (compareSerial && validator.isEmpty) {
+        val a = Json.stringify(input.expected)
+        val b = Json.stringify(serialResult)
+        success = a == b
+      } else {
+        val expect = resConv.fromJsonSerializable(input.expected)
+        success = validator match {
+          case Some(va) => va.apply(expect, result)
+          case None => ValidatorFactory.create(retType)(expect, result)
+        }
+      }
+    }
+    output.success = success
     output.jsonString
   }
 
@@ -22,8 +55,6 @@ class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) extends Validatable[R] wi
   def setValidator(v: (R, R) => Boolean): Unit = {
     validator = Some(v)
   }
-
-  override protected var _arguments: List[Any] = _
 }
 
 object GenericTestWork {

@@ -1,4 +1,4 @@
-package soda.scala.unittest
+package soda.scala.unittest.validate
 
 import scala.collection.mutable
 
