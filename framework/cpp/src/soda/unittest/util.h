@@ -1,6 +1,8 @@
 #ifndef _SODA_UNITTEST_UTIL_H_
 #define _SODA_UNITTEST_UTIL_H_
 
+#include <iostream>
+#include <string>
 #include <tuple>
 #include <type_traits>
 
@@ -30,6 +32,11 @@ struct ArgumentLoader {
         arg_loader<arguments_t,num_args>::load(params, args);
         return args;
     }
+};
+
+class Utils {
+public:
+    static std::string fromStdin();
 };
 
 } // namespace soda::unittest

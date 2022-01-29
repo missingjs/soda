@@ -57,7 +57,7 @@ int main()
 
     // work->setValidator(validate);
     work->setCompareSerial(true);
-    work->run();
+    cout << work->run(Utils::fromStdin());
     delete work;
     return 0;
 }

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "convert.h"
-#include "loader.h"
 #include "struct.h"
 #include "util.h"
 #include "workdata.h"
@@ -24,8 +23,6 @@ public:
 private:
     std::function<Return(Args...)> func;
 
-    std::shared_ptr<WorkLoader> loader;
-
     std::function<bool(const Return&, const Return&)> validator;
 
     bool compareSerial{false};
@@ -34,9 +31,7 @@ private:
 
 public:
     template <typename Func>
-    TestWork(Func fn): func(fn) {
-        initialize();
-    }
+    TestWork(Func fn): func(fn) {}
 
     template <typename Func>
     void setValidator(Func fn) {
@@ -52,7 +47,11 @@ public:
     }
 
     void run() {
-        WorkInput input {loader->load()};
+        std::cout << run(Utils::fromStdin());
+    }
+
+    std::string run(const std::string& text) {
+        WorkInput input {text};
         arguments = ArgumentLoader<Args...>::load(input.getArguments());
 
         auto caller = [&](auto&&... args) {
@@ -89,12 +88,7 @@ public:
         }
         output.setSuccess(success);
 
-        loader->store(output.toJSONString());
-    }
-
-private:
-    void initialize() {
-        loader = LoaderFactory::byStdin();
+        return output.toJSONString();
     }
 
 };
