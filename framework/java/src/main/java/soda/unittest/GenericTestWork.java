@@ -1,5 +1,6 @@
 package soda.unittest;
 
+import soda.unittest.function.*;
 import soda.unittest.task.*;
 
 import java.util.function.BiPredicate;

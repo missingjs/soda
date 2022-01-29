@@ -1,6 +1,7 @@
 package soda.unittest.task;
 
 import soda.unittest.TestWork;
+import soda.unittest.Utils;
 import soda.unittest.WorkInput;
 
 import java.lang.reflect.Type;
@@ -19,7 +20,7 @@ abstract class TaskBase<R> implements TaskProxy<R> {
     private List<Object> args;
 
     TaskBase(Class<?> workClass, String methodName) {
-        var method = TestWork.findMethod(workClass, methodName);
+        var method = Utils.findMethod(workClass, methodName);
         var ats = method.getGenericParameterTypes();
         argTypes = Arrays.stream(ats).collect(Collectors.toList());
         var retType = method.getGenericReturnType();
@@ -35,7 +36,7 @@ abstract class TaskBase<R> implements TaskProxy<R> {
 
     @Override
     public R execute(WorkInput input) {
-        args = TestWork.parseArguments(argTypes, input.args);
+        args = Utils.parseArguments(argTypes, input.args);
         var startNano = System.nanoTime();
         var result = run();
         var endNano = System.nanoTime();

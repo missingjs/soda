@@ -23,14 +23,14 @@ public class StructTester {
         return Utils.wrapEx(() -> {
             var ctor = structClass.getConstructors()[0];
             ctor.setAccessible(true);
-            var cparams = TestWork.parseArguments(ctor.getParameterTypes(), Utils.cast(parameters.get(0)));
+            var cparams = Utils.parseArguments(ctor.getParameterTypes(), Utils.cast(parameters.get(0)));
             var obj = ctor.newInstance(cparams);
             var res = new ArrayList<>();
             res.add(null);
             for (int i = 1; i < parameters.size(); ++i) {
-                var method = TestWork.findMethod(structClass, operations.get(i));
+                var method = Utils.findMethod(structClass, operations.get(i));
                 method.setAccessible(true);
-                var params = TestWork.parseArguments(method.getGenericParameterTypes(), Utils.cast(parameters.get(i)));
+                var params = Utils.parseArguments(method.getGenericParameterTypes(), Utils.cast(parameters.get(i)));
                 var r = method.invoke(obj, params);
                 ObjectConverter<Object, Object> conv = Utils.cast(ConverterFactory.createConverter(method.getGenericReturnType()));
                 res.add(conv.toJsonSerializable(r));

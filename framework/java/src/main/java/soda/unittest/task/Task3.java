@@ -1,5 +1,7 @@
 package soda.unittest.task;
 
+import soda.unittest.function.Function3;
+
 public class Task3<P1, P2, P3, R> extends TaskBase<R> {
 
     private final Function3<P1, P2, P3, R> func;

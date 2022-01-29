@@ -18,20 +18,16 @@ public class TestWork {
 	
 	private Method method;
 	
-	private Type returnType;
+	private final Type returnType;
 	
-	private Type[] argumentTypes;
-	
-	private BiPredicate<?,?> validator;
-	
-	private boolean compareSerial = false;
-
-    private Object expectedOutput;
+	private final Type[] argumentTypes;
 
 	private Object[] arguments;
 
+	private final Validatable<Object> validatable = new Validatable<>();
+
 	public TestWork(Object su, String methodName) {
-		this(su, findMethod(su.getClass(), methodName));
+		this(su, Utils.findMethod(su.getClass(), methodName));
 	}
 	
 	public TestWork(Object su, Method method) {
@@ -41,29 +37,21 @@ public class TestWork {
 		argumentTypes = method.getGenericParameterTypes();
 		returnType = method.getGenericReturnType();
 	}
+
+	public void setCompareSerial(boolean b) {
+		validatable.compareSerial = b;
+	}
 	
 	public void setValidator(BiPredicate<?,?> v) {
-		validator = v;
+		validatable.validator = Utils.cast(v);
 	}
-	
-	public void setCompareSerial(boolean b) {
-		compareSerial = b;
-	}
-
-    public Object getExpectedOutput() {
-        return expectedOutput;
-    }
 
 	public Object[] getArguments() {
 		return arguments;
 	}
 
 	public void run() {
-		try {
-			System.out.println(run(Utils.fromStdin()));
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		Utils.wrapEx(() -> System.out.println(run(Utils.fromStdin())));
 	}
 
 	public String run(String text) {
@@ -74,10 +62,9 @@ public class TestWork {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private String doRun(String text) throws Exception {
 		var input = Utils.objectMapper.readValue(text, WorkInput.class);
-		arguments = parseArguments(argumentTypes, input.args);
+		arguments = Utils.parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
 		var retType = returnType;
@@ -89,56 +76,11 @@ public class TestWork {
 		long endNano = System.nanoTime();
 		double elapseMillis = (endNano - startNano) / 1e6;
 
-		var resConv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(retType);
-		Object serialResult = resConv.toJsonSerializable(result);
 		var output = new WorkOutput();
 		output.id = input.id;
-		output.result = serialResult;
 		output.elapse = elapseMillis;
-		
-		boolean success = true;
-		if (input.expected != null) {
-			if (compareSerial && validator == null) {
-				String a = Utils.objectMapper.writeValueAsString(input.expected);
-				String b = Utils.objectMapper.writeValueAsString(serialResult);
-				success = Objects.equals(a, b);
-			} else {
-				var expect = resConv.fromJsonSerializable(input.expected);
-				expectedOutput = expect;
-				if (validator != null) {
-					success = ((BiPredicate<Object, Object>) validator).test(expect, result);
-				} else {
-					success = ValidatorFactory.create(retType).test(expect, result);
-				}
-			}
-		}
-		output.success = success;
+		validatable.validate(input, retType, result, output);
 		return Utils.objectMapper.writeValueAsString(output);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static Object[] parseArguments(Type[] types, List<Object> rawParams) {
-		Object[] arguments = new Object[types.length];
-		for (int i = 0; i < arguments.length; ++i) {
-			var conv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(types[i]);
-			arguments[i] = conv.fromJsonSerializable(rawParams.get(i));
-		}
-		return arguments;
-	}
-
-	public static List<Object> parseArguments(List<Type> types, List<Object> rawParams) {
-		var res = parseArguments(types.toArray(new Type[0]), rawParams);
-		return Arrays.asList(res);
-	}
-	
-	public static Method findMethod(Class<?> jobClass, String methodName) {
-		Method[] methods = jobClass.getMethods();
-		for (Method m : methods) {
-			if (m.getName().equals(methodName)) {
-				return m;
-			}
-		}
-		throw new RuntimeException(new NoSuchMethodException(methodName));
 	}
 
 	public static TestWork forStruct(Class<?> structClass) {
