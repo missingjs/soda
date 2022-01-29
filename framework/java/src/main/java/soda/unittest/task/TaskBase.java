@@ -4,6 +4,7 @@ import soda.unittest.TestWork;
 import soda.unittest.Utils;
 import soda.unittest.WorkInput;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
@@ -19,12 +20,17 @@ abstract class TaskBase<R> implements TaskProxy<R> {
 
     private List<Object> args;
 
+    protected final Method method;
+
+    protected final boolean voidFunc;
+
     TaskBase(Class<?> workClass, String methodName) {
-        var method = Utils.findMethod(workClass, methodName);
+        method = Utils.findMethod(workClass, methodName);
         var ats = method.getGenericParameterTypes();
         argTypes = Arrays.stream(ats).collect(Collectors.toList());
         var retType = method.getGenericReturnType();
-        returnType = retType.equals(void.class) ? argTypes.get(0) : retType;
+        voidFunc = retType.equals(void.class);
+        returnType = voidFunc ? argTypes.get(0) : retType;
     }
 
     protected abstract R run();

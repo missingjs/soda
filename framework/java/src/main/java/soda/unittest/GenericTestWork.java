@@ -1,8 +1,12 @@
 package soda.unittest;
 
+import soda.unittest.conv.ConverterFactory;
+import soda.unittest.conv.ObjectConverter;
 import soda.unittest.function.*;
 import soda.unittest.task.*;
+import soda.unittest.validate.ValidatorFactory;
 
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,7 +15,9 @@ public class GenericTestWork<R> {
 
     private final TaskProxy<R> proxy;
 
-    private final Validatable<R> validatable = new Validatable<>();
+    private boolean compareSerial;
+
+    private BiPredicate<R,R> validator;
 
     public GenericTestWork(TaskProxy<R> proxy) {
         this.proxy = proxy;
@@ -21,20 +27,41 @@ public class GenericTestWork<R> {
         return Utils.wrapEx(() -> {
             var input = Utils.objectMapper.readValue(text, WorkInput.class);
             var result = proxy.execute(input);
+
             var output = new WorkOutput();
             output.id = input.id;
             output.elapse = proxy.getElapseMillis();
-            validatable.validate(input, proxy.getReturnType(), result, output);
+
+            var retType = proxy.getReturnType();
+            ObjectConverter<R, Object> resConv = Utils.cast(ConverterFactory.createConverter(retType));
+            output.result = resConv.toJsonSerializable(result);
+
+            boolean success = true;
+            if (input.expected != null) {
+                if (compareSerial && validator == null) {
+                    String a = Utils.objectMapper.writeValueAsString(input.expected);
+                    String b = Utils.objectMapper.writeValueAsString(output.result);
+                    success = Objects.equals(a, b);
+                } else {
+                    var expect = resConv.fromJsonSerializable(input.expected);
+                    if (validator != null) {
+                        success = validator.test(expect, result);
+                    } else {
+                        success = ValidatorFactory.create(retType).test(expect, result);
+                    }
+                }
+            }
+            output.success = success;
             return Utils.objectMapper.writeValueAsString(output);
         });
     }
 
     public void setCompareSerial(boolean b) {
-        validatable.compareSerial = b;
+        compareSerial = b;
     }
 
     public void setValidator(BiPredicate<R, R> va) {
-        validatable.validator = va;
+        validator = va;
     }
 
     public Object[] getArguments() {
