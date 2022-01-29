@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     . "missingjs.com/soda/leetcode"
     "missingjs.com/soda/unittest"
     "missingjs.com/soda/util"
@@ -20,5 +21,5 @@ func main() {
     // work := unittest.CreateWorkForStruct(Constructor)
     // work.SetValidator(func(e,r)bool)
     work.CompareSerial = true
-    work.Run()
+    fmt.Print(work.Exec(unittest.Utils.FromStdin()))
 }
