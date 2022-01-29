@@ -1,9 +1,7 @@
 package soda.unittest.conv;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ConvUtils {
@@ -20,7 +18,7 @@ public class ConvUtils {
         return L.stream().map(ConvUtils::toIntArray).toArray(int[][]::new);
     }
 
-    public static List<List<Integer>> toList(int[][] arr) {
+    public static List<List<Integer>> toList2d(int[][] arr) {
         return Arrays.stream(arr).map(ConvUtils::toList).collect(Collectors.toList());
     }
 
@@ -44,7 +42,7 @@ public class ConvUtils {
         return ss.stream().map(ConvUtils::toCharArray).toArray(char[][]::new);
     }
 
-    public static List<List<String>> toStrList(char[][] ch2d) {
+    public static List<List<String>> toStrList2d(char[][] ch2d) {
         return Arrays.stream(ch2d).map(ConvUtils::toStrList).collect(Collectors.toList());
     }
 
@@ -62,6 +60,54 @@ public class ConvUtils {
 
     public static List<List<String>> fromCharList2d(List<List<Character>> chs) {
         return chs.stream().map(ConvUtils::fromCharList).collect(Collectors.toList());
+    }
+
+    public static double[] toDoubleArray(List<Double> L) {
+        return L.stream().mapToDouble(e -> e).toArray();
+    }
+
+    public static List<Double> toList(double[] arr) {
+        return Arrays.stream(arr).boxed().collect(Collectors.toList());
+    }
+
+    public static double[][] toDoubleArray2d(List<List<Double>> L) {
+        return L.stream().map(ConvUtils::toDoubleArray).toArray(double[][]::new);
+    }
+
+    public static List<List<Double>> toList2d(double[][] arr2d) {
+        return Arrays.stream(arr2d).map(ConvUtils::toList).collect(Collectors.toList());
+    }
+
+    public static long[] toLongArray(List<Long> L) {
+        return L.stream().mapToLong(e -> e).toArray();
+    }
+
+    public static List<Long> toList(long[] arr) {
+        return Arrays.stream(arr).boxed().collect(Collectors.toList());
+    }
+
+    public static long[][] toLongArray2d(List<List<Long>> L) {
+        return L.stream().map(ConvUtils::toLongArray).toArray(long[][]::new);
+    }
+
+    public static List<List<Long>> toList2d(long[][] arr2d) {
+        return Arrays.stream(arr2d).map(ConvUtils::toList).collect(Collectors.toList());
+    }
+
+    public static String[] toStrArray(List<String> L) {
+        return L.toArray(String[]::new);
+    }
+
+    public static List<String> toStrList(String[] arr) {
+        return Arrays.stream(arr).collect(Collectors.toList());
+    }
+
+    public static String[][] toStrArray2d(List<List<String>> L) {
+        return L.stream().map(ConvUtils::toStrArray).toArray(String[][]::new);
+    }
+
+    public static List<List<String>> toStrList2d(String[][] arr2d) {
+        return Arrays.stream(arr2d).map(ConvUtils::toStrList).collect(Collectors.toList());
     }
 
 }
