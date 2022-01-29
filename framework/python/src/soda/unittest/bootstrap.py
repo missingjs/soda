@@ -34,5 +34,5 @@ if __name__ == '__main__':
     # step [3]: setup other options
     # work.validator = (e,r) => bool
     work.compareSerial = True
-    work.run()
+    print(work.run(sys.stdin.read()))
 

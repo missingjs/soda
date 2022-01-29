@@ -40,8 +40,11 @@ class TestWork:
         from .structure import structTester
         return cls(structTester(structClass))
 
-    def run(self):
-        testInput = TestInput(json.load(sys.stdin))
+    def run(self, text = None):
+        performIO = text is None
+        if performIO:
+            text = sys.stdin.read()
+        testInput = TestInput(json.loads(text))
         arguments = tuple(self.parse(v,t) for v,t in zip(testInput.args, self.argumentTypes))
         self.arguments = arguments
 
@@ -74,7 +77,11 @@ class TestWork:
                     success = ValidatorFactory.create(ret_type)(expect, result)
 
         output['success'] = success
-        print(json.dumps(output))
+
+        oText = json.dumps(output)
+        if performIO:
+            print(oText)
+        return oText
 
     def parse(self, serialValue, typeHint):
         return getConverter(typeHint).fromJsonSerializable(serialValue)
