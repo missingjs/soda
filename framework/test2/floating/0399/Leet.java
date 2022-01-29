@@ -1,12 +1,11 @@
 import soda.unittest.*;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import soda.leetcode.*;
-import soda.unittest.Validators;
-import soda.unittest.TestWork;
+import soda.unittest.*;
 
 
 class Solution {
@@ -141,19 +140,20 @@ class Solution {
     }
 }
 
-public class Leet implements Supplier<TestWork> {
+public class Leet implements Function<String, String> {
 
     @Override
-    public TestWork get() {
-        var work = new TestWork(new Solution(), "calcEquation");
+    public String apply(String text) {
+        var work = GenericTestWork.create3(new Solution()::calcEquation);
+        // var work = new TestWork(new Solution(), "calcEquation");
         // var work = TestWork.forStruct(Struct.class);
         // work.setValidator((e, r) -> {...});
         // work.setCompareSerial(true);
-        return work;
+        return work.run(text);
     }
 
     public static void main(String[] args) throws Exception {
-        new Leet().get().run();
+        System.out.println(new Leet().apply(Utils.fromStdin()));
     }
 
 }

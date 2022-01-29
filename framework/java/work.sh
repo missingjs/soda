@@ -48,13 +48,14 @@ assert_testname() {
     [ -z $testname ] && usage
 }
 testname=$(python3 -c "print('$testname'.capitalize())")
+output_dir=./java
 
 remote_run()
 {
     # $input must be in valid json format
     local input="$(</dev/stdin)"
     local classname=$1
-    local classpath=$(pwd)
+    local classpath=$(cd $output_dir && pwd)
     pycode=$(cat << EOF
 import json; import sys;
 content = sys.stdin.read()
@@ -73,27 +74,12 @@ EOF
 
 remote_setup()
 {
-    local classpath=$(pwd)
+    local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/java/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
     local url="http://localhost:$server_port/soda/java/reset"
     curl --connect-timeout 2 -X POST -d "classpath=$classpath" -s "$url" && echo
 }
-
-#exec_test()
-#{
-#    local classname=$1
-#    [ -z $classname ] && usage
-#    if [ "$server_mode" == 'yes' ]; then
-#        set -e
-#        $self_dir/server.sh start
-#        runpath=$(pwd)
-#        curl -d "runpath=$runpath" "http://localhost:$server_port/soda/java/setup" && echo
-#        export SODA_JAVA_SERVER_MODE=yes
-#        set +e
-#    fi
-#    run_test java "$@"
-#}
 
 case $cmd in
     new)
@@ -109,14 +95,18 @@ case $cmd in
     make)
         assert_testname
         srcfile=${testname}.java
-        classfile=${testname}.class
+        [ -e $output_dir ] || mkdir $output_dir
+        classfile=$output_dir/${testname}.class
         if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
             assert_framework
+            tmpdir=$(mktemp -d)
+            perl -pe 's/GenericTestWork.create(\w+)\(new (.*)\(\)::(.*)\)/GenericTestWork.create\1(\2.class, "\3", new \2()::\3)/g' $srcfile > $tmpdir/$srcfile
             echo "Compiling $srcfile ..."
             classpath=$(get_classpath)
             set -x
-            javac -cp $classpath $SODA_JAVA_COMPILE_OPTION $srcfile
+            javac -d $output_dir -cp $classpath $SODA_JAVA_COMPILE_OPTION $tmpdir/$srcfile
             set +x
+            rm -rf $tmpdir
             echo "Compile $srcfile OK"
         fi
         ;;
@@ -126,21 +116,14 @@ case $cmd in
         run_mode=$3
         if [ "$run_mode" == "--remote" ]; then
             remote_run $classname <&0
-#            runpath=$(pwd)
-#            curl --connect-timeout 2 -s "http://localhost:$server_port/soda/java/echo?a=b" >/dev/null || { echo "Unable to detect server" >&2; exit 2; }
-#            curl -d "runpath=$runpath" -s "http://localhost:$server_port/soda/java/setup" >/dev/null && echo
-#            url="http://localhost:$server_port/soda/java/job"
-#            post_content=$(python3 -c "import json; import sys; content = sys.stdin.read(); print(json.dumps({'runpath':'$runpath', 'jobclass':'$classname', 'request':content}))")
-#            curl --connect-timeout 2 -d "$post_content" -s $url
         else
             assert_framework
-            java -cp $(get_classpath) $classname
+            java -cp $(get_classpath):$output_dir $classname
         fi
         ;;
     clean)
         assert_testname
-        classfile=${testname}.class
-        [ -e $classfile ] && rm -v *.class
+        [ -e $output_dir ] && rm -v -r $output_dir
         ;;
     server)
         operation=$2

@@ -1,9 +1,6 @@
 package soda.unittest;
 
-import soda.unittest.task.Function2;
-import soda.unittest.task.Task1;
-import soda.unittest.task.Task2;
-import soda.unittest.task.TaskProxy;
+import soda.unittest.task.*;
 
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -43,11 +40,6 @@ public class GenericTestWork<R> {
         return proxy.getArguments();
     }
 
-    // DO NOT use this !!! It's just a placeholder in bootstrap file
-    public static <P1, R> GenericTestWork<R> create1(Function<P1, R> func) {
-        return create1(Solution.class, "METHOD", func);
-    }
-
     public static GenericTestWork<Object> forStruct(Class<?> structClass) {
         return create2(StructTester.class, "test", new StructTester(structClass)::test);
     }
@@ -62,6 +54,18 @@ public class GenericTestWork<R> {
 
     public static <P1, P2, R> GenericTestWork<R> create2(Class<?> workClass, String methodName, Function2<P1, P2, R> func) {
         return new GenericTestWork<>(new Task2<>(workClass, methodName, func));
+    }
+
+    public static <P1, P2, P3, R> GenericTestWork<R> create3(Class<?> workClass, String methodName, Function3<P1, P2, P3, R> func) {
+        return new GenericTestWork<>(new Task3<>(workClass, methodName, func));
+    }
+
+    // DO NOT use this !!! It's just a placeholder in bootstrap file
+    public static <P1, R> GenericTestWork<R> create1(Function<P1, R> func) {
+        return create1(Solution.class, "METHOD", func);
+    }
+    public static <P1, P2, R> GenericTestWork<R> create2(Function2<P1, P2, R> func) {
+        return create2(Solution.class, "METHOD", func);
     }
 
 }

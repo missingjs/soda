@@ -1,13 +1,11 @@
 import soda.unittest.*;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import soda.leetcode.*;
-import soda.unittest.Validators;
-import soda.unittest.TestWork;
-
+import soda.unittest.*;
 
 class Solution {
     public void reverseWords(char[] s) {
@@ -42,21 +40,22 @@ class Solution {
     }
 }
 
-public class Revword implements Supplier<TestWork> {
+public class Revword implements Function<String, String> {
 
     @Override
-    public TestWork get() {
-        var work = new TestWork(new Solution(), "reverseWords");
+    public String apply(String text) {
+        var work = GenericTestWork.create1u(new Solution()::reverseWords);
+        // var work = new TestWork(new Solution(), "reverseWords");
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
         // work.setArgumentParser(index, a -> { ... });
         // work.setResultParser(r -> { ... });
         // work.setResultSerializer(r -> {...});
-        return work;
+        return work.run(text);
     }
 
     public static void main(String[] args) throws Exception {
-        new Revword().get().run();
+        System.out.println(new Revword().apply(Utils.fromStdin()));
     }
 
 }

@@ -1,12 +1,11 @@
 import soda.unittest.*;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import soda.leetcode.*;
-import soda.unittest.Validators;
-import soda.unittest.TestWork;
+import soda.unittest.*;
 
 
 class SummaryRanges {
@@ -71,19 +70,20 @@ class SummaryRanges {
 
 }
 
-public class Leet implements Supplier<TestWork> {
+public class Leet implements Function<String, String> {
 
     @Override
-    public TestWork get() {
+    public String apply(String text) {
+        var work = GenericTestWork.forStruct(SummaryRanges.class);
         // var work = new TestWork(new Solution(), "METHOD");
-        var work = TestWork.forStruct(SummaryRanges.class);
+        // var work = TestWork.forStruct(SummaryRanges.class);
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
-        return work;
+        return work.run(text);
     }
 
     public static void main(String[] args) throws Exception {
-        new Leet().get().run();
+        System.out.println(new Leet().apply(Utils.fromStdin()));
     }
 
 }

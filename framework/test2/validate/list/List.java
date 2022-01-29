@@ -1,13 +1,11 @@
 import soda.unittest.*;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import soda.leetcode.*;
-import soda.unittest.Validators;
-import soda.unittest.TestWork;
-
+import soda.unittest.*;
 
 class Solution {
     public String[] permutation(char[] chars, int n) {
@@ -35,19 +33,21 @@ class Solution {
     }
 }
 
-public class List implements Supplier<TestWork> {
+public class List implements Function<String, String> {
 
     @Override
-    public TestWork get() {
-        var work = new TestWork(new Solution(), "permutation");
+    public String apply(String text) {
+        var work = GenericTestWork.create2(new Solution()::permutation);
+        // var work = GenericTestWork.create2(Solution.class, "permutation", new Solution()::permutation);
+        // var work = new TestWork(new Solution(), "permutation");
         // var work = TestWork.forStruct(Struct.class);
         work.setValidator(Validators.forArray(String.class, false));
         work.setCompareSerial(true);
-        return work;
+        return work.run(text);
     }
 
     public static void main(String[] args) throws Exception {
-        new List().get().run();
+        System.out.println(new List().apply(Utils.fromStdin()));
     }
 
 }
