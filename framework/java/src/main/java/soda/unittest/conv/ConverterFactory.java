@@ -1,14 +1,17 @@
 package soda.unittest.conv;
 
 import soda.leetcode.*;
+import soda.unittest.Log;
 import soda.unittest.job.codec.CodecFactory;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class ConverterFactory {
 
@@ -45,12 +48,26 @@ public class ConverterFactory {
 	}
 	
 	static {
+		registerFactory(int[].class, ConvUtils::toIntArray, ConvUtils::toList);
+		registerFactory(int[][].class, ConvUtils::toIntArray2d, ConvUtils::toList);
+
+		registerFactory(char.class, ConvUtils::toChar, ConvUtils::toStr);
+		registerFactory(Character.class, ConvUtils::toChar, ConvUtils::toStr);
+		registerFactory(char[].class, ConvUtils::toCharArray, ConvUtils::toStrList);
+		registerFactory(char[][].class, ConvUtils::toCharArray2d, ConvUtils::toStrList);
+		registerFactory(new TypeRef<>() {}, ConvUtils::toCharList, ConvUtils::fromCharList);
+		registerFactory(new TypeRef<>() {}, ConvUtils::toCharList2d, ConvUtils::fromCharList2d);
+
+		// Long
+
+		// Double
+
+		// String[], String[][]
+
 		registerFactory(ListNode.class, ListHelper::create, ListHelper::dump);
 		registerFactory(TreeNode.class, TreeFactory::create, TreeFactory::dump);
 		registerFactory(NestedInteger.class, NestedIntegerConverter::new);
 		registerFactory(new TypeRef<List<NestedInteger>>() {}, NestedIntegerListConverter::new);
-		registerFactory(new TypeRef<List<Character>>() {}, CharListConverter::new);
-		registerFactory(new TypeRef<List<List<Character>>>() {}, CharList2dConverter::new);
 		registerFactory(new TypeRef<List<ListNode>>() {}, ListNode1dConverter::new);
 	}
 
