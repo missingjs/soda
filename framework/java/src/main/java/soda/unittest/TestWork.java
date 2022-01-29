@@ -2,6 +2,7 @@ package soda.unittest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -28,8 +29,6 @@ public class TestWork {
     private Object expectedOutput;
 
 	private Object[] arguments;
-
-	private static ObjectMapper objectMapper = new ObjectMapper();
 
 	public TestWork(Object su, String methodName) {
 		this(su, findMethod(su.getClass(), methodName));
@@ -59,7 +58,7 @@ public class TestWork {
 		return arguments;
 	}
 
-	public void run() throws RuntimeException {
+	public void run() {
 		try {
 			System.out.println(run(Utils.fromStdin()));
 		} catch (Exception ex) {
@@ -67,7 +66,7 @@ public class TestWork {
 		}
 	}
 
-	public String run(String text) throws RuntimeException {
+	public String run(String text) {
 		try {
 			return doRun(text);
 		} catch (Exception ex) {
@@ -77,7 +76,7 @@ public class TestWork {
 
 	@SuppressWarnings("unchecked")
 	private String doRun(String text) throws Exception {
-		var input = objectMapper.readValue(text, WorkInput.class);
+		var input = Utils.objectMapper.readValue(text, WorkInput.class);
 		arguments = parseArguments(argumentTypes, input.args);
 		
 		long startNano = System.nanoTime();
@@ -100,8 +99,8 @@ public class TestWork {
 		boolean success = true;
 		if (input.expected != null) {
 			if (compareSerial && validator == null) {
-				String a = objectMapper.writeValueAsString(input.expected);
-				String b = objectMapper.writeValueAsString(serialResult);
+				String a = Utils.objectMapper.writeValueAsString(input.expected);
+				String b = Utils.objectMapper.writeValueAsString(serialResult);
 				success = Objects.equals(a, b);
 			} else {
 				var expect = resConv.fromJsonSerializable(input.expected);
@@ -114,17 +113,22 @@ public class TestWork {
 			}
 		}
 		output.success = success;
-		return objectMapper.writeValueAsString(output);
+		return Utils.objectMapper.writeValueAsString(output);
 	}
 	
 	@SuppressWarnings("unchecked")
-	static Object[] parseArguments(Type[] types, List<Object> rawParams) throws Exception {
+	public static Object[] parseArguments(Type[] types, List<Object> rawParams) {
 		Object[] arguments = new Object[types.length];
 		for (int i = 0; i < arguments.length; ++i) {
 			var conv = (ObjectConverter<Object, Object>) ConverterFactory.createConverter(types[i]);
 			arguments[i] = conv.fromJsonSerializable(rawParams.get(i));
 		}
 		return arguments;
+	}
+
+	public static List<Object> parseArguments(List<Type> types, List<Object> rawParams) {
+		var res = parseArguments(types.toArray(new Type[0]), rawParams);
+		return Arrays.asList(res);
 	}
 	
 	public static Method findMethod(Class<?> jobClass, String methodName) {
