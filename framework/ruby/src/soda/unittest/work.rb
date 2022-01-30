@@ -2,6 +2,7 @@ require 'json'
 require 'time'
 
 require 'soda/unittest/convert'
+require 'soda/unittest/validate'
 
 module Soda end
 
@@ -104,7 +105,6 @@ class TestWork
           success = @validator.call(expect, result)
         else
           success = ValidatorFactory.create(retType).call(expect, result)
-          STDERR.puts "using builtin validator"
         end
       end
     end
