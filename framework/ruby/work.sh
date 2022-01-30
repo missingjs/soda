@@ -3,17 +3,22 @@
 usage()
 {
     local cmd=$(basename $0)
-    cat << EOF
+    cat>&2 << EOF
 usage:
     soda ruby [options]
 
 options:
     new <testname>
         create source file with name <testname>.rb
-    $command_run_help
 
-    exec <exefile> [options]
-        run executable file, options same as command 'run'
+    make <testname> 
+        do nothing
+
+    run <testname>
+        run test case
+
+    clean <testname>
+        do nothing
 
 EOF
     exit 1
@@ -26,33 +31,25 @@ source $framework_dir/common/bashlib.sh || exit
 cmd=$1
 [ -z $cmd ] && usage
 
-exec_test()
+testname=$2
+execfile=./${testname}.rb
+
+assert_testname()
 {
-    local exefile=$1
-    [ -z $exefile ] && usage
-    [ -e $exefile ] || { echo "$exefile not exist" >&2; exit; }
-    run_test ruby "$@"
+    [ -z $testname ] && usage
 }
 
 case $cmd in
     new)
-        testname=$2
-        [ -z $testname ] && usage
-        testname=${testname%.rb}
-        target_file=${testname}.rb
         template_file=$self_dir/src/soda/unittest/bootstrap.rb
-        create_source_file $template_file $target_file
+        create_source_file $template_file $execfile
+        ;;
+    make | clean)
+        # Don't remove. Just for interface compatible
         ;;
     run)
-        testname=$2
-        [ -z $testname ] && usage
-        exefile=${testname}.rb
-        shift; shift
-        exec_test $exefile "$@"
-        ;;
-    exec)
-        shift
-        exec_test "$@"
+        src_dir=$self_dir/src
+        ruby -I $src_dir $execfile
         ;;
     *)
         usage
