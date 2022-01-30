@@ -79,13 +79,16 @@ class TestWork
     }
     STDERR.puts "arguments: #{args}"
 
-    retType = @returnType
     startTime = Time.now
     result = @function.call(*args)
     endTime = Time.now
     elapseMs = (endTime - startTime) * 1000.0
 
-    # TODO deal with void function
+    retType = @returnType
+    if retType == 'Void' || retType == 'void'
+      retType = @argumentTypes[0]
+      result = args[0]
+    end
 
     resConv = ConverterFactory.create(retType)
     serialResult = resConv.toJsonSerializable(result)
