@@ -34,7 +34,7 @@ class TestWork
   end
 
   def self.forStruct(klass)
-    hintsMap = Utils.methodTypeHints($0, klass.name)
+    hintsMap = Utils.methodTypeHints($0, klass)
     TestWork.new(StructTester.create(klass, hintsMap), StructTester.methodHints)
   end
 

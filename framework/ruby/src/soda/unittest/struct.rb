@@ -14,6 +14,14 @@ class StructTester
       res = [nil]
       1.step(operations.size-1) { |i|
         methodName = operations[i]
+        if !methodHints.key?(methodName)
+          ud = Utils.underscore(methodName)
+          if methodHints.key?(ud)
+            methodName = ud
+          else
+            raise Exception.new "method #{methodName} and #{ud} not found in class #{klass.name}"
+          end
+        end
         hints = methodHints[methodName]
         argTypes = hints[...-1]
         retType = hints[-1]
