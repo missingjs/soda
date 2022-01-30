@@ -32,7 +32,7 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
-execfile=./${testname}.rb
+execfile=${testname}.rb
 
 assert_testname()
 {
