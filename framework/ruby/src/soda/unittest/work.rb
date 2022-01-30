@@ -2,7 +2,9 @@ require 'json'
 require 'time'
 
 require 'soda/unittest/convert'
+require 'soda/unittest/struct'
 require 'soda/unittest/validate'
+require 'soda/unittest/utils'
 
 module Soda end
 
@@ -28,36 +30,12 @@ end
 
 class TestWork
   def self.create(function)
-    TestWork.new(function, parseTypeHints(function.name))
+    TestWork.new(function, Utils.functionTypeHints($0, function.name))
   end
 
-  def self.parseTypeHints(funcName)
-    lines = []
-    File.readlines($0).each { |line|
-      if line =~ /^def #{funcName}/
-        break
-      end
-      if line.strip.length > 0
-        lines.append(line)
-      end
-    }
-    retType = nil
-    argTypes = []
-    while lines.length > 0
-      text = lines.pop
-      if /^#\s+@param\s+\{(?<argType>.*)\}/ =~ text
-        argTypes.append(argType)
-      elsif /^#\s+@return\s+\{(?<returnType>.*)\}/ =~ text
-        retType = returnType
-      else
-        break
-      end
-    end
-    argTypes.append(retType)
-  end
-
-  def self.forStruct
-    # TODO
+  def self.forStruct(klass)
+    hintsMap = Utils.methodTypeHints($0, klass.name)
+    TestWork.new(StructTester.create(klass, hintsMap), StructTester.methodHints)
   end
 
   def initialize(function, typeHints)
@@ -74,10 +52,7 @@ class TestWork
 
   def run(text)
     input = WorkInput.new(JSON.parse(text))
-    args = @argumentTypes.each_with_index.map { |type,idx|
-      ConverterFactory.create(type).fromJsonSerializable(input.args[idx])
-    }
-    STDERR.puts "arguments: #{args}"
+    args = Utils.parseArguments(@argumentTypes, input.args)
 
     startTime = Time.now
     result = @function.call(*args)

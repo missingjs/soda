@@ -10,6 +10,7 @@ if __FILE__ == $0
   ns = Soda::Unittest
   # step [2]: setup function/return/arguments
   work = ns::TestWork.create(method(:my_solution))
+  # work = ns::TestWork.forStruct(CLASS)
   # work.validator = -> (e, r) { e is equal to r }
   work.compareSerial = true
   puts work.run(ARGF.read)
