@@ -113,8 +113,7 @@ class StrategyFactory
       if a.size != b.size
         return false
       end
-      # 0.step(a.size-1) {}
-      a.each_with_index { |_, i|
+      (0...a.size).each { |i|
         unless feat.is_equal?(a[i], b[i])
           return false
         end
@@ -196,26 +195,11 @@ class FeatureFactory
   @factory_map = {}
   @factory_map.default = ->() { ObjectFeature.new }
   @factory_map['Float'] = ->() { FloatFeature.new }
+  @factory_map['Float[]'] = ->() { ListFeature.new(self.create('Float')) }
+  @factory_map['Float[][]'] = ->() { ListFeature.new(self.create('Float[]')) }
 
   def self.create(obj_type)
     @factory_map[obj_type].call
-  end
-end
-
-class ValidatorFactory
-  @factory_map = {}
-  @factory_map.default = ->(objType) {
-    ->(x, y) {FeatureFactory.create(objType).is_equal?(x, y)}
-  }
-  @factory_map['Float[]'] = ->(t) {
-    Validators.for_array('Float', true)
-  }
-  @factory_map['Float[][]'] = ->(t) {
-    Validators.for_array2d('Float', true, true)
-  }
-
-  def self.create(obj_type)
-    @factory_map[obj_type].call(obj_type)
   end
 end
 

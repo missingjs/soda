@@ -82,7 +82,7 @@ class TestWork
         if @validator != nil
           success = @validator.call(expect, result)
         else
-          success = ValidatorFactory.create(ret_type).call(expect, result)
+          success = FeatureFactory.create(ret_type).is_equal?(expect, result)
         end
       end
     end
