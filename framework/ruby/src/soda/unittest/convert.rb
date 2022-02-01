@@ -8,23 +8,23 @@ class ObjectConverter
     @serializer = serializer
   end
 
-  def fromJsonSerializable(j)
+  def from_json_serializable(j)
     @parser.call(j)
   end
 
-  def toJsonSerializable(obj)
+  def to_json_serializable(obj)
     @serializer.call(obj)
   end
 end
 
 class ConverterFactory
-  @@factoryMap = {}
-  @@factoryMap.default = -> () {
+  @factory_map = {}
+  @factory_map.default = -> () {
     ObjectConverter.new(->(j){j}, ->(o){o})
   }
 
   def self.create(obj_type)
-      @@factoryMap[obj_type].call()
+    @factory_map[obj_type].call
   end
 end
 

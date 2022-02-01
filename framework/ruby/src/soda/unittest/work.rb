@@ -30,59 +30,59 @@ end
 
 class TestWork
   def self.create(function)
-    TestWork.new(function, Utils.functionTypeHints($0, function.name))
+    TestWork.new(function, Utils.function_type_hints($0, function.name))
   end
 
-  def self.forStruct(klass)
-    hintsMap = Utils.methodTypeHints($0, klass)
-    TestWork.new(StructTester.create(klass, hintsMap), StructTester.methodHints)
+  def self.for_struct(klass)
+    hints_map = Utils.method_type_hints($0, klass)
+    TestWork.new(StructTester.create(klass, hints_map), StructTester.method_hints)
   end
 
-  def initialize(function, typeHints)
+  def initialize(function, type_hints)
     @function = function
-    @typeHints = typeHints
-    @argumentTypes = typeHints[...-1]
-    @returnType = typeHints[-1]
-    @compareSerial = false
+    @type_hints = type_hints
+    @argument_types = type_hints[...-1]
+    @return_type = type_hints[-1]
+    @compare_serial = false
     @validator = nil
     @arguments = nil
   end
 
-  attr_accessor :compareSerial, :validator
+  attr_accessor :compare_serial, :validator
 
   def run(text)
     input = WorkInput.new(JSON.parse(text))
-    args = Utils.parseArguments(@argumentTypes, input.args)
+    args = Utils.parse_arguments(@argument_types, input.args)
 
-    startTime = Time.now
+    start_time = Time.now
     result = @function.call(*args)
-    endTime = Time.now
-    elapseMs = (endTime - startTime) * 1000.0
+    end_time = Time.now
+    elapse_ms = (end_time - start_time) * 1000.0
 
-    retType = @returnType
-    if retType == 'Void' || retType == 'void'
-      retType = @argumentTypes[0]
+    ret_type = @return_type
+    if ret_type == 'Void' || ret_type == 'void'
+      ret_type = @argument_types[0]
       result = args[0]
     end
 
-    resConv = ConverterFactory.create(retType)
-    serialResult = resConv.toJsonSerializable(result)
+    res_conv = ConverterFactory.create(ret_type)
+    serial_result = res_conv.to_json_serializable(result)
     resp = {
       'id' => input.id,
-      'result' => serialResult,
-      'elapse' => elapseMs
+      'result' => serial_result,
+      'elapse' => elapse_ms
     }
 
     success = true
     if input.expected
-      if @compareSerial && !@validator
-        success = (input.expected == serialResult)
+      if @compare_serial && !@validator
+        success = (input.expected == serial_result)
       else
-        expect = resConv.fromJsonSerializable(input.expected)
-        if @validator
+        expect = res_conv.from_json_serializable(input.expected)
+        if @validator != nil
           success = @validator.call(expect, result)
         else
-          success = ValidatorFactory.create(retType).call(expect, result)
+          success = ValidatorFactory.create(ret_type).call(expect, result)
         end
       end
     end

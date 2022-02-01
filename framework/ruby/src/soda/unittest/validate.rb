@@ -3,11 +3,11 @@ module Soda end
 module Soda::Unittest
 
 class ObjectFeature
-  def getHash(obj)
+  def get_hash(obj)
     obj.hash
   end
 
-  def isEqual?(a, b)
+  def is_equal?(a, b)
     a == b
   end
 end
@@ -27,7 +27,7 @@ class XMap
   end
 
   def _hash(key)
-    @feat.getHash(key)
+    @feat.get_hash(key)
   end
 
   def key?(key)
@@ -56,7 +56,7 @@ class XMap
 
   def _entry(key)
     h = _hash(key)
-    if !@dict.key?(h)
+    unless @dict.key?(h)
       return
     end
     @dict[h].each { |entry|
@@ -68,7 +68,7 @@ class XMap
 
   def remove(key)
     h = _hash(key)
-    if !@dict.key?(h)
+    unless @dict.key?(h)
       return
     end
     e = nil
@@ -86,24 +86,24 @@ class XMap
 end
 
 class StrategyFactory
-  def self.unorderedList(feat)
+  def self.unordered_list(feat)
     ->(a, b) {
       if a.size != b.size
         return false
       end
       xmap = XMap.new(feat)
-      for e in a
+      a.each { |e|
         xmap[e] = xmap.get(e, 0) + 1
-      end
-      for e in b
-        if !xmap.contains?(e)
+      }
+      b.each { |e|
+        unless xmap.contains?(e)
           return false
         end
         xmap[e] -= 1
         if xmap[e] == 0
           xmap.remove(e)
         end
-      end
+      }
       true
     }
   end
@@ -113,108 +113,109 @@ class StrategyFactory
       if a.size != b.size
         return false
       end
-      for i in a.index
-        if !feat.isEqual?(a[i], b[i])
+      # 0.step(a.size-1) {}
+      a.each_with_index { |_, i|
+        unless feat.is_equal?(a[i], b[i])
           return false
         end
-      end
+      }
     }
   end
 end
 
 class ListFeature < ObjectFeature
-  def initialize(elemFeat)
-    @elemFeat = elemFeat
+  def initialize(elem_feat)
+    @elem_feat = elem_feat
   end
 
-  def getHash(obj)
+  def get_hash(obj)
     res = 0
     # keep low 48 bits
     mask = 0xffffffffffff
-    for e in obj
-      h = @elemFeat.getHash(e)
+    obj.each { |e|
+      h = @elem_feat.get_hash(e)
       res = res * 133 + h
       res &= mask
-    end
+    }
     res
   end
 
-  def isEqual?(a, b)
-    StrategyFactory.list(@elemFeat).call(a, b)
+  def is_equal?(a, b)
+    StrategyFactory.list(@elem_feat).call(a, b)
   end
 end
 
 class UnorderedListFeature
-  def initialize(elemFeat)
-    @elemFeat = elemFeat
+  def initialize(elem_feat)
+    @elem_feat = elem_feat
   end
 
-  def getHash(obj)
+  def get_hash(obj)
     res = 0
     # keep low 48 bits
     mask = 0xffffffffffff
-    hashArr = obj.map { |e| @elemFeat.getHash(e) }
-    for h in hashArr.sort
+    hash_arr = obj.map { |e| @elem_feat.get_hash(e) }
+    hash_arr.sort.each { |h|
       res = res * 133 + h
       res &= mask
-    end
+    }
     res
   end
   
-  def isEqual?(a, b)
-    StrategyFactory.unorderedList(@elemFeat).call(a, b)
+  def is_equal?(a, b)
+    StrategyFactory.unordered_list(@elem_feat).call(a, b)
   end
 end
 
 class FloatFeature < ObjectFeature
-  def getHash(val)
+  def get_hash(val)
     val.hash
   end
 
-  def isEqual?(a, b)
+  def is_equal?(a, b)
     (a-b).abs < 1e-6
   end
 end
 
 class Validators
-  def self.forArray(objType, ordered)
+  def self.for_array(obj_type, ordered)
     f = StrategyFactory
-    d = FeatureFactory.create(objType)
-    ordered ? f.list(d) : f.unorderedList(d)
+    d = FeatureFactory.create(obj_type)
+    ordered ? f.list(d) : f.unordered_list(d)
   end
 
-  def self.forArray2d(objType, dim1Ordered, dim2Ordered)
+  def self.for_array2d(obj_type, dim1_ordered, dim2_ordered)
     f = StrategyFactory
-    elemFeat = FeatureFactory.create(objType)
-    d = dim2Ordered ? ListFeature.new(elemFeat) : UnorderedListFeature.new(elemFeat)
-    dim1Ordered ? f.list(d) : f.unorderedList(d)
+    elem_feat = FeatureFactory.create(obj_type)
+    d = dim2_ordered ? ListFeature.new(elem_feat) : UnorderedListFeature.new(elem_feat)
+    dim1_ordered ? f.list(d) : f.unordered_list(d)
   end
 end
 
 class FeatureFactory
-  @@factoryMap = {}
-  @@factoryMap.default = ->() { ObjectFeature.new }
-  @@factoryMap['Float'] = ->() { FloatFeature.new }
+  @factory_map = {}
+  @factory_map.default = ->() { ObjectFeature.new }
+  @factory_map['Float'] = ->() { FloatFeature.new }
 
-  def self.create(objType)
-    @@factoryMap[objType].call()
+  def self.create(obj_type)
+    @factory_map[obj_type].call
   end
 end
 
 class ValidatorFactory
-  @@factoryMap = {}
-  @@factoryMap.default = ->(objType) {
-    ->(x, y) {FeatureFactory.create(objType).isEqual?(x, y)}
+  @factory_map = {}
+  @factory_map.default = ->(objType) {
+    ->(x, y) {FeatureFactory.create(objType).is_equal?(x, y)}
   }
-  @@factoryMap['Float[]'] = ->(t) {
-    Validators.forArray(t, true)
+  @factory_map['Float[]'] = ->(t) {
+    Validators.for_array('Float', true)
   }
-  @@factoryMap['Float[][]'] = ->(t) {
-    Validators.forArray2d(t, true, true)
+  @factory_map['Float[][]'] = ->(t) {
+    Validators.for_array2d('Float', true, true)
   }
 
-  def self.create(objType)
-    @@factoryMap[objType].call(objType)
+  def self.create(obj_type)
+    @factory_map[obj_type].call(obj_type)
   end
 end
 

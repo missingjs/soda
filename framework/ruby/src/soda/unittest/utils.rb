@@ -5,77 +5,77 @@ module Soda end
 module Soda::Unittest
 
 class Utils
-  def self.parseArguments(argTypes, rawArgs)
-    argTypes.each_with_index.map { |type, idx|
-      ConverterFactory.create(type).fromJsonSerializable(rawArgs[idx])
+  def self.parse_arguments(arg_types, raw_args)
+    arg_types.each_with_index.map { |type, idx|
+      ConverterFactory.create(type).from_json_serializable(raw_args[idx])
     }
   end
 
-  def self.functionTypeHints(filePath, funcName)
+  def self.function_type_hints(file_path, func_name)
     lines = []
-    File.readlines(filePath).each { |line|
-      if line =~ /^def #{funcName}\(/
+    File.readlines(file_path).each { |line|
+      if line =~ /^def #{func_name}\(/
         break
       end
       if line.strip.length > 0
         lines << line
       end
     }
-    retType = nil
-    argTypes = []
+    ret_type = "Void"
+    arg_types = []
     while lines.length > 0
       text = lines.pop
-      if /^#\s+@param\s+\{(?<argType>.*)\}/ =~ text
-        argTypes.append(argType)
-      elsif /^#\s+@return\s+\{(?<returnType>.*)\}/ =~ text
-        retType = returnType
+      if /^#\s+@param\s+{(?<arg_type>.*)}/ =~ text
+        arg_types << arg_type
+      elsif /^#\s+@return\s+{(?<return_type>.*)}/ =~ text
+        ret_type = return_type
       else
         break
       end
     end
-    argTypes << retType
+    arg_types << ret_type
   end
 
-  def self.methodTypeHints(filePath, klass)
-    className = klass.name
-    lines = File.readlines(filePath)
+  def self.method_type_hints(file_path, klass)
+    class_name = klass.name
+    lines = File.readlines(file_path)
     i = 0
-    while i < lines.size && lines[i] !~ /^class #{className}/
+    while i < lines.size && lines[i] !~ /^class #{class_name}/
       i += 1
     end
     if i == lines.size
-      raise Exception.new "class #{className} not found in #{filePath}"
+      raise Exception.new "class #{class_name} not found in #{file_path}"
     end
 
-    hintsMap = {}
-    hintsBuf = []
+    hints_map = {}
+    hints_buf = []
     until /^end/ =~ lines[i]
       if /^=begin/ =~ lines[i]
         i += 1
         while /^=end/ !~ lines[i]
-          hintsBuf << lines[i]
+          hints_buf << lines[i]
           i += 1
         end
         i += 1
-        if /^\s*def (?<methodName>\w+)/ =~ lines[i]
-          hintsMap[methodName] = hintsBuf.map { |line, _|
+        if /^\s*def (?<method_name>\w+)/ =~ lines[i]
+          hints_map[method_name] = hints_buf.map { |line, _|
             /[:].*[:]\s+(\w+)/.match(line)[1]
           }
-          hintsBuf.clear
+          hints_buf.clear
         end
       end
       i += 1
     end
 
-    for name in klass.methods(false).map { |s| s.to_s }
-      if !hintsMap.key?(name)
-        hintsMap[name] = ['Void']
+    klass.methods(false).map { |s| s.to_s }.each { |name|
+      unless hints_map.key?(name)
+        hints_map[name] = ['Void']
       end
+    }
+    unless hints_map.key?('initialize')
+      hints_map['initialize'] = []
     end
-    if !hintsMap.key?('initialize')
-      hintsMap['initialize'] = []
-    end
-    hintsMap
+    hints_map
   end
 
   def self.underscore(s)
