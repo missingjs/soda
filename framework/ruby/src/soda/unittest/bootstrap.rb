@@ -1,3 +1,4 @@
+require 'set'
 # step [1]: implement solution function
 # @param {Integer} n
 # @return {Integer}

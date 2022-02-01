@@ -17,6 +17,8 @@ class XEntry
     @key = key
     @value = value
   end
+
+  attr_accessor :key, :value
 end
 
 class XMap
@@ -60,7 +62,7 @@ class XMap
       return
     end
     @dict[h].each { |entry|
-      if @feat.isEqual(key, entry.key)
+      if @feat.is_equal?(key, entry.key)
         return entry
       end
     }
@@ -73,7 +75,7 @@ class XMap
     end
     e = nil
     @dict[h].each { |entry|
-      if @feat.isEqual(key, entry.key)
+      if @feat.is_equal?(key, entry.key)
         e = entry
         break
       end
@@ -96,7 +98,7 @@ class StrategyFactory
         xmap[e] = xmap.get(e, 0) + 1
       }
       b.each { |e|
-        unless xmap.contains?(e)
+        unless xmap.key?(e)
           return false
         end
         xmap[e] -= 1
