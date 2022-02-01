@@ -1,3 +1,5 @@
+require 'soda/leetcode/list'
+
 module Soda end
 
 module Soda::Unittest
@@ -18,14 +20,30 @@ class ObjectConverter
 end
 
 class ConverterFactory
-  @factory_map = {}
-  @factory_map.default = -> () {
-    ObjectConverter.new(->(j){j}, ->(o){o})
-  }
+  def self._register(type, parser, serializer)
+    @factory_map[type.to_s] = ->() {
+      ObjectConverter.new(parser, serializer)
+    }
+  end
+
+  def self._init
+    lc = Soda::Leetcode
+    _register('ListNode', lc::ListFactory.method(:create), lc::ListFactory.method(:dump))
+    _register(
+      'ListNode[]',
+      ->(ls) { ls.map { |e| lc::ListFactory.create(e) } },
+      ->(ts) { ts.map { |e| lc::ListFactory.dump(e) } }
+    )
+  end
 
   def self.create(obj_type)
     @factory_map[obj_type].call
   end
+
+  @factory_map = Hash.new(-> () {
+    ObjectConverter.new(->(j){j}, ->(o){o})
+  })
+  _init
 end
 
 end  # module Soda::Unittest
