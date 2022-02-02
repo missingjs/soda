@@ -24,11 +24,11 @@ end
 
 if __FILE__ == $0
   require 'soda/unittest/work'
-  ns = Soda::Unittest
+  include Soda::Unittest
   # step [2]: setup function/return/arguments
-  work = ns::TestWork.create(method(:permutation))
+  work = TestWork.create(method(:permutation))
   # work = ns::TestWork.forStruct(CLASS)
-  work.validator = ->(e, r) { ns::Validators.for_array('String', false) }
+  work.validator = ->(e, r) { Validators.for_array('String', false) }
   work.compare_serial = true
   puts work.run(ARGF.read)
 end

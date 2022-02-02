@@ -16,7 +16,7 @@ if __FILE__ == $0
   # step [2]: setup function/return/arguments
   work = ns::TestWork.create(method(:reverseString))
   # work.validator = -> (e, r) { e is equal to r }
-  work.compareSerial = true
+  work.compare_serial = true
   puts work.run(ARGF.read)
 end
 
