@@ -70,7 +70,7 @@ class NestedIntegerFactory
   end
 
   def self.serialize(ni)
-    ni.is_integer ? ni.get_integer : ni.getList.map { |e| self.serialize(e) }
+    ni.is_integer ? ni.get_integer : ni.get_list.map { |e| self.serialize(e) }
   end
 
   def self.parse_multi(ds)
