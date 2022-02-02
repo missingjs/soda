@@ -1,4 +1,5 @@
 require 'soda/leetcode/list'
+require 'soda/leetcode/nest'
 
 module Soda end
 
@@ -33,6 +34,16 @@ class ConverterFactory
       'ListNode[]',
       ->(ls) { ls.map { |e| lc::ListFactory.create(e) } },
       ->(ts) { ts.map { |e| lc::ListFactory.dump(e) } }
+    )
+    _register(
+      'NestedInteger',
+      lc::NestedIntegerFactory.method(:parse),
+      lc::NestedIntegerFactory.method(:serialize)
+    )
+    _register(
+      'NestedInteger[]',
+      lc::NestedIntegerFactory.method(:parse_multi),
+      lc::NestedIntegerFactory.method(:serialize_multi)
     )
   end
 

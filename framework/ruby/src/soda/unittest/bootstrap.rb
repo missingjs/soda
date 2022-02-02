@@ -1,5 +1,6 @@
 require 'set'
 require 'soda/leetcode/list'
+require 'soda/leetcode/nest'
 # step [1]: implement solution function
 # @param {Integer} n
 # @return {Integer}
