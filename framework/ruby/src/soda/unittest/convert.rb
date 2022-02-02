@@ -1,5 +1,6 @@
-require 'soda/leetcode/list'
-require 'soda/leetcode/nest'
+require_relative '../leetcode/list'
+require_relative '../leetcode/nest'
+require_relative '../leetcode/tree'
 
 module Soda end
 
@@ -45,6 +46,7 @@ class ConverterFactory
       lc::NestedIntegerFactory.method(:parse_multi),
       lc::NestedIntegerFactory.method(:serialize_multi)
     )
+    _register('TreeNode', lc::TreeFactory.method(:create), lc::TreeFactory.method(:dump))
   end
 
   def self.create(obj_type)
