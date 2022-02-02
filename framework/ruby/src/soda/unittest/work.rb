@@ -48,11 +48,11 @@ class TestWork
     @arguments = nil
   end
 
-  attr_accessor :compare_serial, :validator
+  attr_accessor :arguments, :compare_serial, :validator
 
   def run(text)
     input = WorkInput.new(JSON.parse(text))
-    args = Utils.parse_arguments(@argument_types, input.args)
+    @arguments = args = Utils.parse_arguments(@argument_types, input.args)
 
     start_time = Time.now
     result = @function.call(*args)

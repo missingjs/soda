@@ -27,7 +27,11 @@ class StructTester
         ret_type = hints[-1]
         args = Utils.parse_arguments(arg_types, parameters[i])
         r = obj.public_send(method_name, *args)
-        res << ConverterFactory.create(ret_type).to_json_serializable(r)
+        if ret_type.downcase != 'void'
+          res << ConverterFactory.create(ret_type).to_json_serializable(r)
+        else
+          res << nil
+        end
       }
       res
     }
