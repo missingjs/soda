@@ -1,6 +1,8 @@
 #ifndef _SODA_LEETCODE_NEST_H_
 #define _SODA_LEETCODE_NEST_H_
 
+#include <functional>
+#include <string>
 #include <vector>
 
 namespace soda::leetcode {
@@ -36,6 +38,10 @@ public:
 
     int size() const;
 
+    std::string toString() const;
+
+    static std::string toString(const NestedInteger& i);
+
 private:
     bool isAtomic;
     int  value;
@@ -43,5 +49,12 @@ private:
 };
 
 } // namespace soda::leetcode
+
+template <>
+struct std::hash<soda::leetcode::NestedInteger> {
+    std::size_t operator()(const soda::leetcode::NestedInteger& k) const {
+        return std::hash<std::string>()(k.toString());
+    }
+};
 
 #endif

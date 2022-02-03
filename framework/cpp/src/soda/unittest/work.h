@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "convert.h"
+#include "feature_factory.h"
 #include "struct.h"
 #include "util.h"
 #include "workdata.h"
@@ -82,7 +83,7 @@ public:
                 if (validator) {
                     success = validator(expect, result);
                 } else {
-                    success = ValidatorFactory::create<Return>()(expect, result);
+                    success = FeatureFactory::create<Return>()->isEqual(expect, result);
                 }
             }
         }

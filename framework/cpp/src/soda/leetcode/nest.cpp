@@ -60,4 +60,35 @@ bool NestedInteger::operator!=(const NestedInteger& other) const
     return !((*this) == other);
 }
 
+std::string NestedInteger::toString() const
+{
+    return toString(*this);
+}
+
+namespace {
+    void dump(const NestedInteger& ni, std::string& buffer) {
+        if (ni.isInteger()) {
+            buffer.append(to_string(ni.getInteger()));
+        } else {
+            buffer.append("[");
+            auto& list = ni.getList();
+            for (int i = 0; i < int(list.size()) - 1; ++i) {
+                dump(list[i], buffer);
+                buffer.append(",");
+            }
+            if (list.size() > 0) {
+                dump(list[list.size()-1], buffer);
+            }
+            buffer.append("]");
+        }
+    }
+}
+
+std::string NestedInteger::toString(const NestedInteger& ni)
+{
+    std::string buffer;
+    dump(ni, buffer);
+    return buffer;
+}
+
 } // namespace soda::leetcode

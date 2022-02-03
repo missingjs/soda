@@ -2,6 +2,7 @@
 #define _SODA_UNITTEST_JSONPROXY_H_
 
 #include <memory>
+#include <functional>
 #include <string>
 #include <type_traits>
 
@@ -103,5 +104,12 @@ private:
 };
 
 } // namespace soda::unittest
+
+template <>
+struct std::hash<soda::unittest::JsonProxy> {
+    std::size_t operator()(const soda::unittest::JsonProxy& k) const {
+        return std::hash<std::string>()(k.dump());
+    }
+};
 
 #endif
