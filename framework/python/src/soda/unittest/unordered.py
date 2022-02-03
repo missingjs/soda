@@ -62,7 +62,7 @@ class XMap:
             self.dict[h].remove(e)
             self.size -= 1
 
-class UnorderListFeature(ObjectFeature):
+class UnorderedListFeature(ObjectFeature):
 
     def __init__(self, elemFeat: ObjectFeature):
         self.elemFeat = elemFeat
