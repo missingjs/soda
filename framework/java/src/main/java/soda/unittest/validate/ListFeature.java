@@ -22,6 +22,14 @@ public class ListFeature<T> implements ObjectFeature<List<T>> {
 
     @Override
     public boolean isEqual(List<T> a, List<T> b) {
-        return StrategyFactory.list(elemFeat).test(a, b);
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (int i = 0; i < a.size(); ++i) {
+            if (!elemFeat.isEqual(a.get(i), b.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

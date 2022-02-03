@@ -9,19 +9,18 @@ import java.util.stream.Collectors;
 
 public class Validators {
 
-    private static <T> ObjectFeature<T> createFeature(Class<T> klass) {
-        return FeatureFactory.create(klass);
+    private static <T> BiPredicate<List<T>, List<T>> _forList(boolean ordered, ObjectFeature<T> elemFeat) {
+        return ordered ? new ListFeature<>(elemFeat)::isEqual : new UnorderedListFeature<>(elemFeat)::isEqual;
     }
 
     public static <T> BiPredicate<List<T>, List<T>> forList(Class<T> klass, boolean ordered) {
-        var f = createFeature(klass);
-        return ordered ? StrategyFactory.list(f) : StrategyFactory.unorderList(f);
+        return _forList(ordered, FeatureFactory.create(klass));
     }
 
     public static <T> BiPredicate<List<List<T>>, List<List<T>>> forList2d(Class<T> klass, boolean dim1Ordered, boolean dim2Ordered) {
-        var elemFeat = createFeature(klass);
-        var lf = dim2Ordered ? new ListFeature<T>(elemFeat) : new UnorderListFeature<T>(elemFeat);
-        return dim1Ordered ? StrategyFactory.list(lf) : StrategyFactory.unorderList(lf);
+        ObjectFeature<T> elemFeat = FeatureFactory.create(klass);
+        var lf = dim2Ordered ? new ListFeature<T>(elemFeat) : new UnorderedListFeature<T>(elemFeat);
+        return _forList(dim1Ordered, lf);
     }
 
     public static <T> BiPredicate<T[], T[]> forArray(Class<T> klass, boolean ordered) {

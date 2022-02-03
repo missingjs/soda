@@ -4,7 +4,7 @@ import soda.unittest.conv.ConverterFactory;
 import soda.unittest.conv.ObjectConverter;
 import soda.unittest.function.*;
 import soda.unittest.task.*;
-import soda.unittest.validate.ValidatorFactory;
+import soda.unittest.validate.FeatureFactory;
 
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -47,7 +47,7 @@ public class GenericTestWork<R> {
                     if (validator != null) {
                         success = validator.test(expect, result);
                     } else {
-                        success = ValidatorFactory.create(retType).test(expect, result);
+                        success = FeatureFactory.create(retType).isEqual(expect, result);
                     }
                 }
             }
