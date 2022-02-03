@@ -4,7 +4,7 @@ import time
 from typing import get_type_hints
 
 from .registry import getConverter
-from .validate import ValidatorFactory
+from .featurefactory import FeatureFactory
 
 class TestInput:
 
@@ -74,7 +74,7 @@ class TestWork:
                 if self.validator:
                     success = self.validator(expect, result)
                 else:
-                    success = ValidatorFactory.create(ret_type)(expect, result)
+                    success = FeatureFactory.create(ret_type).isEqual(expect, result)
 
         output['success'] = success
 
