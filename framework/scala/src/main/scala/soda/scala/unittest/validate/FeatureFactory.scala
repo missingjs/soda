@@ -12,8 +12,12 @@ object FeatureFactory {
   }
 
   registerFactory(() => new DoubleFeature)
+  registerFactory(() => new ListFeature(create[Double]))
+  registerFactory(() => new DoubleArrayFeature)
+  registerFactory(() => new ListFeature(create[List[Double]]))
+  registerFactory(() => new DoubleArray2dFeature)
 
-  def create[T]()(implicit tt: TypeTag[T]): ObjectFeature[T] = {
+  def create[T: TypeTag]: ObjectFeature[T] = {
     create(typeOf[T])
   }
 

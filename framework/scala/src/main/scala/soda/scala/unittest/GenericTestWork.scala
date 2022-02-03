@@ -3,7 +3,7 @@ package soda.scala.unittest
 import play.api.libs.json._
 import soda.scala.unittest.conv._
 import soda.scala.unittest.task._
-import soda.scala.unittest.validate.ValidatorFactory
+import soda.scala.unittest.validate.FeatureFactory
 
 import scala.reflect.runtime.universe._
 
@@ -40,7 +40,7 @@ class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) {
         val expect = resConv.fromJsonSerializable(input.expected)
         success = validator match {
           case Some(va) => va.apply(expect, result)
-          case None => ValidatorFactory.create(retType)(expect, result)
+          case None => FeatureFactory.create(retType).isEqual(expect, result)
         }
       }
     }
