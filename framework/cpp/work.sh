@@ -85,7 +85,8 @@ case $cmd in
     make)
         [ -e $output_dir ] || mkdir $output_dir
         srcfile=${testname}.cpp
-        gen_source $srcfile > $output_dir/${testname}__gen.cpp
+        # gen_source $srcfile > $output_dir/${testname}__gen.cpp
+        cp $srcfile $output_dir/${testname}__gen.cpp
         bash $self_dir/gen-makefile.sh -c $testname > $output_dir/$makefile
         # return error code from make
         (cd $output_dir; make -f $makefile)
