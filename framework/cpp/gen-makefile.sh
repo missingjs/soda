@@ -25,7 +25,7 @@ done
 [ -z $case_name ] && usage
 
 cat << EOF
-SOURCES = ${case_name}.cpp
+SOURCES = ${case_name}__gen.cpp
 OBJS = \$(SOURCES:.cpp=.o)
 LIBRARY = -L${self_dir}/src/soda/leetcode -lleetcode -L${self_dir}/src/soda/unittest -lsodatest
 CC = g++

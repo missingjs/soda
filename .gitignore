@@ -6,3 +6,4 @@ Makefile.gen.*
 *.swp
 .idea
 .vscode
+*__gen.cpp

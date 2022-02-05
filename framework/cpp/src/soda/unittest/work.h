@@ -149,6 +149,11 @@ public:
     static decltype(auto) forStruct(StructTester<T>* st) {
         return create(st, &StructTester<T>::test);
     }
+
+    template <typename Struct>
+    static decltype(auto) forStruct() {
+        return create<int>([](){return 0;});
+    }
 };
 
 } // namespace soda::unittest
