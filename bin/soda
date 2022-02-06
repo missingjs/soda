@@ -103,6 +103,22 @@ function parse_run_args()
     done
 }
 
+function trans_lang_name()
+{
+    local name=$1
+    case $name in
+        cs)
+            name=csharp
+            ;;
+        py)
+            name=python
+            ;;
+        *)
+            ;;
+    esac
+    echo $name
+}
+
 tags=
 force_rebuild=no
 remote_mode=no
@@ -112,16 +128,16 @@ case $cmd in
         work=$2
         [ -z "$work" ] && usage
         init_work $work
-        [ -z $3 ] || create_work "$3"
+        [ -z $3 ] || create_work $(trans_lang_name "$3")
         ;;
     new)
-        ilang=$2
+        ilang=$(trans_lang_name $2)
         [ -z "$ilang" ] && usage
         create_work $ilang
         ;;
     run)
         # prepare sdk
-        ilang=$2
+        ilang=$(trans_lang_name $2)
         check_sdk $ilang
         script=$framework_dir/$ilang/work.sh
         work=$(get_work_name)
@@ -142,14 +158,14 @@ case $cmd in
         python3 -m $runner $work --command "$commandStr" $tag_options
         ;;
     clean)
-        ilang=$2
+        ilang=$(trans_lang_name $2)
         check_sdk $ilang
         script=$framework_dir/$ilang/work.sh
         work=$(get_work_name)
         $script clean $work
         ;;
     tool)
-        ilang=$2
+        ilang=$(trans_lang_name $2)
         check_sdk $ilang
         script=$framework_dir/$ilang/work.sh
         shift; shift;
