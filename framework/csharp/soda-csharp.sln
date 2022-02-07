@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soda", "soda\soda.csproj", "{F9E998C2-1BF4-4EAA-A686-6631A527278E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soda.testing", "soda.testing\soda.testing.csproj", "{31DE07DE-25DF-4929-8A89-39D53A52DD6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -10,5 +14,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9E998C2-1BF4-4EAA-A686-6631A527278E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9E998C2-1BF4-4EAA-A686-6631A527278E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9E998C2-1BF4-4EAA-A686-6631A527278E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9E998C2-1BF4-4EAA-A686-6631A527278E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31DE07DE-25DF-4929-8A89-39D53A52DD6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31DE07DE-25DF-4929-8A89-39D53A52DD6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31DE07DE-25DF-4929-8A89-39D53A52DD6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31DE07DE-25DF-4929-8A89-39D53A52DD6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

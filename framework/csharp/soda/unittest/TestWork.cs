@@ -1,15 +1,30 @@
-﻿using System.IO;
+﻿using Newtonsoft.Json;
+using soda.unittest.task;
 
 namespace soda.unittest;
-public class TestWork
+
+public class TestWork<R>
 {
-    public string run(string text)
+    private ITaskProxy<R> proxy;
+
+    public bool CompareSerial { get; set; }
+
+    private Func<R, R, bool> validator;
+
+    public TestWork(ITaskProxy<R> proxy)
     {
+        this.proxy = proxy;
+    }
+
+    public string Run(string text)
+    {
+        var input = JsonConvert.DeserializeObject<WorkInput>(text);
+        
         return text;
     }
 
-    public static int getValue()
+    public void SetValidator(Func<R, R, bool> v)
     {
-        return 4096;
+        validator = v;
     }
 }

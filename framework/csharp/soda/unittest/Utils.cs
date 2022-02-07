@@ -1,9 +1,8 @@
+using Newtonsoft.Json.Linq;
+
 namespace soda.unittest;
 
-using System;
-using System.IO;
-
-public class Utils
+public static class Utils
 {
     public static string readStdin()
     {
@@ -11,5 +10,16 @@ public class Utils
         {
             return sr.ReadToEnd();
         }
+    }
+
+    public static IList<object> parseArguments(IList<Type> types, JArray rawParams)
+    {
+        // TODO
+        return new List<object>();
+    }
+
+    public static T Fn<T>(T t)
+    {
+        return t;
     }
 }
