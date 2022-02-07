@@ -40,6 +40,8 @@ output_dir=./csharp
 
 function init_dotnet_project()
 {
+    local classname="$1"
+    local library_path="$2"
     dotnet new sln
     dotnet new console -o app
     dotnet sln add app/app.csproj
@@ -51,7 +53,8 @@ function init_dotnet_project()
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RestoreSources>\$(RestoreSources);$self_dir/soda/bin/Debug</RestoreSources>
+    <RestoreSources>\$(RestoreSources);$library_path</RestoreSources>
+    <StartupObject>$classname</StartupObject>
   </PropertyGroup>
 
 </Project>
@@ -69,13 +72,15 @@ case $cmd in
         template_file=$self_dir/soda/unittest/__Bootstrap__.cs
         create_source_file $template_file $target_file
         classname=$testname
-        echo "using soda.unittest;" > ${classname}.tmp
-        cat $target_file | grep -v '^package ' | sed "s/__Bootstrap__/$classname/g" >> ${classname}.tmp
-        mv ${classname}.tmp $target_file
+        tmpfile=${classname}.tmp
+        cat $target_file | grep -v '^package ' | sed "s/__Bootstrap__/$classname/g" > $tmpfile
+        mv $tmpfile $target_file
         # create dotnet project
         mkdir $output_dir
         cd $output_dir
-        init_dotnet_project
+        # use debug version
+        lib_path=$self_dir/soda/bin/Debug
+        init_dotnet_project $classname "$lib_path"
         ;;
     make)
         srcfile=${testname}.cs
