@@ -1,6 +1,6 @@
-using soda.unittest.task;
+using Soda.Unittest.Task;
 
-namespace soda.unittest;
+namespace Soda.Unittest;
 
 public static class WorkFactory
 {

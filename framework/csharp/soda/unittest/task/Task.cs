@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace soda.unittest.task;
+namespace Soda.Unittest.Task;
 
 public class Task<P1, R> : TaskBase<R>
 {

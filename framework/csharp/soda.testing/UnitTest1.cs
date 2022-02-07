@@ -3,9 +3,9 @@ using System.Reflection;
 using Xunit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using soda.unittest;
+using Soda.Unittest;
 
-namespace soda.testing;
+namespace Soda.testing;
 
 public class UnitTest1
 {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using soda.unittest.task;
+using Soda.Unittest.Task;
 
-namespace soda.unittest;
+namespace Soda.Unittest;
 
 public class TestWork<R>
 {

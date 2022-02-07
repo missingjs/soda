@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace soda.unittest.task;
+namespace Soda.Unittest.Task;
 
 public abstract class TaskBase<R> : ITaskProxy<R>
 {

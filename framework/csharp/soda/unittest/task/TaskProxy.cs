@@ -1,4 +1,4 @@
-namespace soda.unittest.task;
+namespace Soda.Unittest.Task;
 
 public interface ITaskProxy<R>
 {

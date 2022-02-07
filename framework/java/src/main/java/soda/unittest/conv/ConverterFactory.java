@@ -14,7 +14,7 @@ public class ConverterFactory {
 	private static final Map<Type, Supplier<ObjectConverter<?,?>>> factoryMap = new HashMap<>();
 
 	private static <R,J> void registerFactory(Class<R> klass, Supplier<ObjectConverter<R,J>> factory) {
-		regFact((Type) klass, factory);
+		regFact(klass, factory);
 	}
 
 	private static <R,J> void registerFactory(TypeRef<R> ref, Supplier<ObjectConverter<R,J>> factory) {

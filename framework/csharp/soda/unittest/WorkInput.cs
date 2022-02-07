@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace soda.unittest;
+namespace Soda.Unittest;
 
 public class WorkInput
 {
