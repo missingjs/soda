@@ -101,7 +101,7 @@ case $cmd in
         mv $tmpfile $target_file
         # create dotnet project
         mkdir $output_dir
-        cd $output_dir
+        cd $output_dir || exit
         # use debug version
         lib_path=$self_dir/soda/bin/$build_conf
         init_dotnet_project $classname "$lib_path"

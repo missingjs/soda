@@ -34,8 +34,7 @@ cmd=$1
 testname=$2
 srcfile=${testname}.go
 execfile=${srcfile}.out
-
-force_rebuild=$3
+output_dir=./go
 
 assert_testname()
 {
@@ -48,24 +47,31 @@ package_version="v0.0.1"
 assert_testname
 case $cmd in
     new)
+        # check go project directory
+        [ -e $output_dir ] && { echo "$output_dir already exists">&2; exit 2; }
         create_source_file $self_dir/bootstrap.go $srcfile
+        mkdir $output_dir
+        cd $output_dir || exit
         suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
         go mod init "$package_name/coding/$suffix"
         go mod edit -require "$package_name@$package_version"
         go mod edit -replace "$package_name=$self_dir/src"
         ;;
     make)
-        [ "$force_rebuild" == "-f" ] && [ -e $execfile ] && rm $execfile
-        if [[ ! -e $execfile ]] || [[ $srcfile -nt $execfile ]]; then
-            go build -o $execfile $srcfile && echo "Build success."
+        if [[ ! -e $output_dir/$execfile ]] || [[ $srcfile -nt $output_dir/$execfile ]]; then
+            set -e
+            cp $srcfile $output_dir/main__gen.go
+            cd $output_dir
+            go build -o $execfile main__gen.go
+            echo "Build success."
         fi
         ;;
     run)
-        ./$execfile
+        ./$output_dir/$execfile
         ;;
 
     clean)
-        [ -e $execfile ] && rm -v $execfile
+        [ -e $output_dir/$execfile ] && rm -v $output_dir/$execfile
         ;;
     *)
         usage

@@ -228,4 +228,5 @@ project.lock.json
 
 *.class
 Program.cs
+main__gen.go
 
