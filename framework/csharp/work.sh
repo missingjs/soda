@@ -28,6 +28,10 @@ self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 source $framework_dir/common/bashlib.sh || exit
 
+[ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
+source $self_dir/setup_env.sh || exit
+source $self_dir/common.sh || exit
+
 cmd=$1
 [ -z $cmd ] && usage
 
@@ -52,7 +56,7 @@ function init_dotnet_project()
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>$dotnet_version</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RestoreSources>\$(RestoreSources);$library_path;https://api.nuget.org/v3/index.json</RestoreSources>
@@ -61,10 +65,25 @@ function init_dotnet_project()
 
 </Project>
 EOF
-    dotnet add $appname package soda-csharp
+    dotnet add $appname package $package_id
+}
+
+tell_to_build()
+{
+    echo "Please run $this_dir/deploy.sh to build soda C# library" >&2
+    exit 3
+}
+
+function check_framework()
+{
+    local target_dir="$self_dir/soda/bin/$build_conf"
+    local pkg_file="$target_dir/$package_id.$package_version.nupkg"
+    local lib_file="$target_dir/$dotnet_version/soda.dll"
+    [[ ! -f $pkg_file || ! -f $lib_file ]] && tell_to_build
 }
 
 assert_testname
+check_framework
 case $cmd in
     new)
         # check dotnet project directory
@@ -84,25 +103,25 @@ case $cmd in
         mkdir $output_dir
         cd $output_dir
         # use debug version
-        lib_path=$self_dir/soda/bin/Debug
+        lib_path=$self_dir/soda/bin/$build_conf
         init_dotnet_project $classname "$lib_path"
         ;;
     make)
         srcfile=${testname}.cs
-        exefile=$app_dir/bin/Debug/net6.0/$appname
+        exefile=$app_dir/bin/$build_conf/$dotnet_version/$appname
         if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
             set -e
             cp $srcfile $app_dir/Program.cs
             cd $app_dir
-            dotnet build
+            dotnet build --configuration $build_conf
             set +e
         fi
         ;;
     run)
-        cd $app_dir && ./bin/Debug/net6.0/$appname
+        cd $app_dir && ./bin/$build_conf/$dotnet_version/$appname
         ;;
     clean)
-        cd $app_dir && dotnet clean
+        cd $app_dir && rm -rv bin obj
         ;;
     *)
         usage
