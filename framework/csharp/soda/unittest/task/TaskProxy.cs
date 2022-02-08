@@ -8,7 +8,7 @@ public interface ITaskProxy<R>
 
     object[] GetArguments();
 
-    R execute(WorkInput input);
+    R Execute(WorkInput input);
 
     double GetElapseMillis();
 }

@@ -37,15 +37,17 @@ assert_testname() {
 }
 testname=$(python3 -c "print('$testname'.capitalize())")
 output_dir=./csharp
+appname=app
+app_dir=$output_dir/$appname
 
 function init_dotnet_project()
 {
     local classname="$1"
     local library_path="$2"
     dotnet new sln
-    dotnet new console -o app
-    dotnet sln add app/app.csproj
-    cat >app/app.csproj << EOF
+    dotnet new console -o $appname
+    dotnet sln add $appname/$appname.csproj
+    cat >$appname/$appname.csproj << EOF
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -53,13 +55,13 @@ function init_dotnet_project()
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RestoreSources>\$(RestoreSources);$library_path</RestoreSources>
+    <RestoreSources>\$(RestoreSources);$library_path;https://api.nuget.org/v3/index.json</RestoreSources>
     <StartupObject>$classname</StartupObject>
   </PropertyGroup>
 
 </Project>
 EOF
-    dotnet add app package soda-csharp
+    dotnet add $appname package soda-csharp
 }
 
 assert_testname
@@ -73,7 +75,10 @@ case $cmd in
         create_source_file $template_file $target_file
         classname=$testname
         tmpfile=${classname}.tmp
-        cat $target_file | grep -v '^package ' | sed "s/__Bootstrap__/$classname/g" > $tmpfile
+        echo "using Soda.Unittest;" > $tmpfile
+        cat $target_file | grep -v '^namespace ' \
+            | sed "s/__Bootstrap__/$classname/g" \
+            | sed "s/__Solution__/Solution/g" >> $tmpfile
         mv $tmpfile $target_file
         # create dotnet project
         mkdir $output_dir
@@ -84,20 +89,20 @@ case $cmd in
         ;;
     make)
         srcfile=${testname}.cs
-        exefile=$output_dir/app/bin/Debug/net6.0/app.dll
+        exefile=$app_dir/bin/Debug/net6.0/$appname
         if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
             set -e
-            cp $srcfile $output_dir/app/Program.cs
-            cd $output_dir/app
+            cp $srcfile $app_dir/Program.cs
+            cd $app_dir
             dotnet build
             set +e
         fi
         ;;
     run)
-        cd $output_dir/app && dotnet run
+        cd $app_dir && ./bin/Debug/net6.0/$appname
         ;;
     clean)
-        [ -e $output_dir ] && rm -v -r $output_dir
+        cd $app_dir && dotnet clean
         ;;
     *)
         usage

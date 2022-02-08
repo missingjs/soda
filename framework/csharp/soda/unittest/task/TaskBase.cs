@@ -36,7 +36,7 @@ public abstract class TaskBase<R> : ITaskProxy<R>
         return args.ToArray();
     }
 
-    public R execute(WorkInput input)
+    public R Execute(WorkInput input)
     {
         args = Utils.parseArguments(argTypes, input.Args);
         var startTime = DateTime.Now;

@@ -7,9 +7,19 @@ public static class ConverterFactory
     private static readonly IDictionary<Type, Func<ObjectConverter>> factoryMap 
         = new Dictionary<Type, Func<ObjectConverter>>();
 
-    private static void registerFactory(Type type, Func<ObjectConverter> factory)
+    private static readonly IDictionary<Type, Func<ConverterBase>> genericFactoryMap
+         = new Dictionary<Type, Func<ConverterBase>>();
+
+    private static void registerFactory<T>(Func<ObjectConverter<T>> genericFactory)
     {
-        factoryMap[type] = factory;
+        factoryMap[typeof(T)] = () => {
+            var conv = genericFactory();
+            return new ObjectConverter(
+                (JToken js) => conv.fromJsonSerializable(js),
+                (object obj) => conv.toJsonSerializable((T) obj)
+            );
+        };
+        genericFactoryMap[typeof(T)] = genericFactory;
     }
 
     static ConverterFactory()
@@ -17,19 +27,26 @@ public static class ConverterFactory
         // TODO
     }
 
-    public static ObjectConverter<Object> create(Type type)
+    public static ObjectConverter create(Type type)
     {
         if (factoryMap.ContainsKey(type)) {
-            return Utils.Cast<ObjectConverter<Object>>(factoryMap[type]());
+            return factoryMap[type]();
         }
-        return new ObjectConverter<Object>(
+        return new ObjectConverter(
             (JToken js) => js.ToObject(type), 
             (object obj) => JToken.FromObject(obj)
         );
     }
 
-    public static ObjectConverter<T> create<T>(Type type)
+    public static ObjectConverter<T> create<T>()
     {
-        return Utils.Cast<ObjectConverter<T>>(create(type));
+        var type = typeof(T);
+        if (genericFactoryMap.ContainsKey(type)) {
+            return (ObjectConverter<T>) genericFactoryMap[type]();
+        }
+        return new ObjectConverter<T>(
+            (JToken js) => js.ToObject<T>(),
+            (T obj) => JToken.FromObject(obj)
+        );
     }
 }

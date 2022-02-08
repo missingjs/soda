@@ -36,6 +36,25 @@ public class UnitTest1
     {
         return t;
     }
+
+    [Fact]
+    public void Test2()
+    {
+        X.ShowType<int>();
+        X.ShowType<string>();
+        X.ShowType<A>();
+    }
+}
+
+static class X
+{
+    public static void ShowType<T>()
+    {
+        var t = typeof(T);
+        Console.WriteLine($"runtime type: {t}");
+    }
+
+    public static void ShowType() {}
 }
 
 class A

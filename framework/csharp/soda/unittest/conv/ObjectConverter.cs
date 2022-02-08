@@ -2,9 +2,32 @@ using Newtonsoft.Json.Linq;
 
 namespace Soda.Unittest.Conv;
 
-public class ObjectConverter {}
+public class ConverterBase {}
 
-public class ObjectConverter<T> : ObjectConverter
+public class ObjectConverter : ConverterBase
+{
+    private readonly Func<JToken, object> parser;
+
+    private readonly Func<object, JToken> serializer;
+
+    public ObjectConverter(Func<JToken, object> p, Func<object, JToken> s)
+    {
+        parser = p;
+        serializer = s;
+    }
+
+    public object fromJsonSerializable(JToken js)
+    {
+        return parser(js);
+    }
+
+    public JToken toJsonSerializable(object obj)
+    {
+        return serializer(obj);
+    }
+}
+
+public class ObjectConverter<T> : ConverterBase
 {
     private readonly Func<JToken, T> parser;
 
