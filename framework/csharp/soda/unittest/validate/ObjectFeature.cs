@@ -14,13 +14,7 @@ public class ObjectFeature<T> : ObjectFeature
         equalFunc = eq;
     }
 
-    public long Hash(T obj)
-    {
-        return hashFunc(obj);
-    }
+    public long Hash(T obj) => hashFunc(obj);
 
-    public bool IsEqual(T a, T b)
-    {
-        return equalFunc(a, b);
-    }
+    public bool IsEqual(T a, T b) => equalFunc(a, b);
 }

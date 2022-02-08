@@ -4,11 +4,19 @@ public static class FeatureFactory
 {
     static FeatureFactory()
     {
-        // TODO
+        registerFactory<double>(() => new ObjectFeature<double>(
+            (double d) => (long) d.GetHashCode(),
+            (double a, double b) => Math.Abs(a - b) < 1e-6
+        ));
     }
 
     private static readonly IDictionary<Type, Func<ObjectFeature>> factoryMap 
         = new Dictionary<Type, Func<ObjectFeature>>();
+
+    private static void registerFactory<T>(Func<ObjectFeature<T>> factory)
+    {
+        factoryMap[typeof(T)] = factory;
+    }
 
     public static ObjectFeature<object> create(Type type)
     {
@@ -21,8 +29,15 @@ public static class FeatureFactory
         );
     }
 
-    public static ObjectFeature<T> create<T>(Type type)
+    public static ObjectFeature<T> create<T>()
     {
-        return Utils.Cast<ObjectFeature<T>>(create(type));
+        var type = typeof(T);
+        if (factoryMap.ContainsKey(type)) {
+            return (ObjectFeature<T>) factoryMap[type]();
+        }
+        return new ObjectFeature<T>(
+            (T obj) => (long) obj.GetHashCode(),
+            (T a, T b) => object.Equals(a, b)
+        );
     }
 }

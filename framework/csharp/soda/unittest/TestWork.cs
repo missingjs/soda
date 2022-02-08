@@ -42,7 +42,7 @@ public class TestWork<R>
                 if (validator != null) {
                     success = validator(expect, result);
                 } else {
-                    success = FeatureFactory.create<R>(retType).IsEqual(expect, result);
+                    success = FeatureFactory.create<R>().IsEqual(expect, result);
                 }
             }
         }
