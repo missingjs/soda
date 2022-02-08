@@ -227,4 +227,5 @@ project.lock.json
 #####
 
 *.class
+Program.cs
 
