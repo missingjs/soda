@@ -58,7 +58,7 @@ function init_dotnet_project()
     <OutputType>Exe</OutputType>
     <TargetFramework>$dotnet_version</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <RestoreSources>\$(RestoreSources);$library_path;https://api.nuget.org/v3/index.json</RestoreSources>
     <StartupObject>$classname</StartupObject>
   </PropertyGroup>
