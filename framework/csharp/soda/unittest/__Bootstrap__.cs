@@ -1,3 +1,5 @@
+using Soda.Leetcode;
+
 namespace Soda.Unittest;
 
 public class __Solution__ {
