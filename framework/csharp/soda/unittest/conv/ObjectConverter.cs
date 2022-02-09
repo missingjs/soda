@@ -16,12 +16,12 @@ public class ObjectConverter : ConverterBase
         serializer = s;
     }
 
-    public object fromJsonSerializable(JToken js)
+    public object FromJsonSerializable(JToken js)
     {
         return parser(js);
     }
 
-    public JToken toJsonSerializable(object obj)
+    public JToken ToJsonSerializable(object obj)
     {
         return serializer(obj);
     }
@@ -39,12 +39,12 @@ public class ObjectConverter<T> : ConverterBase
         serializer = s;
     }
 
-    public T fromJsonSerializable(JToken js)
+    public T FromJsonSerializable(JToken js)
     {
         return parser(js);
     }
 
-    public JToken toJsonSerializable(T obj)
+    public JToken ToJsonSerializable(T obj)
     {
         return serializer(obj);
     }

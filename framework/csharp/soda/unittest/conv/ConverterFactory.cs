@@ -16,8 +16,8 @@ public static class ConverterFactory
         factoryMap[typeof(T)] = () => {
             var conv = genericFactory();
             return new ObjectConverter(
-                (JToken js) => conv.fromJsonSerializable(js),
-                (object obj) => conv.toJsonSerializable((T) obj)
+                (JToken js) => conv.FromJsonSerializable(js),
+                (object obj) => conv.ToJsonSerializable((T) obj)
             );
         };
         genericFactoryMap[typeof(T)] = genericFactory;
@@ -54,7 +54,7 @@ public static class ConverterFactory
         return t;
     }
 
-    public static ObjectConverter create(Type type)
+    public static ObjectConverter Create(Type type)
     {
         if (factoryMap.ContainsKey(type)) {
             return factoryMap[type]();
@@ -65,7 +65,7 @@ public static class ConverterFactory
         );
     }
 
-    public static ObjectConverter<T> create<T>()
+    public static ObjectConverter<T> Create<T>()
     {
         var type = typeof(T);
         if (genericFactoryMap.ContainsKey(type)) {

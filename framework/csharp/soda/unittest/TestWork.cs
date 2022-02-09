@@ -28,8 +28,8 @@ public class TestWork<R>
         output.Elapse = proxy.GetElapseMillis();
 
         var retType = proxy.GetReturnType();
-        var resConv = ConverterFactory.create<R>();
-        output.Result = resConv.toJsonSerializable(result);
+        var resConv = ConverterFactory.Create<R>();
+        output.Result = resConv.ToJsonSerializable(result);
 
         bool success = true;
         if (input.Expected != null) {
@@ -38,7 +38,7 @@ public class TestWork<R>
                 var b = JsonConvert.SerializeObject(output.Result);
                 success = object.Equals(a, b);
             } else {
-                var expect = resConv.fromJsonSerializable(input.Expected);
+                var expect = resConv.FromJsonSerializable(input.Expected);
                 if (validator != null) {
                     success = validator(expect, result);
                 } else {

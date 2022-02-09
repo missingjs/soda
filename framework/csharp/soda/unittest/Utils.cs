@@ -5,7 +5,7 @@ namespace Soda.Unittest;
 
 public static class Utils
 {
-    public static string readStdin()
+    public static string ReadStdin()
     {
         using (var sr = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
         {
@@ -13,9 +13,14 @@ public static class Utils
         }
     }
 
-    public static IList<object> parseArguments(IList<Type> types, JArray rawParams)
+    public static string readStdin()
     {
-        return types.Select((t, i) => ConverterFactory.create(t).fromJsonSerializable(rawParams[i])).ToList();
+        return ReadStdin();
+    }
+
+    public static IList<object> ParseArguments(IList<Type> types, JArray rawParams)
+    {
+        return types.Select((t, i) => ConverterFactory.Create(t).FromJsonSerializable(rawParams[i])).ToList();
     }
 
     public static T Fn<T>(T t)
@@ -26,5 +31,10 @@ public static class Utils
     public static T Cast<T>(object obj)
     {
         return (T) obj;
+    }
+
+    public static string Capitalize(string s)
+    {
+        return s.Length > 0 ? (char.ToUpper(s[0]) + s.Substring(1)) : "";
     }
 }

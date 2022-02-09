@@ -38,7 +38,7 @@ public abstract class TaskBase<R> : ITaskProxy<R>
 
     public R Execute(WorkInput input)
     {
-        args = Utils.parseArguments(argTypes, input.Args);
+        args = Utils.ParseArguments(argTypes, input.Args);
         var startTime = DateTime.Now;
         var result = run();
         var endTime = DateTime.Now;

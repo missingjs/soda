@@ -1,9 +1,15 @@
+using Newtonsoft.Json.Linq;
 using Soda.Unittest.Task;
 
 namespace Soda.Unittest;
 
 public static class WorkFactory
 {
+    public static TestWork<JToken> ForStruct<T>()
+    {
+        return Create(Utils.Fn(new StructTester(typeof(T)).Test));
+    }
+
     public static TestWork<R> Create<R>(Action<R> act)
     {
         return Create((R p) => {act(p); return p; });

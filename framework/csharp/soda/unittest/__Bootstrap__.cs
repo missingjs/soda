@@ -13,8 +13,9 @@ public class __Bootstrap__
     public static void Main(string[] args)
     {
         var work = WorkFactory.Create(Utils.Fn(new __Solution__().Add));
+        // var work = WorkFactory.ForStruct<STRUCT>();
         // work.SetValidator((e, r) => ...);
         work.CompareSerial = true;
-        Console.WriteLine(work.Run(Utils.readStdin()));
+        Console.WriteLine(work.Run(Utils.ReadStdin()));
     }
 }
