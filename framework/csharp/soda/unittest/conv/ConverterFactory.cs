@@ -41,6 +41,12 @@ public static class ConverterFactory
             (IList<IList<int>> d) => d.Select(ListFactory.Create).ToList(),
             (IList<ListNode> t) => t.Select(ListFactory.Dump).ToList()
         );
+
+        // NestedInteger
+        registerFactory(() => NestedIntegerConverter.Create());
+
+        // IList<NestedInteger>
+        registerFactory(() => NestedIntegerConverter.CreateForList());
     }
 
     private static T fn<T>(T t)
