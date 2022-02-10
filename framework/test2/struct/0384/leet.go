@@ -3,6 +3,7 @@ package main
 import (
     "math/rand"
     "reflect"
+
     . "missingjs.com/soda/leetcode"
     "missingjs.com/soda/unittest"
     "missingjs.com/soda/util"
@@ -50,24 +51,19 @@ func main() {
     // OR create by struct factory
     work := unittest.CreateWorkForStruct(Constructor)
     validator := func (expect, result []interface{}) bool {
+        logger.Infof("in custom validator")
         arguments := work.Arguments
         commands := arguments[0].([]string)
         for i := 1; i < len(commands); i++ {
             cmd := commands[i]
             if cmd == "shuffle" {
                 evalues := reflect.ValueOf(expect[i])
-                rvalues := reflect.ValueOf(result[i])
-                counts := make(map[int]int)
+                var arr []int
                 for i := 0; i < evalues.Len(); i++ {
-                    a := int(evalues.Index(i).Interface().(float64))
-                    counts[a]++
+                    arr = append(arr, int(evalues.Index(i).Interface().(float64)))
                 }
-                for i := 0; i < rvalues.Len(); i++ {
-                    b := rvalues.Index(i).Interface().(int)
-                    c := counts[b] - 1
-                    if c < 0 {
-                        return false
-                    }
+                if !unittest.Validators.ForSlice(nil, false)(arr, result[i]) {
+                    return false
                 }
             }
         }

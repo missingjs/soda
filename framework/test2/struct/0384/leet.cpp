@@ -69,15 +69,8 @@ int main()
             if (cmd == "shuffle") {
                 auto evalues = expect[i].get<vector<int>>();
                 auto rvalues = result[i].get<vector<int>>();
-                unordered_map<int,int> counts;
-                for (int a : evalues) {
-                    ++counts[a];
-                }
-                for (int b : rvalues) {
-                    int c = counts[b] - 1;
-                    if (c < 0) {
-                        return false;
-                    }
+                if (!Validators::forVector<int>(false)) {
+                    return false;
                 }
             }
         }

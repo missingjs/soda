@@ -55,13 +55,8 @@ if __name__ == '__main__':
             if cmd == 'shuffle':
                 evalues = expect[i]
                 rvalues = result[i]
-                counts = defaultdict(int)
-                for a in evalues:
-                    counts[a] += 1
-                for b in rvalues:
-                    c = counts[b] - 1
-                    if c < 0:
-                        return False
+                if not Validators.forList(int, False)(evalues, rvalues):
+                    return False
         return True
     # step [3]: setup other options
     work.validator = validate

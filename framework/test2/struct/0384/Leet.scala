@@ -40,15 +40,8 @@ class Leet extends (String => String) {
       if (commands(i) == "shuffle") {
         val evalues = expect(i).as[List[Int]]
         val rvalues = result(i).as[List[Int]]
-        val counts = mutable.Map[Int,Int]()
-        for (a <- evalues) {
-          counts(a) = counts.getOrElse(a, 0) + 1
-        }
-        for (b <- rvalues) {
-          val c = counts.getOrElse(b, 0) - 1
-          if (c < 0) {
-            return false
-          }
+        if (!Validators.forList[Int](false).apply(evalues, rvalues)) {
+          return false
         }
       }
     }

@@ -50,16 +50,9 @@ if __FILE__ == $0
       if cmd == 'shuffle'
         evalues = expect[i]
         rvalues = result[i]
-        counts = Hash.new(0)
-        evalues.each { |a|
-          counts[a] += 1
-        }
-        rvalues.each { |b|
-          c = counts[b] - 1
-          if c < 0
-            return false
-          end
-        }
+        if !ns::Validators.for_array('Integer', false).call(evalues, rvalues)
+          return false
+        end
       end
     }
     true

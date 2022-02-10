@@ -61,15 +61,8 @@ public class Leet implements Supplier<TestWork> {
             if (cmd.equals("shuffle")) {
                 var evalues = (List<Integer>) expect.get(i);
                 var rvalues = (List<Integer>) result.get(i);
-                var counts = new HashMap<Integer, Integer>();
-                for (int a : evalues) {
-                    counts.put(a, counts.getOrDefault(a, 0) + 1);
-                }
-                for (int b : rvalues) {
-                    int c = counts.getOrDefault(b, 0) - 1;
-                    if (c < 0) {
-                        return false;
-                    }
+                if (!Validators.forList(Integer.class, false).test(evalues, rvalues)) {
+                    return false;
                 }
             }
         }
