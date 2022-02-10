@@ -1,7 +1,6 @@
 using Soda.Leetcode;
 
 namespace Soda.Unittest;
-
 public class __Solution__ {
     public int Add(int a, int b) {
         return a + b;
