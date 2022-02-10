@@ -3,8 +3,10 @@ package unittest
 import (
     "bufio"
     "bytes"
-    "missingjs.com/soda/util"
+    "encoding/json"
     "os"
+
+    "missingjs.com/soda/util"
 )
 
 func getLogger() *util.SimpleLogger {
@@ -27,4 +29,10 @@ func (u *UtilsType) FromStdin() string {
         }
     }
     return string(buffer.Bytes())
+}
+
+func (u *UtilsType) UnmarshalUseNumber(data []byte, target interface{}) error {
+    decoder := json.NewDecoder(bytes.NewReader(data))
+    decoder.UseNumber()
+    return decoder.Decode(target)
 }

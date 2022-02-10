@@ -94,6 +94,7 @@ func (f UnorderedListFeature) IsEqual(a, b interface{}) bool {
         xmap.Put(key, c+1)
     }
 
+
     for i := 0; i < vb.Len(); i++ {
         key := vb.Index(i).Interface()
         if !xmap.Contains(key) {
@@ -110,8 +111,6 @@ func (f UnorderedListFeature) IsEqual(a, b interface{}) bool {
 }
 
 type FeatureFactoryFunc func() ObjectFeature
-type ValidatorFunc func(interface{}, interface{}) bool
-type ValidFactoryFunc func() ValidatorFunc
 
 var featureFactoryMap = make(map[reflect.Type]FeatureFactoryFunc)
 
