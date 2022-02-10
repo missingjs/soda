@@ -47,6 +47,9 @@ public static class ConverterFactory
 
         // IList<NestedInteger>
         registerFactory(() => NestedIntegerConverter.CreateForList());
+
+        // TreeNode
+        registerFactory(fn(TreeFactory.Create), fn(TreeFactory.Dump));
     }
 
     private static T fn<T>(T t)

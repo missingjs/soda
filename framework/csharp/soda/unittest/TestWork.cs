@@ -54,4 +54,9 @@ public class TestWork<R>
     {
         validator = v;
     }
+
+    public object[] Arguments
+    {
+        get => proxy.GetArguments();
+    }
 }
