@@ -45,7 +45,7 @@ class TestWork {
         let success = true;
         if (input.expected != null) {
             if (this.compareSerial && this.validator == null) {
-                success = input.expected === serialResult;
+                success = JSON.stringify(input.expected) === JSON.stringify(serialResult);
             } else {
                 let expect = resConv.fromJsonSerializable(input.expected);
                 if (this.validator != null) {

@@ -12,3 +12,4 @@ var add = function(a, b) {
 const work = TestWork.create(add);
 work.compareSerial = true;
 console.log(work.run(Utils.fromStdin()));
+
