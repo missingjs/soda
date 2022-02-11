@@ -1,3 +1,4 @@
+const {ListNode} = require('soda/leetcode');
 const {TestWork, Utils, Validators} = require('soda/unittest');
 
 /**
