@@ -1,11 +1,14 @@
-const {TestWork} = require('soda/unittest');
+const {TestWork, Utils} = require('soda/unittest');
 
+/**
+ * @param {number} a
+ * @param {number} b
+ * @return {number}
+ */
 var add = function(a, b) {
     return a + b;
 };
 
-const work = new TestWork(add, ['number', 'number', 'number']);
+const work = TestWork.create(add);
 work.compareSerial = true;
-const fs = require("fs");
-const data = fs.readFileSync(0, "utf-8");
-console.log(work.run(data));
+console.log(work.run(Utils.fromStdin()));

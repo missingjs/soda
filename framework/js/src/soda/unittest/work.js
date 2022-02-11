@@ -1,7 +1,8 @@
-const {Utils} = require('./utils')
+const process = require('process');
+
 const {ConverterFactory} = require("./convert");
 const {FeatureFactory} = require("./featurefactory");
-const hash = require('object-hash');
+const {Utils} = require('./utils');
 
 class TestWork {
     constructor(func, typeHints) {
@@ -14,15 +15,18 @@ class TestWork {
         this.arguments = null;
     }
 
+    static create(func) {
+        return new TestWork(func, Utils.functionTypeHints(process.argv[1], func.name));
+    }
+
     run(text) {
         const input = JSON.parse(text);  // {id: 1, expected: object, args: [...]}
-        console.error(input);
         this.arguments = Utils.parseArguments(this.argumentTypes, input.args);
 
-        const startTime = Date.now();
+        const startTime = Utils.microTime();
         let result = this.func(...this.arguments);
-        const endTime = Date.now();
-        const elapseMillis = endTime - startTime;
+        const endTime = Utils.microTime();
+        const elapseMillis = (endTime - startTime) / 1000;
 
         let retType = this.returnType;
         if (retType === 'Void' || retType === 'void') {
@@ -52,8 +56,6 @@ class TestWork {
             }
         }
         resp.success = success;
-
-        console.error(hash(resp));
 
         return JSON.stringify(resp);
     }
