@@ -1,4 +1,4 @@
-const {TestWork, Utils} = require('soda/unittest');
+const {TestWork, Utils, Validators} = require('soda/unittest');
 
 /**
  * @param {number} a
@@ -10,6 +10,7 @@ var add = function(a, b) {
 };
 
 const work = TestWork.create(add);
+// work.validator = (x, y) => { ... };
 work.compareSerial = true;
 console.log(work.run(Utils.fromStdin()));
 
