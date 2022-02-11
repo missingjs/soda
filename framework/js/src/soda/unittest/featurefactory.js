@@ -11,6 +11,16 @@ class FeatureFactory {
         }
         return new ObjectFeature(a => Utils.hashCode(hash(a)), (x, y) => x === y);
     }
+
+    static registerFactory(type, factory) {
+        this.factoryMap.set(type, factory);
+    }
+
+    static {
+        this.registerFactory('number', () => new NumberFeature());
+        this.registerFactory('number[]', () => new ListFeature(this.create('number')));
+        this.registerFactory('number[][]', () => new ListFeature(this.create('number[]')));
+    }
 }
 
 class ListFeature {
@@ -40,6 +50,16 @@ class ListFeature {
             }
         }
         return true;
+    }
+}
+
+class NumberFeature {
+    hash(obj) {
+        return Utils.hashCode(hash(obj));
+    }
+
+    isEqual(x, y) {
+        return Math.abs(x - y) < 1e-6;
     }
 }
 

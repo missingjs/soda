@@ -9,7 +9,7 @@ class TestWork {
         this.func = func;
         this.typeHints = typeHints;
         this.argumentTypes = typeHints.slice(0, -1);
-        this.returnType = typeHints[-1];
+        this.returnType = typeHints.at(-1);
         this.compareSerial = false;
         this.validator = null;
         this.arguments = null;
