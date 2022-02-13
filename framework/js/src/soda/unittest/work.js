@@ -2,6 +2,7 @@ const process = require('process');
 
 const {ConverterFactory} = require("./convert");
 const {FeatureFactory} = require("./featurefactory");
+const {StructTester} = require('./struct');
 const {Utils} = require('./utils');
 
 class TestWork {
@@ -17,6 +18,11 @@ class TestWork {
 
     static create(func) {
         return new TestWork(func, Utils.functionTypeHints(process.argv[1], func.name));
+    }
+
+    static forStruct(ctorFunc) {
+        let hintsMap = Utils.methodTypeHints(process.argv[1], ctorFunc.name);
+        return new TestWork(StructTester.create(ctorFunc, hintsMap), StructTester.methodHints());
     }
 
     run(text) {
