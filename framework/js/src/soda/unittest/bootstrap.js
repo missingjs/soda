@@ -1,4 +1,4 @@
-const {ListNode, NestedInteger} = require('soda/leetcode');
+const {ListNode, NestedInteger, TreeNode} = require('soda/leetcode');
 const {TestWork, Utils, Validators} = require('soda/unittest');
 
 /**
@@ -11,6 +11,7 @@ var add = function(a, b) {
 };
 
 const work = TestWork.create(add);
+// work = TestWork.forStruct(STRUCT);
 // work.validator = (x, y) => { ... };
 work.compareSerial = true;
 console.log(work.run(Utils.fromStdin()));

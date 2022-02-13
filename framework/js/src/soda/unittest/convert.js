@@ -1,5 +1,6 @@
 const {ListFactory} = require('../leetcode/list');
 const {NestedIntegerFactory} = require('../leetcode/nest');
+const {TreeFactory} = require('../leetcode/tree');
 
 class ObjectConverter {
     constructor(parser, serializer) {
@@ -50,6 +51,10 @@ class ConverterFactory {
         this.registerFactory('NestedInteger[]', {
             parser: ds => NestedIntegerFactory.parseMulti(ds),
             serializer: ns => NestedIntegerFactory.serializeMulti(ns)
+        });
+        this.registerFactory('TreeNode', {
+            parser: TreeFactory.create,
+            serializer: TreeFactory.dump
         });
     }
 }
