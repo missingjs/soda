@@ -18,10 +18,12 @@ public:
         srand(time(nullptr));
     }
     
+    // @member_function
     vector<int> reset() {
         return original;
     }
     
+    // @member_function
     vector<int> shuffle() {
         auto res = reset();
         for (int s = res.size(); s > 0; --s) {
@@ -56,10 +58,11 @@ int main()
     // auto work = WorkFactory::create(function);
     //
     // [3] or, create for struct tester
-    auto tester = WorkFactory::createStructTester<Solution,vector<int>>();
-    ADD_FUNCTION(tester, reset)
-    ADD_FUNCTION(tester, shuffle)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<Solution,vector<int>>();
+    // ADD_FUNCTION(tester, reset)
+    // ADD_FUNCTION(tester, shuffle)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<Solution>();
 
     auto validator = [&](const JsonProxy& expect, const JsonProxy& result) {
         auto arguments = work->getArguments();

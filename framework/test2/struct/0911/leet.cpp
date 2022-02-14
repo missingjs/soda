@@ -30,6 +30,7 @@ public:
         }
     }
     
+    // @member_function
     int q(int t) {
         if (t >= times.back()) {
             return winner[N-1];
@@ -65,9 +66,10 @@ int main()
     // auto work = WorkFactory::create(function);
     //
     // [3] or, create for struct tester
-    auto tester = WorkFactory::createStructTester<TopVotedCandidate,vector<int>,vector<int>>();
-    ADD_FUNCTION(tester, q)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<TopVotedCandidate,vector<int>,vector<int>>();
+    // ADD_FUNCTION(tester, q)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<TopVotedCandidate>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

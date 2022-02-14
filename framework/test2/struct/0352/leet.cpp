@@ -20,6 +20,7 @@ public:
     SummaryRanges(): parent(10003), ancestorSet{} {
     }
     
+    // @member_function
     void addNum(int val) {
         ++val;
         if (parent[val]) {
@@ -38,6 +39,7 @@ public:
         }
     }
     
+    // @member_function
     vector<vector<int>> getIntervals() {
         vector<int> ans(ancestorSet.begin(), ancestorSet.end());
         std::sort(ans.begin(), ans.end());
@@ -90,10 +92,11 @@ int main()
     // auto work = WorkFactory::create(function);
     //
     // [3] or, create for struct tester
-    auto tester = WorkFactory::createStructTester<SummaryRanges>();
-    ADD_FUNCTION(tester, addNum)
-    ADD_FUNCTION(tester, getIntervals)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<SummaryRanges>();
+    // ADD_FUNCTION(tester, addNum)
+    // ADD_FUNCTION(tester, getIntervals)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<SummaryRanges>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

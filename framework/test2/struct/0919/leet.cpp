@@ -32,6 +32,7 @@ public:
         }
     }
     
+    // @member_function
     int insert(int v) {
         auto node = new TreeNode(v);
         auto head = qu.front();
@@ -45,6 +46,7 @@ public:
         return head->val;
     }
     
+    // @member_function
     TreeNode* get_root() {
         return root;
     }
@@ -68,10 +70,11 @@ int main()
     // auto work = WorkFactory::create(function);
     //
     // [3] or, create for struct tester
-    auto tester = WorkFactory::createStructTester<CBTInserter,TreeNode*>();
-    ADD_FUNCTION(tester, insert)
-    ADD_FUNCTION(tester, get_root)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<CBTInserter,TreeNode*>();
+    // ADD_FUNCTION(tester, insert)
+    // ADD_FUNCTION(tester, get_root)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<CBTInserter>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

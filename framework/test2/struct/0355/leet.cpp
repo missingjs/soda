@@ -40,6 +40,7 @@ public:
         
     }
     
+    // @member_function
     void postTweet(int userId, int tweetId) {
         tweets[userId].push_back(Tweet(tweetId, nextTimestamp()));
         if (tweets[userId].size() > Limit) {
@@ -47,6 +48,7 @@ public:
         }
     }
     
+    // @member_function
     vector<int> getNewsFeed(int userId) {
 
         auto cmp = [](Node* n1, Node* n2) {
@@ -74,10 +76,12 @@ public:
         return res;
     }
     
+    // @member_function
     void follow(int followerId, int followeeId) {
         follows[followerId].insert(followeeId);
     }
     
+    // @member_function
     void unfollow(int followerId, int followeeId) {
         follows[followerId].erase(followeeId);
     }
@@ -105,12 +109,13 @@ int main()
     // auto work = WorkFactory::create(function);
     //
     // [3] or, create for struct tester
-    auto tester = WorkFactory::createStructTester<Twitter>();
-    ADD_FUNCTION(tester, postTweet)
-    ADD_FUNCTION(tester, getNewsFeed)
-    ADD_FUNCTION(tester, follow)
-    ADD_FUNCTION(tester, unfollow)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<Twitter>();
+    // ADD_FUNCTION(tester, postTweet)
+    // ADD_FUNCTION(tester, getNewsFeed)
+    // ADD_FUNCTION(tester, follow)
+    // ADD_FUNCTION(tester, unfollow)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<Twitter>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

@@ -20,6 +20,7 @@ public:
     Logger() {
     }
     
+    // @member_function
     bool shouldPrintMessage(int timestamp, string message) {
         int T = lastTimestamp;
         lastTimestamp = timestamp;
@@ -53,10 +54,10 @@ int main()
     // [2] or, create by ordinary function
     // auto work = WorkFactory::create(function);
 
-    auto tester = WorkFactory::createStructTester<Logger>();
-    // strtester->withFunction("shouldPrintMessage", &Logger::shouldPrintMessage);
-    ADD_FUNCTION(tester, shouldPrintMessage)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<Logger>();
+    // ADD_FUNCTION(tester, shouldPrintMessage)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<Logger>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

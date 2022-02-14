@@ -38,6 +38,10 @@ public:
         for (int i = 1; i < parameters.size(); ++i) {
             auto name = operations[i];
             auto func = funcMap[name];
+            if (!func) {
+                std::cerr << "member function " << name << " not found\n";
+                exit(1);
+            }
             res.append(func(obj, parameters[i]));
         }
         return res;

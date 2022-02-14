@@ -29,6 +29,7 @@ public:
         }
     }
     
+    // @member_function
     void update(int row, int col, int val) {
         int diff = val - matrix[row][col];
         matrix[row][col] = val;
@@ -39,6 +40,7 @@ public:
         }
     }
     
+    // @member_function
     int sumRegion(int row1, int col1, int row2, int col2) {
         return query(row1, col1) - query(row1, col2+1) - query(row2+1, col1) + query(row2+1, col2+1);
     }
@@ -76,10 +78,11 @@ int main()
     // auto tester = WorkFactory::createStructTester<Class,Args...>();
     // ADD_FUNCTION(tester, funcname)
     // auto worker = WorkFactory::forStruct(tester);
-    auto tester = WorkFactory::createStructTester<NumMatrix,vector<vector<int>>>();
-    ADD_FUNCTION(tester, update)
-    ADD_FUNCTION(tester, sumRegion)
-    auto work = WorkFactory::forStruct(tester);
+    // auto tester = WorkFactory::createStructTester<NumMatrix,vector<vector<int>>>();
+    // ADD_FUNCTION(tester, update)
+    // ADD_FUNCTION(tester, sumRegion)
+    // auto work = WorkFactory::forStruct(tester);
+    auto work = WorkFactory::forStruct<NumMatrix>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);

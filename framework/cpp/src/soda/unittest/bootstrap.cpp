@@ -34,6 +34,9 @@ int main()
     // auto tester = WorkFactory::createStructTester<Class,Args...>();
     // ADD_FUNCTION(tester, funcname)
     // auto work = WorkFactory::forStruct(tester);
+    //
+    // [4] or, create for struct tester (simplified)
+    // auto work = WorkFactory<Class>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);
