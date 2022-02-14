@@ -53,8 +53,8 @@ class ConverterFactory {
             serializer: ns => NestedIntegerFactory.serializeMulti(ns)
         });
         this.registerFactory('TreeNode', {
-            parser: TreeFactory.create,
-            serializer: TreeFactory.dump
+            parser: d => TreeFactory.create(d),
+            serializer: t => TreeFactory.dump(t)
         });
     }
 }

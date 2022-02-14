@@ -49,7 +49,7 @@ case $cmd in
         ;;
     run)
         src_dir=$self_dir/src
-        export NODE_PATH=$src_dir:$NODE_PATH
+        export NODE_PATH=$src_dir:$self_dir/node_modules:$NODE_PATH
         node $execfile
         ;;
     *)

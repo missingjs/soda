@@ -64,3 +64,4 @@ class NumberFeature {
 }
 
 exports.FeatureFactory = FeatureFactory;
+exports.ListFeature = ListFeature;
