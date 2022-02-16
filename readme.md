@@ -26,3 +26,6 @@ source - https://stackoverflow.com/questions/10081293/install-npm-into-home-dire
 
 ** npm install object-hash
 
+* perl
+** Sub::Identify, JSON
+
