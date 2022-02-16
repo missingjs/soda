@@ -2,6 +2,8 @@
 ** pip install pyyaml
 
 * ruby
+** install rbenv
+** install ruby 3.x
 ** gem install algorithms
 
 * js
@@ -24,7 +26,7 @@ Now when you do an npm install -g, NPM will install the libraries into ~/.npm-pa
 
 source - https://stackoverflow.com/questions/10081293/install-npm-into-home-directory-with-distribution-nodejs-package-ubuntu
 
-** npm install object-hash
+** npm install
 
 * perl
 ** Sub::Identify, JSON

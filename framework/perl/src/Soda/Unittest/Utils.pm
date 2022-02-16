@@ -12,7 +12,7 @@ use Soda::Unittest::ObjectConverter;
 # set the version for version checking
 our $VERSION     = '1.00';
 
-our @EXPORT = qw(from_stdin micro_time parse_arguments hash_code);
+our @EXPORT = qw(from_stdin function_type_hints micro_time parse_arguments hash_code);
 
 sub from_stdin {
     join("", <STDIN>);
@@ -44,6 +44,37 @@ sub hash_code {
         $hash &= 0x7fffffff;
     }
     $hash;
+}
+
+sub function_type_hints {
+    my ($file_path, $func_name) = @_;
+    my @lines;
+    open my $info, $file_path or die "Could not open $file_path: $!";
+    while (my $line = <$info>) {
+        chomp $line;
+        if ($line =~ /^sub \Q$func_name\E \{/) {
+            last;
+        }
+        if (length($line) > 0) {
+            push @lines, $line;
+        }
+    }
+    close $info;
+
+    my $ret_type = 'void';
+    my @arg_types;
+    while (@lines > 0) {
+        my $text = pop @lines;
+        if ($text =~ /^#\s+\@param\s+{(?<arg_type>.*)}/) {
+            push @arg_types, $+{arg_type};
+        } elsif ($text =~ /^#\s+\@return\s+{(?<return_type>.*)}/) {
+            $ret_type = $+{return_type};
+        } else {
+            last;
+        }
+    }
+    push @arg_types, $ret_type;
+    \@arg_types;
 }
 
 1;

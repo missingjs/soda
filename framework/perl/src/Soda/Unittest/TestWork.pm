@@ -7,7 +7,7 @@ use Exporter 5.57 'import';
 use JSON::PP;
 use Sub::Identify;
 
-use Soda::Unittest::Utils qw/micro_time parse_arguments/;
+use Soda::Unittest::Utils qw/function_type_hints micro_time parse_arguments/;
 use Soda::Unittest::ObjectConverter;
 use Soda::Unittest::ObjectFeature;
 
@@ -30,7 +30,8 @@ sub new {
 }
 
 sub create {
-    my ($func, $type_hints) = @_;
+    my ($func) = @_;
+    my $type_hints = function_type_hints($0, Sub::Identify::sub_name($func));
     # print STDERR "func: ", Sub::Identify::sub_name($func), "\n";
     # my $packname = __PACKAGE__;
     # print STDERR "package: $packname\n";
