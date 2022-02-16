@@ -50,22 +50,6 @@ class Utils {
         // evict ' */'
         lines.pop();
         return parseTypeHints(lines);
-
-        // let retType = 'void';
-        // let argTypes = [];
-        // while (lines.length > 0) {
-        //     let text = lines.pop();
-        //     let m = null;
-        //     if ((m = /^ \* @param\s+{(?<arg_type>.*)}/.exec(text))) {
-        //         argTypes.push(m.groups.arg_type);
-        //     } else if ((m = /^ \* @return[s]?\s+{(?<return_type>.*)}/.exec(text))) {
-        //         retType = m.groups.return_type;
-        //     } else {
-        //         break;
-        //     }
-        // }
-        // argTypes.push(retType);
-        // return argTypes;
     }
 
     static fromStdin() {
