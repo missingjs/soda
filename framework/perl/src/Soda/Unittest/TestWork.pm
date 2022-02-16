@@ -7,7 +7,9 @@ use Exporter 5.57 'import';
 use JSON::PP;
 use Sub::Identify;
 
-use Soda::Unittest::Utils qw/micro_time/;
+use Soda::Unittest::Utils qw/micro_time parse_arguments/;
+use Soda::Unittest::ObjectConverter;
+use Soda::Unittest::ObjectFeature;
 
 our @EXPORT = qw(create);
 
@@ -41,8 +43,7 @@ sub run {
     my ($self, $text) = @_;
     my $input = $js->decode($text);
 
-    # TODO fix this
-    my $args = $input->{args};
+    my $args = parse_arguments($self->{argument_types}, $input->{args});
     $self->{arguments} = $args;
 
     my $start_time = micro_time;
@@ -56,9 +57,8 @@ sub run {
         $result = $args->[0];
     }
 
-    # TODO
-    # my $res_conv;
-    my $serial_result = $result;  # TODO FIX THIS
+    my $res_conv = Soda::Unittest::ObjectConverter::create($ret_type);
+    my $serial_result = $res_conv->to_json_serializable($result);
     my $resp = {
         id     => $input->{id},
         result => $serial_result,
@@ -72,15 +72,11 @@ sub run {
             my $bs = $js->encode($serial_result);
             $success = $as eq $bs;
         } else {
-            # TODO fix this
-            # my $expect = $res_conv->from_json_serializable($input->{expected});
-            my $expect = $input->{expected};
+            my $expect = $res_conv->from_json_serializable($input->{expected});
             if (defined($self->{validator})) {
                 $success = $self->{validator}->(($expect, $result));
             } else {
-                # TODO fix me
-                # $success = FeatureFactory->create($ret_type)->is_equal($expect, $result);
-                $success = Dumper($expect) eq Dumper($result);
+                $success = Soda::Unittest::ObjectFeature::create($ret_type)->is_equal($expect, $result);
             }
         }
     }
@@ -92,7 +88,11 @@ sub run {
 sub compare_serial {
     my ($self, $val) = @_;
     $self->{compare_serial} = $val if defined($val);
-    $val;
+}
+
+sub validator {
+    my ($self, $vali) = @_;
+    $self->{validator} = $vali if defined($vali);
 }
 
 1;
