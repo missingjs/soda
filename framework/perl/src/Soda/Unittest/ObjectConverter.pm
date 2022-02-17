@@ -2,6 +2,7 @@ package Soda::Unittest::ObjectConverter;
 use strict;
 use warnings FATAL => 'all';
 
+use Soda::Leetcode::NestedInteger;
 use Soda::Leetcode::ListNode;
 
 sub new {
@@ -48,7 +49,11 @@ sub register_factory {
 
 BEGIN {
     %factory_map = ();
-    register_factory('ListNode', \&Soda::Leetcode::ListNode::create, \&Soda::Leetcode::ListNode::dump);
+    register_factory(
+        'ListNode',
+        \&Soda::Leetcode::ListNode::create,
+        \&Soda::Leetcode::ListNode::dump
+    );
     register_factory(
         'ListNode[]',
         sub {
@@ -58,6 +63,22 @@ BEGIN {
         sub {
             my $nodes = shift;
             [map { Soda::Leetcode::ListNode::dump($_) } @$nodes];
+        }
+    );
+    register_factory(
+        'NestedInteger',
+        \&Soda::Leetcode::NestedInteger::parse,
+        \&Soda::Leetcode::NestedInteger::serialize
+    );
+    register_factory(
+        'NestedInteger[]',
+        sub {
+            my $ds = shift;
+            [map { Soda::Leetcode::NestedInteger::parse($_) } @$ds];
+        },
+        sub {
+            my $ni_list = shift;
+            [map { Soda::Leetcode::NestedInteger::serialize($_) } @$ni_list];
         }
     );
 }

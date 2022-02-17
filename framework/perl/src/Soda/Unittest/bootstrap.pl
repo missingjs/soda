@@ -1,8 +1,11 @@
 use strict;
 use warnings;
+use List::Util qw(min max);
 use Soda::Leetcode::ListNode;
+use Soda::Leetcode::NestedInteger;
 
 *ListNode:: = \*Soda::Leetcode::ListNode::;
+*NestedInteger:: = \*Soda::Leetcode::NestedInteger::;
 
 # step [1]: implement solution function
 # @param {number} a

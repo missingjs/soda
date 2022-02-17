@@ -1,6 +1,8 @@
 require 'set'
 require 'soda/leetcode/list'
 require 'soda/leetcode/nest'
+NestedInteger = Soda::Leetcode::NestedInteger;
+
 # step [1]: implement solution function
 # @param {String} s
 # @return {NestedInteger}
@@ -13,7 +15,7 @@ $p = 0
 def parse(s)
   if s[$p] == '['
     $p += 1
-    root = Soda::Leetcode::NestedInteger.new
+    root = NestedInteger.new
     until s[$p] == ']'
       root.add(parse(s))
       if s[$p] == ','
@@ -39,7 +41,7 @@ def parse(s)
   if negative
     value = -value
   end
-  Soda::Leetcode::NestedInteger.new(value)
+  NestedInteger.new(value)
 end
 
 if __FILE__ == $0
