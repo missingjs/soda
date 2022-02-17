@@ -2,6 +2,8 @@ package Soda::Unittest::ObjectConverter;
 use strict;
 use warnings FATAL => 'all';
 
+use Soda::Leetcode::ListNode;
+
 sub new {
     my $class = shift;
     my ($parser, $serializer) = @_;
@@ -21,7 +23,7 @@ sub to_json_serializable {
     $self->{serializer}->(($obj));
 }
 
-our %factory_map = ();
+my %factory_map;
 
 # static method
 sub create {
@@ -31,6 +33,33 @@ sub create {
     } else {
         new(__PACKAGE__, sub { $_[0] }, sub { $_[0] });
     }
+}
+
+sub register_factory {
+    my ($type, $parser, $serializer) = @_;
+    $factory_map{$type} = sub {
+        new (
+            __PACKAGE__,
+            sub { $parser->(@_) },
+            sub { $serializer->(@_) }
+        );
+    };
+}
+
+BEGIN {
+    %factory_map = ();
+    register_factory('ListNode', \&Soda::Leetcode::ListNode::create, \&Soda::Leetcode::ListNode::dump);
+    register_factory(
+        'ListNode[]',
+        sub {
+            my $ds = shift;
+            [map { Soda::Leetcode::ListNode::create($_) } @$ds];
+        },
+        sub {
+            my $nodes = shift;
+            [map { Soda::Leetcode::ListNode::dump($_) } @$nodes];
+        }
+    );
 }
 
 1;

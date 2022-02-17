@@ -36,20 +36,16 @@ sub create {
         my $js = JSON::PP->new;
         $js->canonical(1);
         new(__PACKAGE__,
-            sub { hash_code($_[0]) },
+            \&hash_code,
             sub { $js->encode($_[0]) eq $js->encode($_[1]) }
         );
     }
 }
 
 sub register_factory {
-    my ($type, $parser, $serializer) = @_;
+    my ($type, $hash_func, $equal_func) = @_;
     $factory_map{$type} = sub {
-        new (
-            __PACKAGE__,
-            sub { $parser->(@_) },
-            sub { $serializer->(@_) }
-        );
+        new (__PACKAGE__, $hash_func, $equal_func);
     };
 }
 
@@ -60,7 +56,7 @@ sub reg_fact {
 
 BEGIN {
     %factory_map = ();
-    register_factory('number', sub { hash_code(@_) }, sub { abs($_[0] - $_[1]) < 1e-6 });
+    register_factory('number', \&hash_code, sub { abs($_[0] - $_[1]) < 1e-6 });
     reg_fact('number[]', sub { Soda::Unittest::ListFeatureFactory::ordered(create('number')) });
     reg_fact('number[][]', sub { Soda::Unittest::ListFeatureFactory::ordered(create('number[]')) });
 }

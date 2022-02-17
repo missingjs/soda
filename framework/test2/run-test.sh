@@ -20,10 +20,6 @@ shift; shift;
 [ "$languages" == "all" ] && languages="cpp python java go scala ruby cs perl"
 options="$@"
 
-for loc in $(echo $location | tr ':' ' '); do
-    echo location: $loc
-done
-
 for lang in $languages; do
     for loc in $(echo $location | tr ':' ' '); do
         while read path; do

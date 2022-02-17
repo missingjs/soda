@@ -8,6 +8,10 @@ use Soda::Unittest::ObjectFeature;
 
 our @EXPORT = qw(for_array for_array2d);
 
+# BEGIN {
+#     *ListFeatureFactory:: = \*Soda::Unittest::ListFeatureFactory::;
+# }
+
 # static
 sub for_array {
     my ($obj_type, $ordered) = @_;
