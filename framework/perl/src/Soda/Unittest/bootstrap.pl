@@ -16,11 +16,13 @@ sub add {
     return $x + $y;
 }
 
+package main;
 use Soda::Unittest::Utils qw(from_stdin);
-use Soda::Unittest::TestWork qw(create);
+use Soda::Unittest::TestWork qw(create for_struct);
 use Soda::Unittest::Validators qw(for_array for_array2d);
 # step [2]: setup function/return/arguments
 my $work = create(\&add);
+# my $work = for_struct(PACKAGE::);
 # $work->validator(sub { $_[0] vs $_[1]; return boolean });
 $work->compare_serial(1);
 print $work->run(from_stdin());

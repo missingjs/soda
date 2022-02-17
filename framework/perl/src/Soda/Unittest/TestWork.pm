@@ -7,17 +7,23 @@ use Exporter 5.57 'import';
 use JSON::PP;
 use Sub::Identify;
 
-use Soda::Unittest::Utils qw/function_type_hints micro_time parse_arguments/;
+use Soda::Unittest::Utils qw/
+    function_type_hints
+    method_type_hints
+    micro_time
+    parse_arguments
+    underscore
+/;
 use Soda::Unittest::ObjectConverter;
 use Soda::Unittest::ObjectFeature;
 
-our @EXPORT = qw(create);
+our @EXPORT = qw(create for_struct);
 
 sub new {
     my $class = shift;
     my ($func, $type_hints) = @_;
-    my $return_type = $type_hints->[$#{$type_hints}];
-    my @arg_types = $type_hints->@[0 .. ($#{$type_hints} - 1)];
+    my $return_type = $type_hints->[-1];
+    my @arg_types = $type_hints->@[0 .. ($#$type_hints - 1)];
     bless {
         func           => $func,
         type_hints     => $type_hints,
@@ -32,10 +38,43 @@ sub new {
 sub create {
     my ($func) = @_;
     my $type_hints = function_type_hints($0, Sub::Identify::sub_name($func));
-    # print STDERR "func: ", Sub::Identify::sub_name($func), "\n";
-    # my $packname = __PACKAGE__;
-    # print STDERR "package: $packname\n";
     new(__PACKAGE__, $func, $type_hints);
+}
+
+sub for_struct {
+    my $classname = shift;
+    my $method_hints = method_type_hints($0, $classname);
+    my $tester_func = sub {
+        my ($operations, $parameters) = @_;
+        # hints of constructor has not return type
+        my $ctor_args = parse_arguments($method_hints->{new}, $parameters->[0]);
+        my $obj = $classname->new(@$ctor_args);
+        my @res = (undef);
+        for my $i (1..$#$parameters) {
+            my $method_name = $operations->[$i];
+            unless (exists $method_hints->{$method_name}) {
+                my $ud = underscore($method_name);
+                if (exists $method_hints->{$ud}) {
+                    $method_name = $ud;
+                } else {
+                    die "no type hints for method $method_name and $ud";
+                }
+            }
+            my $hints = $method_hints->{$method_name};
+            my $arg_types = [$hints->@[0..$#$hints-1]];
+            my $ret_type = $hints->[-1];
+            my $args = parse_arguments($arg_types, $parameters->[$i]);
+            my $r = $obj->$method_name(@$args);
+            if ($ret_type ne 'void' && $ret_type ne 'Void') {
+                push @res, Soda::Unittest::ObjectConverter::create($ret_type)->to_json_serializable($r);
+            } else {
+                push @res, undef;
+            }
+        }
+        \@res;
+    };
+    my @func_hints = qw/string[] object[] object[]/;
+    new(__PACKAGE__, $tester_func, \@func_hints);
 }
 
 sub run {

@@ -12,7 +12,15 @@ use Soda::Unittest::ObjectConverter;
 # set the version for version checking
 our $VERSION     = '1.00';
 
-our @EXPORT = qw(from_stdin function_type_hints micro_time parse_arguments hash_code);
+our @EXPORT = qw(
+    from_stdin
+    function_type_hints
+    hash_code
+    method_type_hints
+    micro_time
+    parse_arguments
+    underscore
+);
 
 sub from_stdin {
     join("", <STDIN>);
@@ -60,21 +68,63 @@ sub function_type_hints {
         }
     }
     close $info;
+    parse_type_hints(\@lines);
+}
 
+sub parse_type_hints {
+    my $ref_lines = shift;
+    my @lines = @$ref_lines;
+    my @type_hints;
     my $ret_type = 'void';
-    my @arg_types;
     while (@lines > 0) {
         my $text = pop @lines;
         if ($text =~ /^#\s+\@param\s+{(?<arg_type>.*)}/) {
-            push @arg_types, $+{arg_type};
+            push @type_hints, $+{arg_type};
         } elsif ($text =~ /^#\s+\@return\s+{(?<return_type>.*)}/) {
             $ret_type = $+{return_type};
         } else {
             last;
         }
     }
-    push @arg_types, $ret_type;
-    \@arg_types;
+    push @type_hints, $ret_type;
+    \@type_hints;
+}
+
+sub method_type_hints {
+    my ($file_path, $classname) = @_;
+
+    open my $fp, $file_path or die "Could not open $file_path: $!";
+    while (my $line = <$fp>) {
+        chomp $line;
+        if ($line =~ /^package \Q$classname\E;/) {
+            last;
+        }
+    }
+
+    my %hints_map;
+    my @buf;
+    while (my $line = <$fp>) {
+        chomp $line;
+        if ($line =~ /^sub (?<method_name>\w+)/) {
+            $hints_map{$+{method_name}} = parse_type_hints(\@buf);
+            @buf = ();
+        } else {
+            push @buf, $line;
+        }
+    }
+    close $fp;
+
+    $hints_map{new} = [] unless exists $hints_map{new};
+    \%hints_map;
+}
+
+sub underscore {
+    my $s = shift;
+    $s =~ s/::/\//;
+    $s =~ s/([A-Z]+)([A-Z][a-z])/$1_$2/;
+    $s =~ s/([a-z\d])([A-Z])/$1_$2/;
+    $s =~ s/-/_/;
+    lc($s);
 }
 
 1;
