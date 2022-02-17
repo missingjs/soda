@@ -49,7 +49,7 @@ case $cmd in
         ;;
     run)
         include_path=$self_dir/src
-        perl -I$include_path $execfile
+        perl -MCarp::Always -I$include_path $execfile
         ;;
     *)
         usage
