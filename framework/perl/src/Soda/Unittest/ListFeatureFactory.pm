@@ -11,7 +11,7 @@ sub ordered {
     my $hash_func = sub {
         my $obj = shift;
         my $res = 0;
-        for my $e (@{$obj}) {
+        for my $e (@$obj) {
             my $h = $elem_feat->hash($e);
             $res = $res * 133 + $h;
             $res &= 0x7fffffff;
@@ -20,10 +20,10 @@ sub ordered {
     };
     my $equal_func = sub {
         my ($x, $y) = @_;
-        if (@{$x} != @{$y}) {
+        if (@$x != @$y) {
             return 0;
         }
-        my ($index) = grep { !$elem_feat->is_equal($x->[$_], $y->[$_]); } (0..$#{$x});
+        my ($index) = grep { !$elem_feat->is_equal($x->[$_], $y->[$_]); } (0..$#$x);
         return !defined $index;
     };
     return Soda::Unittest::ObjectFeature->new($hash_func, $equal_func);
@@ -36,7 +36,7 @@ sub unordered {
         my $obj = shift;
         my $res = 0;
         my $hash_arr = map { $elem_feat->hash($_) } $obj;
-        for my $h (sort @{$hash_arr}) {
+        for my $h (sort @$hash_arr) {
             $res = $res * 133 + $h;
             $res &= 0x7fffffff;
         }
@@ -44,14 +44,14 @@ sub unordered {
     };
     my $is_equal = sub {
         my ($x, $y) = @_;
-        if (@{$x} != @{$y}) {
+        if (@$x != @$y) {
             return 0;
         }
         my $xmap = Soda::Unittest::XMap->new($elem_feat);
-        for my $e (@{$x}) {
+        for my $e (@$x) {
             $xmap->set($e, $xmap->get($e, 0) + 1);
         }
-        for my $e (@{$y}) {
+        for my $e (@$y) {
             return 0 unless $xmap->has($e);
             my $c = $xmap->get($e) - 1;
             if ($c == 0) {
