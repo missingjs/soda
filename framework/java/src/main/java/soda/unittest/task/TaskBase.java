@@ -43,7 +43,6 @@ abstract class TaskBase<R> implements TaskProxy<R> {
     @Override
     public R execute(WorkInput input) {
         args = Utils.parseArguments(argTypes, input.args);
-        System.err.println("args: " + args);
         var startNano = System.nanoTime();
         var result = run();
         var endNano = System.nanoTime();
