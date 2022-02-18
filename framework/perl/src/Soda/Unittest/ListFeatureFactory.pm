@@ -35,8 +35,8 @@ sub unordered {
     my $hash = sub {
         my $obj = shift;
         my $res = 0;
-        my $hash_arr = map { $elem_feat->hash($_) } $obj;
-        for my $h (sort @$hash_arr) {
+        my @hash_arr = sort map { $elem_feat->hash($_) } @$obj;
+        for my $h (@hash_arr) {
             $res = $res * 133 + $h;
             $res &= 0x7fffffff;
         }
