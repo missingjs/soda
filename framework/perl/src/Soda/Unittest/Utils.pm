@@ -120,10 +120,10 @@ sub method_type_hints {
 
 sub underscore {
     my $s = shift;
-    $s =~ s/::/\//;
-    $s =~ s/([A-Z]+)([A-Z][a-z])/$1_$2/;
-    $s =~ s/([a-z\d])([A-Z])/$1_$2/;
-    $s =~ s/-/_/;
+    $s =~ s/::/\//g;
+    $s =~ s/([A-Z]+)([A-Z][a-z])/$1_$2/g;
+    $s =~ s/([a-z\d])([A-Z])/$1_$2/g;
+    $s =~ s/-/_/g;
     lc($s);
 }
 

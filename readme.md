@@ -29,5 +29,5 @@ source - https://stackoverflow.com/questions/10081293/install-npm-into-home-dire
 ** npm install
 
 * perl
-** Sub::Identify, JSON, Carp::Always
+** Sub::Identify, JSON, Carp::Always, Array::Heap
 
