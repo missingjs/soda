@@ -67,10 +67,12 @@ public class ConverterFactory {
 		registerFactory(String[][].class, ConvUtils::toStrArray2d, ConvUtils::toStrList2d);
 
 		registerFactory(ListNode.class, ListHelper::create, ListHelper::dump);
+		registerFactory(new TypeRef<>() {}, ListNode1dConverter::new);
+		registerFactory(ListNode[].class, ListNode1dConverter::forArray);
+
 		registerFactory(TreeNode.class, TreeFactory::create, TreeFactory::dump);
 		registerFactory(NestedInteger.class, NestedIntegerConverter::new);
 		registerFactory(new TypeRef<>() {}, NestedIntegerListConverter::new);
-		registerFactory(new TypeRef<>() {}, ListNode1dConverter::new);
 	}
 
 	public static ObjectConverter<?,?> createConverter(Type type) {

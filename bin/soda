@@ -30,9 +30,6 @@ function init_work()
 soda:
   version: 2.0.1
   work_name: $work
-  run:
-    java:
-      mode: normal
 eof
     echo $project_file generated
 }
