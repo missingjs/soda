@@ -85,6 +85,11 @@ object ConverterFactory {
     (data: List[List[Int]]) => data.map(ListFactory.create),
     (heads: List[ListNode]) => heads.map(ListFactory.dump)
   )
+  // Array[ListNode]
+  registerFactory(
+    (data: List[List[Int]]) => data.map(ListFactory.create).toArray,
+    (lists: Array[ListNode]) => lists.map(ListFactory.dump).toList
+  )
 
   implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]] {
     override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
