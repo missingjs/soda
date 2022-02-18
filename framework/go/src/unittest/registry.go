@@ -12,13 +12,21 @@ type ObjectConverterFactory func() *ObjectConverter
 var converterFactoryMap = make(map[reflect.Type]ObjectConverterFactory)
 
 func init() {
+    // ListNode
     regConverter(lc.ListCreate, lc.ListDump)
+    // TreeNode
     regConverter(lc.TreeCreate, lc.TreeDump)
+    // []byte
     regConverter(DecodeByteSlice, EncodeByteSlice)
+    // [][]byte
     regConverter(DecodeByteSlice2D, EncodeByteSlice2D)
+    // *NestedInteger
     regConverter(lc.UnmarshalNestedInteger, lc.MarshalNestedInteger)
+    // []*NestedInteger
     regConverter(lc.ParseNestedIntegers, lc.SerializeNestedIntegers)
+    // byte
     regConverter(func(s string) byte { return s[0] }, func(c byte) string { return string([]byte{c}) })
+    // []*ListNode
     regConverter(lc.ListFactory.CreateSlice, lc.ListFactory.DumpSlice)
 }
 

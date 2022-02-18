@@ -8,14 +8,19 @@ import (
 )
 
 var logger = util.Logger
-var _used ListNode
+
+func add(a int, b int) int {
+    return a + b
+}
 
 func main() {
     // create tester by function
-    work := unittest.CreateWork(FUNCTION)
+    work := unittest.CreateWork(add)
     // OR create by struct factory
     // work := unittest.CreateWorkForStruct(Constructor)
     // work.SetValidator(func(e,r)bool)
     work.CompareSerial = true
     fmt.Print(work.Exec(unittest.Utils.FromStdin()))
 }
+
+var _x Dummy

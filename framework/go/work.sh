@@ -49,7 +49,7 @@ case $cmd in
     new)
         # check go project directory
         [ -e $output_dir ] && { echo "$output_dir already exists">&2; exit 2; }
-        create_source_file $self_dir/bootstrap.go $srcfile
+        create_source_file $self_dir/src/bootstrap.go $srcfile
         mkdir $output_dir
         cd $output_dir || exit
         suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
