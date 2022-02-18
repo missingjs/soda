@@ -101,6 +101,7 @@ case $cmd in
             assert_framework
             tmpdir=$(mktemp -d)
             perl -pe 's/GenericTestWork.create(\w+)\(new (.*)\(\)::(.*)\)/GenericTestWork.create\1(\2.class, "\3", new \2()::\3)/g' $srcfile > $tmpdir/$srcfile
+            cp $tmpdir/$srcfile $output_dir/${testname}__gen.java
             echo "Compiling $srcfile ..."
             classpath=$(get_classpath)
             set -x
