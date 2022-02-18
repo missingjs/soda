@@ -135,4 +135,8 @@ sub validator {
     $self->{validator} = $vali if defined($vali);
 }
 
+sub arguments {
+    shift()->{arguments};
+}
+
 1;

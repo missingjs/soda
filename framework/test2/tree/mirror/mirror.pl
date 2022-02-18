@@ -12,12 +12,17 @@ use Soda::Leetcode::TreeNode;
 *TreeNode:: = \*Soda::Unittest::TestWork::;
 
 # step [1]: implement solution function
-# @param {number} a
-# @param {number} b
-# @return {number}
-sub add {
-    my ($x, $y) = @_;
-    return $x + $y;
+# @param {TreeNode} root
+# @return {TreeNode}
+sub mirror {
+    my $root = shift;
+    return undef unless defined $root;
+    mirror($root->left);
+    mirror($root->right);
+    my $temp = $root->left;
+    $root->set_left($root->right);
+    $root->set_right($temp);
+    $root;
 }
 
 package main;
@@ -25,7 +30,7 @@ use Soda::Unittest::Utils qw(from_stdin);
 use Soda::Unittest::TestWork qw(create for_struct);
 use Soda::Unittest::Validators qw(for_array for_array2d);
 # step [2]: setup function/return/arguments
-my $work = create(\&add);
+my $work = create(\&mirror);
 # my $work = for_struct(PACKAGE::);
 # $work->validator(sub { $_[0] vs $_[1]; return boolean });
 $work->compare_serial(1);

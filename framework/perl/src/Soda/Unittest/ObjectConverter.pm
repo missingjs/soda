@@ -86,6 +86,11 @@ BEGIN {
             [map { Soda::Leetcode::NestedInteger::serialize($_) } @$ni_list];
         }
     );
+    register_factory(
+        'TreeNode',
+        \&Soda::Leetcode::TreeNode::create,
+        \&Soda::Leetcode::TreeNode::dump
+    );
 }
 
 1;
