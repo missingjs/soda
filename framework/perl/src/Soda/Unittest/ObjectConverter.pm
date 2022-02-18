@@ -50,6 +50,11 @@ sub register_factory {
 BEGIN {
     %factory_map = ();
     register_factory(
+        'boolean',
+        sub { $_[0] },
+        sub { $_[0] ? \1 : \0 }
+    );
+    register_factory(
         'ListNode',
         \&Soda::Leetcode::ListNode::create,
         \&Soda::Leetcode::ListNode::dump
