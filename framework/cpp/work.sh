@@ -78,11 +78,13 @@ case $cmd in
     make)
         [ -e $output_dir ] || mkdir $output_dir
         srcfile=${testname}.cpp
-        gen_source $srcfile > $output_dir/${testname}__gen.cpp
-#        cp $srcfile $output_dir/${testname}__gen.cpp
-        bash $self_dir/gen-makefile.sh -c $testname > $output_dir/$makefile
-        # return error code from make
-        (cd $output_dir; make -f $makefile)
+        exefile=$output_dir/${testname}.out
+        if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
+            gen_source $srcfile > $output_dir/${testname}__gen.cpp
+            bash $self_dir/gen-makefile.sh -c $testname > $output_dir/$makefile
+            # return error code from make
+            (cd $output_dir; make -f $makefile)
+        fi
         ;;
     run)
         execfile=$output_dir/${testname}.out
