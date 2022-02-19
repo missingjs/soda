@@ -105,7 +105,7 @@ case $cmd in
             echo "Compiling $srcfile ..."
             classpath=$(get_classpath)
             set -x
-            javac -d $output_dir -cp $classpath $SODA_JAVA_COMPILE_OPTION $tmpdir/$srcfile
+            javac -d $output_dir -cp $classpath $SODA_JAVA_COMPILE_OPTION $tmpdir/$srcfile || exit
             set +x
             rm -rf $tmpdir
             echo "Compile $srcfile OK"
