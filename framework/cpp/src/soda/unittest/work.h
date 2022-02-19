@@ -138,6 +138,20 @@ public:
         return create(&obj, memFunc);
     }
 
+    template <typename Arg, typename Class>
+    static decltype(auto) create(Class* obj, void(Class::*memFunc)(Arg)) {
+        auto fn = [=](Arg arg) -> Arg {
+            (obj->*memFunc)(arg);
+            return arg;
+        };
+        return new TestWork<Arg,Arg>(fn);
+    }
+
+    template <typename Arg, typename Class>
+    static decltype(auto) create(Class& obj, void(Class::*memFunc)(Arg)) {
+        return create(&obj, memFunc);
+    }
+
     template <typename T, typename... Args>
     static StructTester<T>* createStructTester() {
         auto st = new StructTester<T>();

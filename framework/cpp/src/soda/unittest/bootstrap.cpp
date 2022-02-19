@@ -36,7 +36,7 @@ int main()
     // auto work = WorkFactory::forStruct(tester);
     //
     // [4] or, create for struct tester (simplified)
-    // auto work = WorkFactory<Class>();
+    // auto work = WorkFactory::forStruct<Class>();
 
     // work->setValidator(validate);
     work->setCompareSerial(true);
