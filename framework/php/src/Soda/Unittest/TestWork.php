@@ -19,6 +19,9 @@ class TestWork
         $this->proc = $proc;
         $this->argumentTypes = array_slice($typeHints, 0, -1);
         $this->returnType = $typeHints[count($typeHints)-1];
+        if (isset($argv)) {
+            fwrite(STDERR, "main file: $argv[0]\n");
+        }
     }
 
     function run(string $text): string
@@ -71,8 +74,8 @@ class TestWork
         return $this->arguments;
     }
 
-    static function create($instance, $methodName, $typeHints): TestWork
+    static function create($instance, $methodName, $mainFile): TestWork
     {
-        return new TestWork([$instance, $methodName], $typeHints);
+        return new TestWork([$instance, $methodName], Utils::functionTypeHints($mainFile, $methodName));
     }
 }

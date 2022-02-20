@@ -1,19 +1,22 @@
 <?php
 namespace Soda\Unittest;
 
+require_once __DIR__ . "/ConverterFactory.php";
+
 class Utils
 {
-    static function parseArguments($argTypes, $rawArgs)
+    static function parseArguments($argTypes, $rawArgs): array
     {
-        // TODO
-        return $rawArgs;
+        return array_map(
+            fn($i) => ConverterFactory::create($argTypes[$i])->fromJsonSerializable($rawArgs[$i]),
+            range(0, count($argTypes)-1)
+        );
     }
 
     static function nanoTime(): int
     {
         [$sec, $nano] = hrtime(false);
         $k = ($sec * 1e9 + $nano);
-        fwrite(STDERR, "time nano: $k\n");
         return (int) ($sec * 1e9 + $nano);
     }
 
@@ -42,5 +45,42 @@ class Utils
             $hash &= 0x7fffffff;
         }
         return $hash;
+    }
+
+    static function functionTypeHints($filePath, $funcName): array
+    {
+        $lines = array();
+        $fp = fopen($filePath, "r") or die("unable to open file $filePath");
+        while (($line = fgets($fp))) {
+            if (preg_match("/function\\s+$funcName\\s*[(]/", $line)) {
+                break;
+            }
+            if (strlen(trim($line)) > 0) {
+                $lines[] = $line;
+            }
+        }
+        fclose($fp);
+        // evict ' */'
+        array_pop($lines);
+        return self::parseTypeHints($lines);
+    }
+
+    private static function parseTypeHints(&$lines): array
+    {
+        $retType = 'void';
+        $typeHints = array();
+        while (count($lines) > 0) {
+            $text = array_pop($lines);
+            $matches = array();
+            if (preg_match("/\\* @param\\s+(?<argType>[^ ]+)/", $text, $matches)) {
+                $typeHints[] = $matches['argType'];
+            } elseif (preg_match("/\\* @return\\s+(?<returnType>[^ ]+)/", $text, $matches)) {
+                $retType = $matches['returnType'];
+            } else {
+                break;
+            }
+        }
+        $typeHints[] = $retType;
+        return $typeHints;
     }
 }
