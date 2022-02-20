@@ -1,6 +1,7 @@
 <?php
 namespace Soda\Unittest;
 
+require_once __DIR__ . "/ConverterFactory.php";
 require_once __DIR__ . "/Utils.php";
 
 class TestWork
@@ -35,9 +36,8 @@ class TestWork
             $result = $args[0];
         }
 
-//        $resConv = ObjectConverter
-//        $serialResult = $resConv->toJsonSerializer($result);
-        $serialResult = $result;
+        $resConv = ConverterFactory::create($retType);
+        $serialResult = $resConv->toJsonSerializable($result);
         $resp = array (
             'id'     => $input['id'],
             'result' => $serialResult,
@@ -50,9 +50,9 @@ class TestWork
                 $a = json_encode($input['expected']);
                 $b = json_encode($serialResult);
                 $success = $a == $b;
+                fwrite(STDERR, "use json serial compare\n");
             } else {
-//                $expect = $resConv->fromJsonSerializable($input['expected']);
-                $expect = $input['expected'];
+                $expect = $resConv->fromJsonSerializable($input['expected']);
                 if ($this->validator) {
                     $success = ($this->validator)($expect, $result);
                 } else {

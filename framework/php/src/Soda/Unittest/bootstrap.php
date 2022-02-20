@@ -17,4 +17,6 @@ class Solution {
 }
 
 $work = TestWork::create(new Solution(), 'add', ['Integer', 'Integer', 'Integer']);
+// $work->validator = fn($e, $r) => <boolean result>
+$work->compareSerial = true;
 echo $work->run(Utils::fromStdin());
