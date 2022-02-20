@@ -44,7 +44,7 @@ case $cmd in
         ;;
     run)
         include_path=.:$self_dir/src
-        php -d include_path=$include_path $execfile
+        php -d include_path=$include_path -d register_argc_argv=on $execfile
         ;;
     *)
         usage
