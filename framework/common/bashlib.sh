@@ -25,3 +25,8 @@ run_test()
     runner=soda.unittest.tester
     python3 -m $runner "$@"
 }
+
+assert_testname()
+{
+    [ -z $testname ] && usage
+}
