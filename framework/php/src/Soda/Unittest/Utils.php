@@ -31,4 +31,16 @@ class Utils
         }
         return $content;
     }
+
+    static function hashCode($obj): int
+    {
+        $jsonStr = json_encode($obj);
+        $hashStr = hash('sha1', $jsonStr);
+        $hash = 0;
+        for ($i = 0, $len = strlen($hashStr); $i < $len; ++$i) {
+            $hash = $hash * 31 + ord($hashStr[$i]);
+            $hash &= 0x7fffffff;
+        }
+        return $hash;
+    }
 }

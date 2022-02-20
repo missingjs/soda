@@ -2,6 +2,7 @@
 namespace Soda\Unittest;
 
 require_once __DIR__ . "/ConverterFactory.php";
+require_once __DIR__ . "/FeatureFactory.php";
 require_once __DIR__ . "/Utils.php";
 
 class TestWork
@@ -56,8 +57,7 @@ class TestWork
                 if ($this->validator) {
                     $success = ($this->validator)($expect, $result);
                 } else {
-//                    $success = ObjectFeature::create($retType)->isEqual($expect, $result);
-                    $success = $expect == $result;
+                    $success = FeatureFactory::create($retType)->isEqual($expect, $result);
                 }
             }
         }
