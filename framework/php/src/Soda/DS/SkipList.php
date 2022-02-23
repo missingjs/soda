@@ -3,10 +3,10 @@ namespace Soda\DS;
 
 class SkipNode
 {
-    public $level;
-    public $link;
-    public $key;
-    public $value;
+    public int $level;
+    public array $link;
+    public mixed $key;
+    public mixed $value;
 
     function __construct($level, $key, $value)
     {
@@ -16,7 +16,7 @@ class SkipNode
         $this->value = $value;
     }
 
-    static function create($maxLevel, $p, $key, $value = null)
+    static function create($maxLevel, $p, $key, $value = null): SkipNode
     {
         $level = 1;
         while (mt_rand() / mt_getrandmax() < $p && $level < $maxLevel) {
@@ -28,12 +28,12 @@ class SkipNode
 
 class SkipList
 {
-    private $maxLevel;
-    private $prob;
-    private $head;
-    private $footbuf;
-    private $cmpFunc;
-    private $size;
+    private int $maxLevel;
+    private float $prob;
+    private SkipNode $head;
+    private array $footbuf;
+    private mixed $cmpFunc;
+    private int $size;
 
     function __construct($maxLevel, $p, $cmp = null)
     {
@@ -45,7 +45,7 @@ class SkipList
         $this->size = 0;
     }
 
-    function size()
+    function size(): int
     {
         return $this->size;
     }
@@ -61,7 +61,7 @@ class SkipList
         return $node && $this->cmp($node->key, $key) == 0 ? $node->value : null;
     }
 
-    function lowerBound($key)
+    function lowerBound($key): ?array
     {
         $node = $this->find($key, $this->footbuf);
         return $node ? [$node->key, $node->value] : null;
@@ -94,7 +94,7 @@ class SkipList
         }
     }
 
-    function items()
+    function items(): \Generator
     {
         $p = $this->head->link[0];
         while ($p) {
@@ -103,7 +103,7 @@ class SkipList
         }
     }
 
-    private function do_insert($key, &$footprint)
+    private function do_insert($key, &$footprint): SkipNode
     {
         $node = SkipNode::create($this->maxLevel, $this->prob, $key);
         for ($lv = 0; $lv < $node->level; ++$lv) {
@@ -135,16 +135,3 @@ class SkipList
         return ($this->cmpFunc)($a, $b);
     }
 }
-
-# $slist = new SkipList(10, 0.5);
-# $values = [3,9,7,6,12,19,17,26,21,25];
-# foreach ($values as $val) {
-#     $slist->insert($val, "value of $val");
-# }
-# foreach ($slist->items() as [$key, $value]) {
-#     echo "$key => $value\n";
-# }
-# 
-# echo $slist->queryValue(19) . "\n";
-# echo $slist->queryValue(-1) . "\n";
-

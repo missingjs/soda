@@ -1,6 +1,7 @@
 <?php
 namespace Soda\Unittest;
 
+require_once __DIR__ . "/ListFeatureFactory.php";
 require_once __DIR__ . "/ObjectFeature.php";
 
 class FeatureFactory
@@ -9,7 +10,7 @@ class FeatureFactory
 
     static function create(string $type): ObjectFeature
     {
-        $c = count(self::$factoryMap);
+        $type = strtolower($type);
         if (array_key_exists($type, self::$factoryMap)) {
             return self::$factoryMap[$type]();
         }
@@ -26,12 +27,18 @@ class FeatureFactory
 
     private static function regFact($type, $factory)
     {
-        self::$factoryMap[$type] = $factory;
+        self::$factoryMap[strtolower($type)] = $factory;
     }
 
     private static function regAlias($type, $alias)
     {
-        self::regFact($alias, fn() => self::create($type));
+        if (is_array($alias)) {
+            foreach ($alias as $typeName) {
+                self::regFact($typeName, fn() => self::create($type));
+            }
+        } else {
+            self::regFact($alias, fn() => self::create($type));
+        }
     }
 
     static function __init()
@@ -41,7 +48,19 @@ class FeatureFactory
             fn($obj) => Utils::hashCode($obj),
             fn($x, $y) => abs($x-$y) < 1e-6
         );
-        self::regAlias('double', 'Double');
+        self::regAlias('double', 'float');
+
+        self::regFact(
+            'double[]',
+            fn() => ListFeatureFactory::ordered(self::create('double'))
+        );
+        self::regAlias('double[]', 'float[]');
+
+        self::regFact(
+            'double[][]',
+            fn() => ListFeatureFactory::ordered(self::create('double[]'))
+        );
+        self::regAlias('double[][]', 'float[][]');
     }
 }
 

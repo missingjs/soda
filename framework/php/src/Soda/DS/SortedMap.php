@@ -5,7 +5,7 @@ require_once __DIR__ . '/SkipList.php';
 
 class SortedMap
 {
-    private $skipList;
+    private SkipList $skipList;
 
     function __construct($cmp = null)
     {
@@ -15,7 +15,7 @@ class SortedMap
         $this->skipList = new SkipList(10, 0.5, $cmp);
     }
 
-    function has($key)
+    function has($key): bool
     {
         return $this->skipList->query($key) != null;
     }
@@ -26,7 +26,7 @@ class SortedMap
         return $node != null ? $node->value : $default;
     }
 
-    function size()
+    function size(): int
     {
         return $this->skipList->size();
     }
@@ -41,12 +41,12 @@ class SortedMap
         $this->skipList->remove($key);
     }
 
-    function lowerBound($key)
+    function lowerBound($key): ?array
     {
         return $this->skipList->lowerBound($key);
     }
 
-    function iterate()
+    function iterate(): \Generator
     {
         yield from $this->skipList->items();
     }
