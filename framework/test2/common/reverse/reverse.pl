@@ -13,7 +13,6 @@ sub reverse_vowels {
         $isv[ord($ch)] = 1;
     }
     my @buf = split('', $s);
-    print STDERR "buf: @buf\n";
     my ($i, $j) = (0, length($s)-1);
     while ($i < $j) {
         while ($i < $j && !$isv[ord($buf[$i])]) {
@@ -23,7 +22,6 @@ sub reverse_vowels {
             --$j;
         }
         if ($i < $j) {
-            print STDERR $buf[$i] . " - " . $buf[$j] . "\n";
             ($buf[$i], $buf[$j]) = ($buf[$j], $buf[$i]);
             ++$i;
             --$j;
