@@ -1,5 +1,5 @@
 <?php
-// namespace Soda\DS;
+namespace Soda\DS;
 
 class SkipNode
 {
@@ -32,25 +32,39 @@ class SkipList
     private $prob;
     private $head;
     private $footbuf;
+    private $cmpFunc;
+    private $size;
 
-    function __construct($maxLevel, $p)
+    function __construct($maxLevel, $p, $cmp = null)
     {
         $this->maxLevel = $maxLevel;
         $this->prob = $p;
+        $this->cmpFunc = $cmp ? $cmp : fn($a, $b) => $a - $b;
         $this->head = new SkipNode($maxLevel, null, null);
         $this->footbuf = array_fill(0, $maxLevel, null);
+        $this->size = 0;
+    }
+
+    function size()
+    {
+        return $this->size;
+    }
+
+    function query($key)
+    {
+        return $this->find($key, $this->footbuf);
     }
 
     function queryValue($key) 
     {
         $node = $this->find($key, $this->footbuf);
-        return $node && $node->key == key ? $node->value : null;
+        return $node && $this->cmp($node->key, $key) == 0 ? $node->value : null;
     }
 
     function lowerBound($key)
     {
         $node = $this->find($key, $this->footbuf);
-        return $node ? $node->key : null;
+        return $node ? [$node->key, $node->value] : null;
     }
 
     function insert($key, $value)
@@ -62,7 +76,7 @@ class SkipList
     {
         $footprint = $this->footbuf;
         $node = $this->find($key, $footprint);
-        if (!$node || $node->key != $key) {
+        if (!$node || $this->cmp($node->key, $key) != 0) {
             $node = $this->do_insert($key, $footprint);
         }
         $node->value = $value;
@@ -72,10 +86,11 @@ class SkipList
     {
         $footprint = $this->footbuf;
         $node = $this->find($key, $footprint);
-        if ($node && $node->key == $key) {
-            for ($lv = 0; $lv < count($node->level); ++$lv) {
+        if ($node && $this->cmp($node->key, $key) == 0) {
+            for ($lv = 0; $lv < $node->level; ++$lv) {
                 $footprint[$lv]->link[$lv] = $node->link[$lv];
             }
+            --$this->size;
         }
     }
 
@@ -96,6 +111,7 @@ class SkipList
             $footprint[$lv]->link[$lv] = $node;
             $node->link[$lv] = $next;
         }
+        ++$this->size;
         return $node;
     }
 
@@ -104,7 +120,7 @@ class SkipList
         $node = $this->head;
         $lv = $this->maxLevel - 1;
         while ($lv >= 0) {
-            if ($node->link[$lv] && $node->link[$lv]->key < $key) {
+            if ($node->link[$lv] && $this->cmp($node->link[$lv]->key, $key) < 0) {
                 $node = $node->link[$lv];
             } else {
                 $footprint[$lv] = $node;
@@ -113,14 +129,22 @@ class SkipList
         }
         return $node->link[0];
     }
+
+    private function cmp($a, $b)
+    {
+        return ($this->cmpFunc)($a, $b);
+    }
 }
 
-$slist = new SkipList(10, 0.5);
-$values = [3,9,7,6,12,19,17,26,21,25];
-foreach ($values as $val) {
-    $slist->insert($val, "value of $val");
-}
-foreach ($slist->items() as [$key, $value]) {
-    echo "$key => $value\n";
-}
+# $slist = new SkipList(10, 0.5);
+# $values = [3,9,7,6,12,19,17,26,21,25];
+# foreach ($values as $val) {
+#     $slist->insert($val, "value of $val");
+# }
+# foreach ($slist->items() as [$key, $value]) {
+#     echo "$key => $value\n";
+# }
+# 
+# echo $slist->queryValue(19) . "\n";
+# echo $slist->queryValue(-1) . "\n";
 

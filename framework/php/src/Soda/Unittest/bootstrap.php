@@ -1,6 +1,8 @@
 <?php
+require_once 'Soda/DS/index.php';
 require_once 'Soda/Unittest/index.php';
 
+use Soda\DS;
 use Soda\Unittest\TestWork;
 use Soda\Unittest\Utils;
 

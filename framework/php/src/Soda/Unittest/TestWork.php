@@ -19,9 +19,6 @@ class TestWork
         $this->proc = $proc;
         $this->argumentTypes = array_slice($typeHints, 0, -1);
         $this->returnType = $typeHints[count($typeHints)-1];
-        if (isset($argv)) {
-            fwrite(STDERR, "main file: $argv[0]\n");
-        }
     }
 
     function run(string $text): string
@@ -54,7 +51,6 @@ class TestWork
                 $a = json_encode($input['expected']);
                 $b = json_encode($serialResult);
                 $success = $a == $b;
-                fwrite(STDERR, "use json serial compare\n");
             } else {
                 $expect = $resConv->fromJsonSerializable($input['expected']);
                 if ($this->validator) {
