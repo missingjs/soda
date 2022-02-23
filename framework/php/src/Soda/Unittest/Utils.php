@@ -52,10 +52,11 @@ class Utils
         $lines = array();
         $fp = fopen($filePath, "r") or die("unable to open file $filePath");
         while (($line = fgets($fp))) {
+            $line = trim($line);
             if (preg_match("/function\\s+$funcName\\s*[(]/", $line)) {
                 break;
             }
-            if (strlen(trim($line)) > 0) {
+            if (strlen($line) > 0) {
                 $lines[] = $line;
             }
         }
