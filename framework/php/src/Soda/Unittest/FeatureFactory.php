@@ -14,7 +14,7 @@ class FeatureFactory
         }
         return new ObjectFeature(
             fn($obj) => Utils::hashCode($obj),
-            fn($x, $y) => $x == $y
+            fn($x, $y) => $x === $y
         );
     }
 }
