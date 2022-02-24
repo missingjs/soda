@@ -11,10 +11,10 @@ import (
 var logger = util.Logger
 
 func mergeKLists(lists []*ListNode) *ListNode {
-    pq := NewPriorityQueue(func (a, b *ListNode) bool { return a.Val < b.Val; });
+    pq := NewMinPriorityQueue()
     for _, node := range lists {
         if node != nil {
-            pq.Push(node)
+            pq.Push(node, node.Val)
         }
     }
 
@@ -24,7 +24,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
         t := pq.Pop().(*ListNode)
         L := t.Next
         if L != nil {
-            pq.Push(L)
+            pq.Push(L, L.Val)
         }
         tail.Next = t
         tail = t
