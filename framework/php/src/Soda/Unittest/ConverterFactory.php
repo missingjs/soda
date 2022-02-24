@@ -5,6 +5,7 @@ require_once "Soda/Leetcode/index.php";
 require_once __DIR__ . "/ObjectConverter.php";
 
 use Soda\Leetcode\ListFactory;
+use Soda\Leetcode\NestedIntegerFactory;
 
 class ConverterFactory
 {
@@ -40,6 +41,18 @@ class ConverterFactory
             'ListNode[]',
             fn($ds) => array_map(fn($d) => ListFactory::create($d), $ds),
             fn($ns) => array_map(fn($n) => ListFactory::dump($n), $ns)
+        );
+
+        self::registerFactory(
+            'NestedInteger',
+            fn($d) => NestedIntegerFactory::parse($d),
+            fn($ni) => NestedIntegerFactory::serialize($ni)
+        );
+
+        self::registerFactory(
+            'NestedInteger[]',
+            fn($ds) => array_map(fn($d) => NestedIntegerFactory::parse($d), $ds),
+            fn($ni_list) => array_map(fn($ni) => NestedIntegerFactory::serialize($ni), $ni_list)
         );
     }
 }
