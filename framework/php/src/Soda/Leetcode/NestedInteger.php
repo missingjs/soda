@@ -5,7 +5,7 @@ class NestedInteger {
 
     private bool $isAtomic;
     private array $elements = array();
-    private int $value = 0;
+    private ?int $value = 0;
 
     // if value is not specified, initializes an empty list.
     // Otherwise initializes a single integer equal to value.
