@@ -60,7 +60,7 @@ class Utils
         i += 1
         if /^\s*def (?<method_name>\w+)/ =~ lines[i]
           hints_map[method_name] = hints_buf.map { |line, _|
-            /[:].*[:]\s+(\w+)/.match(line)[1]
+            /[:].*[:]\s+(\S+)/.match(line)[1]
           }
           hints_buf.clear
         end
