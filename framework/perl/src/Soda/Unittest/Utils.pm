@@ -86,6 +86,7 @@ sub parse_type_hints {
             last;
         }
     }
+    @type_hints = reverse(@type_hints);
     push @type_hints, $ret_type;
     \@type_hints;
 }
