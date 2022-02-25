@@ -33,6 +33,7 @@ class Utils
         break
       end
     end
+    arg_types = arg_types.reverse()
     arg_types << ret_type
   end
 
