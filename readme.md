@@ -4,7 +4,8 @@
 * ruby
 ** install rbenv
 ** install ruby 3.x
-** gem install algorithms
+** install bundle through `gem install bundle`
+** cd framework/ruby, run `bundle install`
 
 * js
 $ NPM_PACKAGES="$HOME/.npm-packages"
