@@ -29,7 +29,10 @@ class Utils {
                 hintsMap.set(m[1], desc.typeHints);
             }
         }
-        if (!hintsMap.has('constructor')) {
+        if (hintsMap.has('constructor')) {
+            // hints of constructor has not return type
+            hintsMap.get('constructor').pop();
+        } else {
             hintsMap.set('constructor', []);
         }
         return hintsMap;
