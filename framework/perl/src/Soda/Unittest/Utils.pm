@@ -115,7 +115,12 @@ sub method_type_hints {
     }
     close $fp;
 
-    $hints_map{new} = [] unless exists $hints_map{new};
+    if (exists $hints_map{new}) {
+        # hints of constructor has no return type
+        pop @{$hints_map{new}}
+    } else {
+        $hints_map{new} = [];
+    }
     \%hints_map;
 }
 
