@@ -74,4 +74,33 @@ class TestWork
     {
         return new TestWork([$instance, $methodName], Utils::functionTypeHints($mainFile, $methodName));
     }
+
+    static function forStruct($className, $mainFile): TestWork
+    {
+        $hintsMap = Utils::methodTypeHints($mainFile, $className);
+        $testFunc = function ($operations, $parameters) use ($className, $hintsMap) {
+            // hints of constructor has not return type
+            $ctorArgs = Utils::parseArguments($hintsMap['__construct'], $parameters[0]);
+            $object = new $className(...$ctorArgs);
+            $res = [null];
+            for ($i = 1; $i < count($parameters); ++$i) {
+                $methodName = $operations[$i];
+                if (!array_key_exists($methodName, $hintsMap)) {
+                    throw new \Exception("hints for method $methodName not found");
+                }
+                $hints = $hintsMap[$methodName];
+                $argTypes = array_slice($hints, 0, count($hints)-1);
+                $retType = $hints[count($hints)-1];
+                $args = Utils::parseArguments($argTypes, $parameters[$i]);
+                $r = $object->$methodName(...$args);
+                if ($retType !== 'void' && $retType != 'Void') {
+                    $res[] = ConverterFactory::create($retType)->toJsonSerializable($r);
+                } else {
+                    $res[] = null;
+                }
+            }
+            return $res;
+        };
+        return new TestWork($testFunc, ['String[]', 'mixed[]', 'mixed[]']);
+    }
 }

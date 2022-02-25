@@ -7,6 +7,9 @@ class Utils
 {
     static function parseArguments($argTypes, $rawArgs): array
     {
+        if (count($argTypes) == 0) {
+            return array();
+        }
         return array_map(
             fn($i) => ConverterFactory::create($argTypes[$i])->fromJsonSerializable($rawArgs[$i]),
             range(0, count($argTypes)-1)
@@ -84,5 +87,52 @@ class Utils
         $typeHints = array_reverse($typeHints);
         $typeHints[] = $retType;
         return $typeHints;
+    }
+
+    static function methodTypeHints($filePath, $className): array
+    {
+        $hintsMap = array();
+        foreach (self::parseMethodDesc($filePath, $className) as $desc) {
+            $matches = array();
+            if (preg_match('/^\s+function\s+__construct[(]/', $desc['declare'], )) {
+                $hintsMap['__construct'] = $desc['typeHints'];
+            } elseif (preg_match('/function\s+(?<methodName>\w+)/', $desc['declare'], $matches)) {
+                $hintsMap[$matches['methodName']] = $desc['typeHints'];
+            }
+        }
+        if (array_key_exists('__construct', $hintsMap)) {
+            // hints of constructor has not return type
+            array_pop($hintsMap['__construct']);
+        } else {
+            $hintsMap['__construct'] = [];
+        }
+        return $hintsMap;
+    }
+
+    private static function parseMethodDesc($filePath, $className): \Generator
+    {
+        $fp = fopen($filePath, "r") or die("unable to open file $filePath");
+        while ($line = fgets($fp)) {
+            if (preg_match("/^class $className/", $line)) {
+                break;
+            }
+        }
+        while ($line = fgets($fp)) {
+            if (preg_match('/^\s+\/\*\*/', $line)) {
+                $buf = [];
+                while (!preg_match('/^\s*\*\//', $line = fgets($fp))) {
+                    $buf[] = $line;
+                }
+                $typeHints = self::parseTypeHints($buf);
+                $methodDef = fgets($fp);
+                yield array(
+                    'typeHints' => $typeHints,
+                    'declare' => $methodDef
+                );
+            } elseif (preg_match('/^[}]/', $line)) {
+                break;
+            }
+        }
+        fclose($fp);
     }
 }
