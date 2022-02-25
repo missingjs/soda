@@ -81,6 +81,7 @@ class Utils
                 break;
             }
         }
+        $typeHints = array_reverse($typeHints);
         $typeHints[] = $retType;
         return $typeHints;
     }

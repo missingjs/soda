@@ -6,6 +6,7 @@ require_once 'Soda/Unittest/index.php';
 use Soda\DS;
 use Soda\Leetcode\ListNode;
 use Soda\Leetcode\NestedInteger;
+use Soda\Leetcode\TreeNode;
 use Soda\Unittest\TestWork;
 use Soda\Unittest\Utils;
 use Soda\Unittest\Validators;
