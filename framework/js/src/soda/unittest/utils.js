@@ -96,7 +96,7 @@ function parseTypeHints(lines) {
             break;
         }
     }
-    typeHints.push(retType);
+    typeHints.reverse().push(retType);
     return typeHints;
 }
 
