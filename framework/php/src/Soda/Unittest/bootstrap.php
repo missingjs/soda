@@ -24,7 +24,7 @@ class Solution {
 }
 
 $work = TestWork::create(new Solution(), 'add', $argv[0]);
-// $work = TestWork::forStruct('STRUCT::class', $argv[0]);
+// $work = TestWork::forStruct(STRUCT::class, $argv[0]);
 // $work->validator = fn($e, $r) => <boolean result>
 $work->compareSerial = true;
 echo $work->run(Utils::fromStdin());
