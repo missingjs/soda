@@ -135,4 +135,10 @@ class Utils
         }
         fclose($fp);
     }
+
+    static function isEmptyReturnType($type): bool
+    {
+        $type = strtolower($type);
+        return $type == 'void' || $type == 'null';
+    }
 }

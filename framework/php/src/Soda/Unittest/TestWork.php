@@ -32,7 +32,7 @@ class TestWork
         $elapseMillis = ($endTime - $startTime) / 1e3;
 
         $retType = $this->returnType;
-        if ($retType == 'void' || $retType == 'Void') {
+        if (Utils::isEmptyReturnType($retType)) {
             $retType = $this->argumentTypes[0];
             $result = $args[0];
         }
@@ -93,7 +93,7 @@ class TestWork
                 $retType = $hints[count($hints)-1];
                 $args = Utils::parseArguments($argTypes, $parameters[$i]);
                 $r = $object->$methodName(...$args);
-                if ($retType !== 'void' && $retType != 'Void') {
+                if (Utils::isEmptyReturnType($retType)) {
                     $res[] = ConverterFactory::create($retType)->toJsonSerializable($r);
                 } else {
                     $res[] = null;
