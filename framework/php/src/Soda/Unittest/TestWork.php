@@ -93,7 +93,7 @@ class TestWork
                 $retType = $hints[count($hints)-1];
                 $args = Utils::parseArguments($argTypes, $parameters[$i]);
                 $r = $object->$methodName(...$args);
-                if (Utils::isEmptyReturnType($retType)) {
+                if (!Utils::isEmptyReturnType($retType)) {
                     $res[] = ConverterFactory::create($retType)->toJsonSerializable($r);
                 } else {
                     $res[] = null;
