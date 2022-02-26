@@ -31,7 +31,7 @@ public:
         }
     };
 
-    int timestamp;
+    int timestamp {0};
     unordered_map<int,deque<Tweet>> tweets;
     unordered_map<int,unordered_set<int>> follows;
     static const int Limit = 10;
