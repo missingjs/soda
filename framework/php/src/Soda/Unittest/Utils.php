@@ -76,9 +76,9 @@ class Utils
         while (count($lines) > 0) {
             $text = array_pop($lines);
             $matches = array();
-            if (preg_match("/\\* @param\\s+(?<argType>[^ ]+)/", $text, $matches)) {
+            if (preg_match("/\\* @param\\s+(?<argType>\\S+)/", $text, $matches)) {
                 $typeHints[] = $matches['argType'];
-            } elseif (preg_match("/\\* @return\\s+(?<returnType>[^ ]+)/", $text, $matches)) {
+            } elseif (preg_match("/\\* @return\\s+(?<returnType>\\S+)/", $text, $matches)) {
                 $retType = $matches['returnType'];
             } else {
                 break;
