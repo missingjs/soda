@@ -45,7 +45,7 @@ class Solution:
         return q
 
     def merge(self, L1, L2):
-        t = h = ListNode()
+        t = ListNode()
         while L1 and L2:
             t.next = L1
             t = L1
