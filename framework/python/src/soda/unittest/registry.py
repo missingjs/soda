@@ -12,7 +12,7 @@ converterFactoryMap = {}
 defaultConverter = ObjectConverter(lambda x: x, lambda y: y)
 
 def register(typeHint, funcFromSerial, funcToSerial):
-    converterFactoryMap[typeHint] = lambda: ObjectConverter(funcFromSerial, funcToSerial)
+    registerFactory(typeHint, lambda: ObjectConverter(funcFromSerial, funcToSerial))
 
 def registerFactory(typeHint, factoryFunc):
     converterFactoryMap[typeHint] = factoryFunc
