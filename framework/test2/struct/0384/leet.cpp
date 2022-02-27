@@ -67,12 +67,13 @@ int main()
     auto validator = [&](const JsonProxy& expect, const JsonProxy& result) {
         auto arguments = work->getArguments();
         auto commands = std::get<0>(arguments);
+        auto arrCmp = Validators::forVector<int>(false);
         for (int i = 1; i < commands.size(); ++i) {
             string cmd = commands[i];
             if (cmd == "shuffle") {
                 auto evalues = expect[i].get<vector<int>>();
                 auto rvalues = result[i].get<vector<int>>();
-                if (!Validators::forVector<int>(false)) {
+                if (!arrCmp(evalues, rvalues)) {
                     return false;
                 }
             }

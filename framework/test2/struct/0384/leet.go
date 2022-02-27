@@ -51,9 +51,9 @@ func main() {
     // OR create by struct factory
     work := unittest.CreateWorkForStruct(Constructor)
     validator := func (expect, result []interface{}) bool {
-        logger.Infof("in custom validator")
         arguments := work.Arguments
         commands := arguments[0].([]string)
+        sliceCmp := unittest.Validators.ForSlice(nil, false)
         for i := 1; i < len(commands); i++ {
             cmd := commands[i]
             if cmd == "shuffle" {
@@ -62,7 +62,7 @@ func main() {
                 for i := 0; i < evalues.Len(); i++ {
                     arr = append(arr, int(evalues.Index(i).Interface().(float64)))
                 }
-                if !unittest.Validators.ForSlice(nil, false)(arr, result[i]) {
+                if !sliceCmp(arr, result[i]) {
                     return false
                 }
             }

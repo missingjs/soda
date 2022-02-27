@@ -56,12 +56,13 @@ public class Leet implements Supplier<TestWork> {
     private static boolean validate(TestWork work, List<Object> expect, List<Object> result) {
         Object[] arguments = work.getArguments();
         var commands = (List<String>) arguments[0];
+        var listCmp = Validators.forList(Integer.class, false);
         for (int i = 1; i < commands.size(); ++i) {
             String cmd = commands.get(i);
             if (cmd.equals("shuffle")) {
                 var evalues = (List<Integer>) expect.get(i);
                 var rvalues = (List<Integer>) result.get(i);
-                if (!Validators.forList(Integer.class, false).test(evalues, rvalues)) {
+                if (!listCmp.test(evalues, rvalues)) {
                     return false;
                 }
             }

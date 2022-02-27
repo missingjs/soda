@@ -41,12 +41,13 @@ public class Leet
         var vfunc = (JToken expect, JToken result) => {
             var arguments = work.Arguments;
             var commands = arguments[0] as IList<string>;
+            var listCmp = Validators.ForList<int>(false);
             for (int i = 1; i < commands.Count; ++i) {
                 var cmd = commands[i];
                 if (cmd == "shuffle") {
                     var evalues = expect[i].ToObject<IList<int>>();
                     var rvalues = result[i].ToObject<IList<int>>();
-                    if (!Validators.ForList<int>(false)(evalues, rvalues)) {
+                    if (!listCmp(evalues, rvalues)) {
                         return false;
                     }
                 }

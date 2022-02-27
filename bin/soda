@@ -66,10 +66,10 @@ function create_work()
     ilang=$1
     check_sdk $ilang
     work=$(get_work_name)
+    [ -z $work ] && exit
     $framework_dir/$ilang/work.sh new $work || exit
     lowcase=$(echo "$work" | awk '{print tolower($0)}')
     test_file=${lowcase}.input
-#    [ -e $test_file ] || echo -e '#@format=case\n' > $test_file
     [ -e $test_file ] || cat >$test_file <<EOF
 #@format=case
 

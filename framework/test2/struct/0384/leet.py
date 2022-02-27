@@ -50,12 +50,13 @@ if __name__ == '__main__':
     def validate(expect, result) -> bool:
         arguments = work.arguments
         commands = arguments[0]
+        listCmp = Validators.forList(int, False)
         for i in range(1, len(commands)):
             cmd = commands[i]
             if cmd == 'shuffle':
                 evalues = expect[i]
                 rvalues = result[i]
-                if not Validators.forList(int, False)(evalues, rvalues):
+                if not listCmp(evalues, rvalues):
                     return False
         return True
     # step [3]: setup other options

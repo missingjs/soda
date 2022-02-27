@@ -45,12 +45,13 @@ if __FILE__ == $0
   work.validator = ->(expect, result) {
     arguments = work.arguments
     commands = arguments[0]
+    arr_cmp = ns::Validators.for_array('Integer', false)
     (1...commands.size).each { |i|
       cmd = commands[i]
       if cmd == 'shuffle'
         evalues = expect[i]
         rvalues = result[i]
-        if !ns::Validators.for_array('Integer', false).call(evalues, rvalues)
+        if !arr_cmp.call(evalues, rvalues)
           return false
         end
       end

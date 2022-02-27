@@ -42,12 +42,13 @@ work = TestWork.forStruct(Solution);
 work.validator = (expect, result) => {
     let args = work.arguments;
     let commands = args[0];
+    let arrCmp = Validators.forArray('number', false);
     for (let i = 1; i < commands.length; ++i) {
         let cmd = commands[i];
         if (cmd === 'shuffle') {
             let evalues = expect[i];
             let rvalues = result[i];
-            if (!Validators.forArray('number', false)(evalues, rvalues)) {
+            if (!arrCmp(evalues, rvalues)) {
                 return false;
             }
         }

@@ -36,11 +36,12 @@ class Leet extends (String => String) {
   import play.api.libs.json._
   def validate(work: GenericTestWork[JsValue], expect: JsValue, result: JsValue): Boolean = {
     val commands = work.arguments.head.asInstanceOf[List[String]]
+    val listCmp = Validators.forList[Int](false);
     for (i <- commands.indices) {
       if (commands(i) == "shuffle") {
         val evalues = expect(i).as[List[Int]]
         val rvalues = result(i).as[List[Int]]
-        if (!Validators.forList[Int](false).apply(evalues, rvalues)) {
+        if (!listCmp.apply(evalues, rvalues)) {
           return false
         }
       }

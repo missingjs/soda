@@ -51,12 +51,13 @@ my $validator = sub {
     my ($expect, $result) = @_;
     my $args = $work->arguments;
     my $commands = $args->[0];
+    my $arr_cmp = for_array('number', 0);
     for (my $i = 1; $i < @$commands; ++$i) {
         my $cmd = $commands->[$i];
         if ($cmd eq "shuffle") {
             my $evals = $expect->[$i];
             my $rvals = $result->[$i];
-            return 0 unless for_array('number', 0)->($evals, $rvals);
+            return 0 unless $arr_cmp->($evals, $rvals);
         }
     }
     1;
