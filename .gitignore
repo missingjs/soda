@@ -7,3 +7,4 @@ Makefile.gen.*
 .idea
 .vscode
 *__gen.cpp
+.python-version
