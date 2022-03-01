@@ -1,5 +1,6 @@
 require 'algorithms'
 require 'set'
+require 'soda/ds/treemap'
 require 'soda/leetcode/list'
 require 'soda/leetcode/nest'
 require 'soda/leetcode/tree'
