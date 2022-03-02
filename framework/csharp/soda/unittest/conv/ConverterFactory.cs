@@ -42,6 +42,12 @@ public static class ConverterFactory
             (IList<ListNode> t) => t.Select(ListFactory.Dump).ToList()
         );
 
+        // ListNode[]
+        registerFactory(
+            (IList<IList<int>> d) => d.Select(ListFactory.Create).ToArray(),
+            (ListNode[] t) => t.Select(ListFactory.Dump).ToList()
+        );
+
         // NestedInteger
         registerFactory(() => NestedIntegerConverter.Create());
 
