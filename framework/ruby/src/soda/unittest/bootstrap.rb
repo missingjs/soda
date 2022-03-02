@@ -5,6 +5,9 @@ require 'soda/leetcode/list'
 require 'soda/leetcode/nest'
 require 'soda/leetcode/tree'
 # step [1]: implement solution function
+include Soda::DS
+include Soda::Leetcode
+
 # @param {Integer} n
 # @return {Integer}
 def my_solution(n)
