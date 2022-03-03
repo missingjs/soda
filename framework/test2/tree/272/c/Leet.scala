@@ -20,7 +20,7 @@ object Solution {
     var nodes = ArrayBuffer[Node]()
     collect(root, nodes, target)
     quickSelect(nodes, 0, nodes.size-1, k)
-    nodes.sortBy(_.diff).slice(0, k).map(_.value).toList
+    nodes.slice(0, k).map(_.value).toList
   }
 
   private def quickSelect(nodes: ArrayBuffer[Node], _start: Int, _end: Int, index: Int): Unit = {
