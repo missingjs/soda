@@ -8,3 +8,4 @@ Makefile.gen.*
 .vscode
 *__gen.cpp
 .python-version
+go.sum

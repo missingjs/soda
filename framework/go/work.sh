@@ -62,6 +62,7 @@ case $cmd in
             set -e
             cp $srcfile $output_dir/main__gen.go
             cd $output_dir
+            go mod tidy
             go build -o $execfile main__gen.go
             echo "Build success."
         fi
