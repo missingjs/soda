@@ -13,14 +13,14 @@ class TreeFactory {
         let qu = [root];
         for (let i = 1; i < data.length; ) {
             let node = qu.shift();
-            if (data[i]) {
+            if (data[i] !== null) {
                 node.left = new TreeNode(data[i]);
                 qu.push(node.left);
             }
             if (++i === data.length) {
                 break;
             }
-            if (data[i]) {
+            if (data[i] !== null) {
                 node.right = new TreeNode(data[i]);
                 qu.push(node.right);
             }
