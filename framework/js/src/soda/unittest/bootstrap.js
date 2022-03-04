@@ -1,10 +1,14 @@
-const {ListNode, NestedInteger, TreeNode} = require('soda/leetcode');
-const {TestWork, Utils, Validators} = require('soda/unittest');
+const {
+    AvlTree,
+    BinarySearchTree
+} = require('@datastructures-js/binary-search-tree');
 const {
     PriorityQueue,
     MinPriorityQueue,
     MaxPriorityQueue
 } = require('@datastructures-js/priority-queue');
+const {ListNode, NestedInteger, TreeNode} = require('soda/leetcode');
+const {TestWork, Utils, Validators} = require('soda/unittest');
 
 // step [1]: implement solution function
 /**
