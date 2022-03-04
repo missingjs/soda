@@ -3,7 +3,6 @@ const {
     BinarySearchTree
 } = require('@datastructures-js/binary-search-tree');
 const {
-    PriorityQueue,
     MinPriorityQueue,
     MaxPriorityQueue
 } = require('@datastructures-js/priority-queue');
