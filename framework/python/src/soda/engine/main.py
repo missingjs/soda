@@ -210,6 +210,8 @@ def main():
                         continue
                 if not execute(args.command, testname, config, testobj):
                     sys.exit(3)
+        if seq_in_file == 0:
+            logger.error('No test case')
 
 if __name__ == '__main__':
     main()
