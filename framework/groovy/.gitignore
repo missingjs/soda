@@ -10,3 +10,7 @@ gradle-app.setting
 
 # Avoid ignore Gradle wrappper properties
 !gradle-wrapper.properties
+
+/setup_env.sh
+
+/soda-lib/
