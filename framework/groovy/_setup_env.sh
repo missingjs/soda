@@ -21,7 +21,7 @@ get_classpath()
 {
     local lib_dir=$this_dir/soda-lib
     local classpath=
-    for jar in $(ls $lib_dir/*.jar 2>/dev/null); do
+    for jar in $(cd $lib_dir && ls *.jar 2>/dev/null); do
         classpath="$classpath:$lib_dir/$jar"
     done
     echo $classpath
