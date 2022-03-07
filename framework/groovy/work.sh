@@ -49,7 +49,6 @@ case $cmd in
         assert_testname
         assert_framework
         classpath=$(get_classpath)
-        set -x
         groovy -cp $classpath $execfile
         ;;
     *)
