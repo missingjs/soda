@@ -16,8 +16,10 @@ class Utils {
     }
 
     static List<Object> parseArguments(List<Type> types, List<Object> rawParams) {
-        rawParams.eachWithIndex{ def param, int i ->
-            ConverterFactory.create(types[i]).fromJsonSerializable(param)
+        def args = []
+        for (int i = 0; i < rawParams.size(); ++i) {
+            args << ConverterFactory.create(types[i]).fromJsonSerializable(rawParams[i])
         }
+        args
     }
 }

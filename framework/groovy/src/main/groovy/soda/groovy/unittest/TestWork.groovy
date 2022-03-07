@@ -34,7 +34,7 @@ class TestWork<R> {
         def args = Utils.parseArguments(argTypes, input.args)
 
         def startNano = System.nanoTime()
-        def result = closure.call(args)
+        def result = closure.call(args.toArray(Object[]::new))
         def endNano = System.nanoTime()
         def elapseMillis = (endNano - startNano) / 1e6
 
