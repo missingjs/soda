@@ -9,11 +9,19 @@ class ConverterFactory {
     private static Map<Type, Closure<ObjectConverter>> factoryMap = [:]
 
     private static register(Type type, Closure parser, Closure serializer) {
-        factoryMap[type] = { t -> new ObjectConverter(parser, serializer) }
+        register(type, { t -> new ObjectConverter(parser, serializer) })
     }
 
     private static register(Type type, Closure factory) {
         factoryMap[type] = factory
+    }
+
+    private static register(TypeRef ref, Closure parser, Closure serializer) {
+        register(ref.refType, parser, serializer)
+    }
+
+    private static register(TypeRef ref, Closure factory) {
+        register(ref.refType, factory)
     }
 
     static ObjectConverter create(Type type) {
@@ -24,7 +32,11 @@ class ConverterFactory {
     }
 
     static {
-        register(char, { String s -> s[0] as Character }, { char ch -> ch as String })
+        register(char, ConvUtils::toChar, ConvUtils::fromChar)
         register(Character, { t -> create(char) })
+        register(char[], ConvUtils::toCharArray, ConvUtils::fromCharArray)
+        register(char[][], ConvUtils::toCharArray2d, ConvUtils::fromCharArray2d)
+        register(new TypeRef<List<Character>>() {}, ConvUtils::toCharList, ConvUtils::fromCharList)
+        register(new TypeRef<List<List<Character>>>() {}, ConvUtils::toCharList2d, ConvUtils::fromCharList2d)
     }
 }
