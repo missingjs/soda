@@ -43,4 +43,12 @@ class ConvUtils {
         cc2d.collect({fromCharList(it)})
     }
 
+    static int[] toIntArray(List<Integer> ints) {
+        ints
+    }
+
+    static List<Integer> fromIntArray(int[] ints) {
+        ints.toList()
+    }
+
 }

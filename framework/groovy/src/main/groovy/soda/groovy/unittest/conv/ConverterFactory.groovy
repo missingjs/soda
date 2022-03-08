@@ -32,6 +32,8 @@ class ConverterFactory {
     }
 
     static {
+        register(int[], ConvUtils::toIntArray, ConvUtils::fromIntArray)
+
         register(char, ConvUtils::toChar, ConvUtils::fromChar)
         register(Character, { t -> create(char) })
         register(char[], ConvUtils::toCharArray, ConvUtils::fromCharArray)
