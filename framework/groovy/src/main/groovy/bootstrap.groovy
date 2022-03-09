@@ -7,5 +7,5 @@ class Solution {
 }
 
 def work = TestWork.create(new Solution().&add)
-// work.setValidator { i, j -> i == j }
+// work.validator = { i, j -> i == j }
 println work.run(System.in.getText('UTF-8'))

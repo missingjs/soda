@@ -12,7 +12,7 @@ class FeatureFactory {
 
     static ObjectFeature create(Type type) {
         def factory = factoryMap[type] ?: {
-            new ObjectFeature({ it.hashCode }, { x, y -> x == y})
+            new ObjectFeature({ it.hashCode() }, { x, y -> x == y})
         }
         factory()
     }
