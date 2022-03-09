@@ -1,8 +1,11 @@
 #!/bin/bash
 
+
 self_dir=$(cd $(dirname $0) && pwd)
 soda_dir=$(cd $self_dir/../.. && pwd)
 lib_dir=soda-lib
+
+source $self_dir/setup_env.sh || exit
 
 cd $self_dir
 
