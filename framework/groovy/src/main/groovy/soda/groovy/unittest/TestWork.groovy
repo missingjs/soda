@@ -47,7 +47,7 @@ class TestWork<R> {
 
         def success = true
         if (input.expected != null) {
-            if (compareSerial && validator) {
+            if (compareSerial && !validator) {
                 def a = JsonOutput.toJson(input.expected)
                 def b = JsonOutput.toJson(output.result)
                 success = (a == b)

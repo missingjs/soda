@@ -1,5 +1,7 @@
 package soda.groovy.unittest.conv
 
+import soda.groovy.leetcode.ListFactory
+import soda.groovy.leetcode.ListNode
 import soda.groovy.unittest.validate.ObjectFeature
 
 import java.lang.reflect.Type
@@ -43,5 +45,15 @@ class ConverterFactory {
         registerFactory(char[][], ConvUtils::toCharArray2d, ConvUtils::fromCharArray2d)
         registerFactory(new TypeRef<List<Character>>() {}, ConvUtils::toCharList, ConvUtils::fromCharList)
         registerFactory(new TypeRef<List<List<Character>>>() {}, ConvUtils::toCharList2d, ConvUtils::fromCharList2d)
+
+        registerFactory(ListNode, ListFactory::create, ListFactory::dump)
+        registerFactory(ListNode[],
+                { List<List<Integer>> data -> data.collect({ListFactory.create(it)}).toArray(ListNode[]::new) },
+                { ListNode[] lists -> lists.collect({ListFactory.dump(it)}) }
+        )
+        registerFactory(new TypeRef<List<ListNode>>() {},
+                { List<List<Integer>> data -> data.collect({ListFactory.create(it)}) },
+                { List<ListNode> lists -> lists.collect({ListFactory.dump(it)}) }
+        )
     }
 }
