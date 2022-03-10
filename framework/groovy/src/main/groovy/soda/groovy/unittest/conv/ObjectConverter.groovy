@@ -12,11 +12,11 @@ class ObjectConverter<T, J> {
     }
 
     T fromJsonSerializable(J j) {
-        parser.call(j)
+        parser(j)
     }
 
     J toJsonSerializable(T t) {
-        serializer.call(t)
+        serializer(t)
     }
 
 }

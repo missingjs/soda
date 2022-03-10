@@ -8,20 +8,20 @@ class ConverterFactory {
 
     private static Map<Type, Closure<ObjectConverter>> factoryMap = [:]
 
-    private static register(Type type, Closure parser, Closure serializer) {
-        register(type, { t -> new ObjectConverter(parser, serializer) })
+    private static registerFactory(Type type, Closure parser, Closure serializer) {
+        registerFactory(type, { t -> new ObjectConverter(parser, serializer) })
     }
 
-    private static register(Type type, Closure factory) {
+    private static registerFactory(Type type, Closure factory) {
         factoryMap[type] = factory
     }
 
-    private static register(TypeRef ref, Closure parser, Closure serializer) {
-        register(ref.refType, parser, serializer)
+    private static registerFactory(TypeRef ref, Closure parser, Closure serializer) {
+        registerFactory(ref.refType, parser, serializer)
     }
 
-    private static register(TypeRef ref, Closure factory) {
-        register(ref.refType, factory)
+    private static registerFactory(TypeRef ref, Closure factory) {
+        registerFactory(ref.refType, factory)
     }
 
     static ObjectConverter create(Type type) {
@@ -32,13 +32,16 @@ class ConverterFactory {
     }
 
     static {
-        register(int[], ConvUtils::toIntArray, ConvUtils::fromIntArray)
+        registerFactory(int[], ConvUtils::toIntArray, ConvUtils::fromIntArray)
+        registerFactory(int[][], ConvUtils::toIntArray2d, ConvUtils::fromIntArray2d)
+        registerFactory(double[], ConvUtils::toDoubleArray, ConvUtils::fromDoubleArray)
+        registerFactory(double[][], ConvUtils::toDoubleArray2d, ConvUtils::fromDoubleArray2d)
 
-        register(char, ConvUtils::toChar, ConvUtils::fromChar)
-        register(Character, { t -> create(char) })
-        register(char[], ConvUtils::toCharArray, ConvUtils::fromCharArray)
-        register(char[][], ConvUtils::toCharArray2d, ConvUtils::fromCharArray2d)
-        register(new TypeRef<List<Character>>() {}, ConvUtils::toCharList, ConvUtils::fromCharList)
-        register(new TypeRef<List<List<Character>>>() {}, ConvUtils::toCharList2d, ConvUtils::fromCharList2d)
+        registerFactory(char, ConvUtils::toChar, ConvUtils::fromChar)
+        registerFactory(Character, { t -> create(char) })
+        registerFactory(char[], ConvUtils::toCharArray, ConvUtils::fromCharArray)
+        registerFactory(char[][], ConvUtils::toCharArray2d, ConvUtils::fromCharArray2d)
+        registerFactory(new TypeRef<List<Character>>() {}, ConvUtils::toCharList, ConvUtils::fromCharList)
+        registerFactory(new TypeRef<List<List<Character>>>() {}, ConvUtils::toCharList2d, ConvUtils::fromCharList2d)
     }
 }

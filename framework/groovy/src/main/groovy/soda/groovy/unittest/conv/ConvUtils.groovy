@@ -51,4 +51,28 @@ class ConvUtils {
         ints.toList()
     }
 
+    static int[][] toIntArray2d(List<List<Integer>> ints2d) {
+        ints2d.collect({ toIntArray(it) }).toArray(int[][]::new)
+    }
+
+    static List<List<Integer>> fromIntArray2d(int[][] ints2d) {
+        ints2d.collect({ fromIntArray(it) })
+    }
+
+    static double[] toDoubleArray(List<Double> ds) {
+        ds
+    }
+
+    static List<Double> fromDoubleArray(double[] ds) {
+        ds.toList()
+    }
+
+    static double[][] toDoubleArray2d(List<List<Double>> ds2d) {
+        ds2d.collect({ toDoubleArray(it) }).toArray(double[][]::new)
+    }
+
+    static List<List<Double>> fromDoubleArray2d(double[][] ds2d) {
+        ds2d.collect({ fromDoubleArray(it) })
+    }
+
 }
