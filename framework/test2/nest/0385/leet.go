@@ -19,9 +19,9 @@ func deserialize(s string) *NestedInteger {
 func parse(s string) *NestedInteger {
     if (s[p] == '[') {
         p++
-        var root = NewNestedInteger()
+        var root = &NestedInteger{}
         for s[p] != ']' {
-            root.Add(parse(s))
+            root.Add(*parse(s))
             if s[p] == ',' {
                 p++
             }
@@ -45,7 +45,9 @@ func parse(s string) *NestedInteger {
     if negative {
         value = 0 - value
     }
-    return NewNestedIntegerWithInt(value)
+    ni := &NestedInteger{}
+    ni.SetInteger(value)
+    return ni
 }
 
 func main() {

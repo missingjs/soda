@@ -14,44 +14,35 @@ type NestedInteger struct {
 	list     []*NestedInteger
 }
 
-func NewNestedIntegerWithInt(val int) *NestedInteger {
-	return &NestedInteger{
-		isAtomic: true,
-		value:    val,
-	}
-}
-
-func NewNestedInteger() *NestedInteger {
-	return &NestedInteger{}
-}
-
 // IsInteger Return true if this NestedInteger holds a single integer, rather than a nested list.
-func (n *NestedInteger) IsInteger() bool {
+func (n NestedInteger) IsInteger() bool {
 	return n.isAtomic
 }
 
 // GetInteger Return the single integer that this NestedInteger holds, if it holds a single integer
 // The result is undefined if this NestedInteger holds a nested list
 // So before calling this method, you should have a check
-func (n *NestedInteger) GetInteger() int {
+func (n NestedInteger) GetInteger() int {
 	return n.value
 }
 
 // SetInteger Set this NestedInteger to hold a single integer.
 func (n *NestedInteger) SetInteger(value int) {
+    n.isAtomic = true
 	n.value = value
 }
 
 // Add Set this NestedInteger to hold a nested list and adds a nested integer to it.
-func (n *NestedInteger) Add(elem *NestedInteger) {
-	n.list = append(n.list, elem)
+func (n *NestedInteger) Add(elem NestedInteger) {
+	n.list = append(n.list, &elem)
 }
 
 // GetList Return the nested list that this NestedInteger holds, if it holds a nested list
 // The list length is zero if this NestedInteger holds a single integer
 // You can access NestedInteger's list element directly if you want to modify it
-func (n *NestedInteger) GetList() []*NestedInteger {
-	return n.list
+func (n NestedInteger) GetList() []*NestedInteger {
+    res := make([]*NestedInteger, 0)
+    return append(res, n.list...)
 }
 
 func ParseNestedIntegers(raw []json.RawMessage) []*NestedInteger {
@@ -68,16 +59,18 @@ func UnmarshalNestedInteger(raw json.RawMessage) *NestedInteger {
 		if err != nil {
 			panic(fmt.Sprintf("failed to parse int from string: %s", string(raw)))
 		}
-		return NewNestedIntegerWithInt(val)
+        ni := &NestedInteger{}
+        ni.SetInteger(val)
+        return ni
 	}
 
 	var rawList []json.RawMessage
 	if err := json.Unmarshal(raw, &rawList); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal json: %v", err))
 	}
-	ni := NewNestedInteger()
+    ni := &NestedInteger{}
 	for _, r := range rawList {
-		ni.Add(UnmarshalNestedInteger(r))
+		ni.Add(*UnmarshalNestedInteger(r))
 	}
 	return ni
 }
