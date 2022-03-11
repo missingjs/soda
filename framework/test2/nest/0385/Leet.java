@@ -19,7 +19,7 @@ class Solution {
     private NestedInteger parse(String s) {
         if (s.charAt(p) == '[') {
             ++p;
-            var root = new DefaultNestedInteger();
+            var root = new NestedInteger();
             while (s.charAt(p) != ']') {
                 root.add(parse(s));
                 if (s.charAt(p) == ',') {
@@ -45,7 +45,7 @@ class Solution {
         if (negative) {
             value = 0 - value;
         }
-        return new DefaultNestedInteger(value);
+        return new NestedInteger(value);
     }
 }
 

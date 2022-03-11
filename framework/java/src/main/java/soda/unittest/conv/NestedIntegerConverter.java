@@ -1,6 +1,5 @@
 package soda.unittest.conv;
 
-import soda.leetcode.DefaultNestedInteger;
 import soda.leetcode.NestedInteger;
 
 import java.util.ArrayList;
@@ -20,9 +19,9 @@ public class NestedIntegerConverter implements ObjectConverter<NestedInteger, Ob
     @SuppressWarnings("unchecked")
     public static NestedInteger parse(Object obj) {
         if (obj instanceof Integer) {
-            return new DefaultNestedInteger((Integer) obj);
+            return new NestedInteger((Integer) obj);
         }
-        var ni = new DefaultNestedInteger();
+        var ni = new NestedInteger();
         for (var a : (List<Object>) obj) {
             ni.add(parse(a));
         }
