@@ -41,21 +41,21 @@ class XMap<K, V> {
         _entry(key) != null
     }
 
-    V getAt(K key) {
+    V get(K key) {
         _entry(key)?.value
     }
 
     V getOrDefault(K key, V defaultValue) {
-        getAt(key) ?: defaultValue
+        get(key) ?: defaultValue
     }
 
-    void putAt(K key, V value) {
+    void put(K key, V value) {
         def e = _entry(key)
-        if ( e == null) {
+        if (!e) {
             long h = _hash(key)
-            def values = dict.computeIfAbsent(h, k -> new ArrayList<>())
+            def values = dict.computeIfAbsent(h, k -> [])
             e = new XEntry<K, V>(key: key, value: value)
-            values.add(e)
+            values << e
             ++size
         }
         e.value = value

@@ -17,6 +17,8 @@ class TestWork<R> {
 
     private Type returnType
 
+    private Object[] arguments
+
     boolean compareSerial
 
     Closure<Boolean> validator
@@ -30,6 +32,7 @@ class TestWork<R> {
     String run(String text) {
         def input = new WorkInput(new JsonSlurper().parseText(text))
         def args = Utils.parseArguments(argTypes, input.args)
+        arguments = args
 
         def startNano = System.nanoTime()
         def result = closure.call(args.toArray(Object[]::new))
@@ -60,6 +63,10 @@ class TestWork<R> {
         }
         output.success = success
         JsonOutput.toJson(output)
+    }
+
+    Object[] getArguments() {
+        arguments
     }
 
     static <R> TestWork<R> create(Closure<R> workClosure) {

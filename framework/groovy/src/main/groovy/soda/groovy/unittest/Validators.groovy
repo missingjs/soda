@@ -26,4 +26,38 @@ class Validators {
         _forList(dim1Ordered, listFeat)
     }
 
+    static <T> Closure<Boolean> forArray(Class<T> klass, boolean ordered) {
+        { T[] x, T[] y ->
+            def clo = forList(klass, ordered)
+            clo.call(x.toList(), y.toList())
+        }
+    }
+
+    static <T> Closure<Boolean> forArray2d(Class<T> klass, boolean dim1Ordered, boolean dim2Ordered) {
+        { T[][] x, T[][] y ->
+            def clo = forList2d(klass, dim1Ordered, dim2Ordered)
+            clo.call(
+                    x.collect({it.toList()}).toList(),
+                    y.collect({it.toList()}).toList()
+            )
+        }
+    }
+
+    static Closure<Boolean> forIntArray(boolean ordered) {
+        { int[] x, int[] y ->
+            def clo = forList(Integer, ordered)
+            clo(x.toList(), y.toList())
+        }
+    }
+
+    static Closure<Boolean> forIntArray2d(boolean dim1Ordered, boolean dim2Ordered) {
+        { int[][] x, int[][] y ->
+            def clo = forList2d(Integer, dim1Ordered, dim2Ordered)
+            clo(
+                    x.collect({it.toList()}).toList(),
+                    y.collect({it.toList()}).toList()
+            )
+        }
+    }
+
 }

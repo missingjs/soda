@@ -18,7 +18,6 @@ class ConvUtils {
         cc.collect({it as String})
     }
 
-
     static List<Character> toCharList(List<String> ss) {
         toCharArray(ss).toList()
     }
@@ -41,6 +40,22 @@ class ConvUtils {
 
     static List<List<String>> fromCharList2d(List<List<Character>> cc2d) {
         cc2d.collect({fromCharList(it)})
+    }
+
+    static String[] toStringArray(List<String> ss) {
+        ss.toArray()
+    }
+
+    static List<String> fromStringArray(String[] ss) {
+        ss.toList()
+    }
+
+    static String[][] toStringArray2d(List<List<String>> ss2d) {
+        ss2d.collect({it.toArray()}).toArray()
+    }
+
+    static List<List<String>> fromStringArray2d(String[][] ss2d) {
+        ss2d.collect({it.toList()}).toList()
     }
 
     static int[] toIntArray(List<Integer> ints) {

@@ -42,17 +42,17 @@ class ListFeatureFactory {
             }
             def xmap = new XMap<T, Integer>(elemFeat)
             for (e in a) {
-                xmap[e] = xmap.getOrDefault(e, 0) + 1
+                xmap.put(e, xmap.getOrDefault(e, 0) + 1)
             }
             for (e in b) {
                 if (!xmap.containsKey(e)) {
                     return false
                 }
-                int c = xmap[e] - 1
+                int c = xmap.get(e) - 1
                 if (c == 0) {
                     xmap.remove(e)
                 } else {
-                    xmap[e] = c
+                    xmap.put(e, c)
                 }
             }
             return true
