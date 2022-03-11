@@ -22,4 +22,8 @@ class Utils {
         }
         args
     }
+
+    static Object[] parseArguments(Type[] types, List<Object> rawParams) {
+        parseArguments(types.toList(), rawParams).toArray(Object[]::new)
+    }
 }

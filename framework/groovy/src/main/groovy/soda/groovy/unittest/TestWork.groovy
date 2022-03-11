@@ -13,8 +13,6 @@ class TestWork<R> {
 
     private Closure<R> closure
 
-    private List<Type> typeList
-
     private List<Type> argTypes
 
     private Type returnType
@@ -84,6 +82,10 @@ class TestWork<R> {
             typeList << retType
             new TestWork<R>(mc, typeList)
         }
+    }
+
+    static TestWork<Object> forStruct(Class structClass) {
+        create(new StructTester(structClass).&test)
     }
 
 }
