@@ -13,7 +13,7 @@ class Solution {
     private NestedInteger parse(String s) {
         if (s[p] == '[') {
             ++p
-            def root = new DefaultNestedInteger()
+            def root = new NestedInteger()
             while (s[p] != ']') {
                 root.add(parse(s))
                 if (s[p] == ',') {
@@ -39,7 +39,7 @@ class Solution {
         if (negative) {
             value = 0 - value
         }
-        new DefaultNestedInteger(value)
+        new NestedInteger(value)
     }
 }
 

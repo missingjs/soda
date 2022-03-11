@@ -4,9 +4,9 @@ class NestedIntegerFactory {
 
     static NestedInteger parse(Object obj) {
         if (obj instanceof Integer) {
-            return new DefaultNestedInteger(obj as int)
+            return new NestedInteger(obj as int)
         }
-        def ni = new DefaultNestedInteger()
+        def ni = new NestedInteger()
         for (a in obj as List) {
             ni.add(parse(a))
         }
