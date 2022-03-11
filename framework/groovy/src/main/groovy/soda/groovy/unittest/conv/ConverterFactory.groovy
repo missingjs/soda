@@ -1,7 +1,6 @@
 package soda.groovy.unittest.conv
 
-import soda.groovy.leetcode.ListFactory
-import soda.groovy.leetcode.ListNode
+import soda.groovy.leetcode.*
 import soda.groovy.unittest.validate.ObjectFeature
 
 import java.lang.reflect.Type
@@ -54,6 +53,13 @@ class ConverterFactory {
         registerFactory(new TypeRef<List<ListNode>>() {},
                 { List<List<Integer>> data -> data.collect({ListFactory.create(it)}) },
                 { List<ListNode> lists -> lists.collect({ListFactory.dump(it)}) }
+        )
+
+        registerFactory(NestedInteger, NestedIntegerFactory::parse, NestedIntegerFactory::serialize)
+        registerFactory(
+                new TypeRef<List<NestedInteger>>() {},
+                NestedIntegerFactory::parseList,
+                NestedIntegerFactory::serializeList
         )
     }
 }
