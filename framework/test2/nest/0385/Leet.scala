@@ -17,7 +17,7 @@ object Solution {
   def parse(s: String): NestedInteger = {
     if (s(p) == '[') {
       p += 1
-      val root = DefaultNestedInteger.forList()
+      val root = new NestedInteger {}
       while (s(p) != ']') {
         root.add(parse(s))
         if (s(p) == ',') {
@@ -43,7 +43,9 @@ object Solution {
     if (negative) {
       value = -value
     }
-    DefaultNestedInteger.forInt(value)
+    val ni = new NestedInteger {}
+    ni.setInteger(value)
+    ni
   }
 }
 

@@ -1,7 +1,7 @@
 package soda.scala.unittest.conv
 
 import play.api.libs.json._
-import soda.scala.leetcode.{DefaultNestedInteger, NestedInteger}
+import soda.scala.leetcode.NestedInteger
 
 class NestedIntegerConverter extends ObjectConverter[NestedInteger] {
 
@@ -14,9 +14,14 @@ class NestedIntegerConverter extends ObjectConverter[NestedInteger] {
 object NestedIntegerConverter {
   def parse(obj: JsValue): NestedInteger = {
     obj match {
-      case i: JsNumber => DefaultNestedInteger.forInt(i.as[Int])
+      case i: JsNumber => {
+        val ni = new NestedInteger {}
+        ni.setInteger(i.as[Int])
+        ni
+      }
       case arr: JsArray => {
-        val ni = DefaultNestedInteger.forList()
+        val ni = new NestedInteger {}
+//        val ni = DefaultNestedInteger.forList()
         for (elem <- arr.value) {
           ni.add(parse(elem))
         }
