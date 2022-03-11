@@ -14,7 +14,7 @@ public class Solution {
     private NestedInteger parse(string s) {
         if (s[p] == '[') {
             ++p;
-            var root = new NestedIntegerImpl();
+            var root = new NestedInteger();
             while (s[p] != ']') {
                 root.Add(parse(s));
                 if (s[p] == ',') {
@@ -40,7 +40,7 @@ public class Solution {
         if (negative) {
             value = -value;
         }
-        return new NestedIntegerImpl(value);
+        return new NestedInteger(value);
     }
 }
 

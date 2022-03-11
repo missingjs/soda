@@ -21,9 +21,9 @@ public static class NestedIntegerConverter
     private static NestedInteger parse(JToken jt)
     {
         if (jt.Type == JTokenType.Integer) {
-            return new NestedIntegerImpl(jt.ToObject<int>());
+            return new NestedInteger(jt.ToObject<int>());
         }
-        var ni = new NestedIntegerImpl();
+        var ni = new NestedInteger();
         foreach (var a in jt) {
             ni.Add(parse(a));
         }
