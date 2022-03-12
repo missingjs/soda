@@ -26,6 +26,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&reverseVowels)
-// work.validator = { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class ReverseWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&reverseVowels)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new ReverseWork()(System.in.getText('UTF-8'))

@@ -38,8 +38,14 @@ class TopVotedCandidate {
     }
 }
 
-// def work = TestWork.create(new Solution().&add)
-def work = TestWork.forStruct(TopVotedCandidate)
-// work.validator = { i, j -> i == j }
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+class LeetWork {
+    String call(String input) {
+        // def work = TestWork.create(new Solution().&add)
+        def work = TestWork.forStruct(TopVotedCandidate)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new LeetWork()(System.in.getText('UTF-8'))

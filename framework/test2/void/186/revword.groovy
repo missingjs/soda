@@ -34,8 +34,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&reverseWords)
-// def work = TestWork.forStruct(STRUCT)
-// work.validator = { i, j -> i == j }
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+class RevwordWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&reverseWords)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new RevwordWork()(System.in.getText('UTF-8'))

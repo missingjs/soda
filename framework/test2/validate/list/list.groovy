@@ -27,8 +27,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&permutation)
-// def work = TestWork.forStruct(STRUCT)
-work.validator = Validators.forArray(String, false)
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+class ListWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&permutation)
+        // def work = TestWork.forStruct(STRUCT)
+        work.validator = Validators.forArray(String, false)
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new ListWork()(System.in.getText('UTF-8'))

@@ -80,17 +80,23 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&wiggleSort)
-// def work = TestWork.forStruct(STRUCT)
-work.validator = { e, nums ->
-    def res = true
-    for (int i = 1; i < nums.length; ++i) {
-        if (i % 2 != 0 && nums[i] <= nums[i-1] || i % 2 == 0 && nums[i] >= nums[i-1]) {
-            res = false
-            break
+class LeetWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&wiggleSort)
+        // def work = TestWork.forStruct(STRUCT)
+        work.validator = { e, nums ->
+            def res = true
+            for (int i = 1; i < nums.length; ++i) {
+                if (i % 2 != 0 && nums[i] <= nums[i-1] || i % 2 == 0 && nums[i] >= nums[i-1]) {
+                    res = false
+                    break
+                }
+            }
+            res
         }
+        work.compareSerial = true
+        work.run(input)
     }
-    res
 }
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+
+println new LeetWork()(System.in.getText('UTF-8'))

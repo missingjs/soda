@@ -28,6 +28,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&containsNearbyAlmostDuplicate)
-// work.setValidator { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class LeetWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&containsNearbyAlmostDuplicate)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new LeetWork()(System.in.getText('UTF-8'))

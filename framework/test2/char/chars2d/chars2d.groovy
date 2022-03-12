@@ -13,6 +13,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&toUpper)
-// work.setValidator { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class Chars2dWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&toUpper)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new Chars2dWork()(System.in.getText('UTF-8'))

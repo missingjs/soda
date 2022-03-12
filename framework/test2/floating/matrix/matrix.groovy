@@ -17,6 +17,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&matrixMultiply)
-// work.validator = { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class MatrixWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&matrixMultiply)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        // work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new MatrixWork()(System.in.getText('UTF-8'))

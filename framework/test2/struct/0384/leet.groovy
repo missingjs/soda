@@ -30,21 +30,28 @@ class Solution {
     }
 }
 
-// def work = TestWork.create(new Solution().&add)
-def work = TestWork.forStruct(Solution)
-work.validator = { List expect, List result ->
-    Object[] arguments = work.arguments
-    def commands = arguments[0] as List
-    def listCmp = Validators.forList(Integer, false)
-    for (int i = 1; i < commands.size(); ++i) {
-        String cmd = commands[i]
-        if (cmd == "shuffle") {
-            if (!listCmp(expect[i], result[i])) {
-                return false
+class LeetWork {
+    String call(String input) {
+        // def work = TestWork.create(new Solution().&add)
+        def work = TestWork.forStruct(Solution)
+        work.validator = { List expect, List result ->
+            Object[] arguments = work.arguments
+            def commands = arguments[0] as List
+            def listCmp = Validators.forList(Integer, false)
+            for (int i = 1; i < commands.size(); ++i) {
+                String cmd = commands[i]
+                if (cmd == "shuffle") {
+                    if (!listCmp(expect[i], result[i])) {
+                        return false
+                    }
+                }
             }
+            return true
         }
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
     }
-    return true
 }
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+
+println new LeetWork()(System.in.getText('UTF-8'))

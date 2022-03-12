@@ -17,4 +17,4 @@ class __Bootstrap__ {
     }
 }
 
-println new __Bootstrap__().call(System.in.getText('UTF-8'))
+println new __Bootstrap__()(System.in.getText('UTF-8'))

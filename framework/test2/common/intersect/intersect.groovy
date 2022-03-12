@@ -19,6 +19,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&intersection)
-work.validator = Validators.forList(Integer, false)
-println work.run(System.in.getText('UTF-8'))
+class IntersectWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&intersection)
+        // def work = TestWork.forStruct(STRUCT)
+        work.validator = Validators.forList(Integer, false)
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new IntersectWork()(System.in.getText('UTF-8'))

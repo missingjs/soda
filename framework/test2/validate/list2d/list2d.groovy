@@ -19,8 +19,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&groupByLength)
-// def work = TestWork.forStruct(STRUCT)
-work.validator = Validators.forArray2d(String, false, false)
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+class List2dWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&groupByLength)
+        // def work = TestWork.forStruct(STRUCT)
+        work.validator = Validators.forArray2d(String, false, false)
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new List2dWork()(System.in.getText('UTF-8'))

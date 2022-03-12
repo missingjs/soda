@@ -6,6 +6,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&divide)
-// work.validator = { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class FloatingWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&divide)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        // work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new FloatingWork()(System.in.getText('UTF-8'))

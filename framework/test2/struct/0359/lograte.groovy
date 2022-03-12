@@ -25,8 +25,15 @@ class Logger {
     }
 }
 
-// def work = TestWork.create(new Solution().&add)
-def work = TestWork.forStruct(Logger)
-// work.validator = { i, j -> i == j }
-work.compareSerial = true
-println work.run(System.in.getText('UTF-8'))
+class LograteWork {
+    String call(String input) {
+        // def work = TestWork.create(new Solution().&add)
+        def work = TestWork.forStruct(Logger)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new LograteWork()(System.in.getText('UTF-8'))

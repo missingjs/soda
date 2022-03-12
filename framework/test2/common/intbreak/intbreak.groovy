@@ -25,6 +25,14 @@ class Solution {
     }
 }
 
-def work = TestWork.create(new Solution().&integerBreak)
-// work.setValidator { i, j -> i == j }
-println work.run(System.in.getText('UTF-8'))
+class IntbreakWork {
+    String call(String input) {
+        def work = TestWork.create(new Solution().&integerBreak)
+        // def work = TestWork.forStruct(STRUCT)
+        // work.validator = { i, j -> i == j }
+        work.compareSerial = true
+        work.run(input)
+    }
+}
+
+println new IntbreakWork()(System.in.getText('UTF-8'))
