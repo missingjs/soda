@@ -1,30 +1,30 @@
 package soda.groovy.web
 
-public class ClassLoaderManager {
+class ClassLoaderManager {
 
-    private Map<String, ClassLoader> loaderMap = new HashMap<>();
+    private Map<String, ClassLoader> loaderMap = [:]
 
-    public synchronized void set(String path) throws MalformedURLException {
-        File file = new File(path);
-        ClassLoader parent = ClassLoaderManager.class.getClassLoader();
-        URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, parent);
-        loaderMap.put(path, loader);
-        Logger.info(String.format("new class loader for %s: %s", path, loader));
+    synchronized void set(String path) throws MalformedURLException {
+        File file = new File(path)
+        ClassLoader parent = ClassLoaderManager.class.classLoader
+        URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, parent)
+        loaderMap[path] = loader
+        Logger.info("new class loader for $path: $loader")
     }
 
-    public synchronized ClassLoader get(String path) {
+    synchronized ClassLoader get(String path) {
         if (!loaderMap.containsKey(path)) {
             try {
-                set(path);
+                set(path)
             } catch (MalformedURLException ex) {
-                Logger.exception("invalid path: " + path, ex);
+                Logger.exception("invalid path: $path", ex)
             }
         }
-        return loaderMap.get(path);
+        loaderMap[path]
     }
 
-    public synchronized void remove(String path) {
-        loaderMap.remove(path);
+    synchronized void remove(String path) {
+        loaderMap.remove(path)
     }
 
 }

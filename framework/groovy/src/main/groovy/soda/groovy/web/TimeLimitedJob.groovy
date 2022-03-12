@@ -6,7 +6,7 @@ class TimeLimitedJob {
 
     private Closure<String> job
 
-    private Thread jobThread;
+    private Thread jobThread
 
     TimeLimitedJob(Closure<String> job) {
         this.job = job

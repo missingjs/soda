@@ -44,6 +44,8 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
+workclass=$(python3 -c "print('$testname'.capitalize())")
+workclass="${workclass}Work"
 execfile=${testname}.groovy
 
 remote_run()
@@ -83,15 +85,24 @@ case $cmd in
     new)
         template_file=$self_dir/src/main/groovy/bootstrap.groovy
         create_source_file $template_file $execfile
+        classname=$workclass
+        cat $execfile | sed "s/__Bootstrap__/$classname/g" > $classname.tmp
+        mv $classname.tmp $execfile
         ;;
     make | clean)
         # Don't remove. Just for interface compatible
         ;;
     run)
         assert_testname
-        assert_framework
         classpath=$(get_classpath)
-        groovy -cp $classpath $execfile
+        run_mode=$3
+        if [ "$run_mode" == "--remote" ]; then
+            cur_dir=$(pwd)
+            remote_run $workclass "$cur_dir/$execfile" <&0
+        else
+            assert_framework
+            groovy -cp $classpath $execfile
+        fi
         ;;
     server)
         operation=$2

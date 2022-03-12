@@ -4,63 +4,53 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 
 import java.nio.charset.StandardCharsets
-import java.util.stream.Collectors
 
-public abstract class BaseHandler implements HttpHandler {
+abstract class BaseHandler implements HttpHandler {
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        var method = exchange.getRequestMethod();
-        var uri = exchange.getRequestURI();
+    void handle(HttpExchange exchange) throws IOException {
+        def method = exchange.requestMethod
+        def uri = exchange.requestURI
         try {
-            String result = handleWork(exchange);
-            sendMessage(exchange, 200, result);
-            Logger.info(String.format("%s %s 200 %s", method, uri, result));
+            String result = handleWork(exchange)
+            sendMessage(exchange, 200, result)
+            Logger.info("$method $uri 200 $result")
         } catch (Exception ex) {
-            Logger.exception(String.format("%s %s 500 request handling error", method, uri), ex);
-            sendMessageWithCatch(exchange, 500, Utils.toString(ex));
+            Logger.exception("$method $uri 500 request handling error", ex)
+            sendMessageWithCatch(exchange, 500, WebUtils.toString(ex))
         }
     }
 
-    protected abstract String handleWork(HttpExchange exchange) throws Exception;
+    protected abstract String handleWork(HttpExchange exchange) throws Exception
 
     protected void sendMessage(HttpExchange exch, int code, String message) throws IOException {
-        byte[] data = message.getBytes(StandardCharsets.UTF_8);
-        exch.sendResponseHeaders(code, data.length);
-        exch.getResponseBody().write(data);
-        exch.getResponseBody().close();
+        byte[] data = message.getBytes(StandardCharsets.UTF_8)
+        exch.sendResponseHeaders(code, data.length)
+        exch.responseBody.write(data)
+        exch.responseBody.close()
     }
 
     protected void sendMessageWithCatch(HttpExchange exch, int code, String message) {
         try {
-            sendMessage(exch, code, message);
+            sendMessage(exch, code, message)
         } catch (IOException ex) {
-            var msg = String.format("message sending error, code - %d, msg - %s", code, message);
-            Logger.exception(msg, ex);
+            Logger.exception("message sending error, code - $code, msg - $message", ex)
         }
     }
 
     protected Map<String, String> parseQuery(HttpExchange exch) {
-        String query = exch.getRequestURI().getQuery();
-        return parseQuery(query);
+        parseQuery(exch.requestURI.query)
     }
 
     protected Map<String, String> parseQuery(String query) {
-        return Arrays.stream(query.split("[&]"))
-                .map(s -> s.split("="))
-                .filter(ss -> ss.length == 2)
-                .collect(Collectors.toMap(ss -> ss[0], ss->ss[1]));
+        query.split('&')
+                .collect {it.split('=')}
+                .findAll {it.length==2}
+                .collectEntries {[it[0], it[1]]}
     }
 
     protected String getPostBody(HttpExchange exch) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(exch.getRequestBody(), StandardCharsets.UTF_8));
-        StringBuilder buf = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            buf.append(line);
-        }
-        reader.close();
-        return buf.toString();
+        exch.requestBody.getText('UTF-8')
     }
 
 }
