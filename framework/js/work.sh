@@ -9,7 +9,7 @@ usage:
 
 options:
     new <testname>
-        create source file with name <testname>.rb
+        create source file with name <testname>.js
 
     make <testname> 
         do nothing
