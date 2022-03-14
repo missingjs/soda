@@ -6,5 +6,10 @@ out_dir=./dist
 
 cd $self_dir
 [ -d $out_dir ] && rm -r $out_dir
+
 set -x
-tsc --outDir $out_dir
+tsc --outDir $out_dir --moduleResolution node || exit
+set +x
+
+echo '{"type":"module"}' > dist/soda/package.json
+

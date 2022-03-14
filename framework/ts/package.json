@@ -8,5 +8,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "object-hash": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "@types/object-hash": "^2.2.1"
+  }
 }

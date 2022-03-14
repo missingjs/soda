@@ -36,6 +36,7 @@ srcfile=${testname}.ts
 exefile=${testname}.js
 output_dir=./ts
 dist_dir=$self_dir/dist
+build_target=es2022
 
 case $cmd in
     new)
@@ -47,16 +48,28 @@ case $cmd in
         [ -e $output_dir ] || mkdir $output_dir
         jsfile=$output_dir/$exefile
         if [[ ! -e $jsfile ]] || [[ $srcfile -nt $jsfile ]]; then
+            cp $srcfile $output_dir/
+            cd $output_dir
+            echo '{"type": "module"}' > package.json
+
+            [ -e node_modules ] || mkdir node_modules
+            cd node_modules
+            rm -rf *
+            ln -s $dist_dir/soda
+            for d in $(ls -d $self_dir/node_modules/*); do
+                ln -s $d
+            done
+            cd ..
+
             echo "Compiling $srcfile ..."
             set -x
-            tsc --baseUrl $dist_dir --outDir $output_dir --target es3 $srcfile || exit
+            tsc --target $build_target --moduleResolution node $srcfile || exit
             set +x
             echo "Compile $srcfile OK"
         fi
         ;;
     run)
-        export NODE_PATH="$dist_dir:$self_dir/node_modules:$NODE_PATH"
-        (cd $output_dir && node $exefile)
+        cd $output_dir && node --experimental-specifier-resolution=node $exefile
         ;;
     clean)
         [ -e $output_dir ] && rm -v -r $output_dir
