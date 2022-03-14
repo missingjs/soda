@@ -18,6 +18,8 @@ server_class="soda.groovy.web.SodaServer"
 port=$server_port
 prefix="http://localhost:$port"
 
+[ -z "$port" ] && { echo "server port not configured"; exit 2; }
+
 cmd=$1
 [ -z $cmd ] && usage
 
