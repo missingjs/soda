@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "target": "es3",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "rootDir": "src"
   },
   "include": ["src/**/*"],

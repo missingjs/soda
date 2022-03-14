@@ -33,9 +33,9 @@ cmd=$1
 
 testname=$2
 srcfile=${testname}.ts
+exefile=${testname}.js
 output_dir=./ts
 dist_dir=$self_dir/dist
-jsfile=$output_dir/${testname}.js
 
 case $cmd in
     new)
@@ -45,17 +45,18 @@ case $cmd in
     make)
         assert_testname
         [ -e $output_dir ] || mkdir $output_dir
+        jsfile=$output_dir/$exefile
         if [[ ! -e $jsfile ]] || [[ $srcfile -nt $jsfile ]]; then
             echo "Compiling $srcfile ..."
             set -x
-            tsc --baseUrl $dist_dir --outDir $output_dir $srcfile || exit
+            tsc --baseUrl $dist_dir --outDir $output_dir --target es3 $srcfile || exit
             set +x
             echo "Compile $srcfile OK"
         fi
         ;;
     run)
         export NODE_PATH="$dist_dir:$self_dir/node_modules:$NODE_PATH"
-        node $jsfile
+        (cd $output_dir && node $exefile)
         ;;
     clean)
         [ -e $output_dir ] && rm -v -r $output_dir
