@@ -1,5 +1,7 @@
-import {TestWork} from './work';
+import { Utils } from './utils';
+import { TestWork } from './work';
 
 export {
-    TestWork
+    TestWork,
+    Utils
 };
