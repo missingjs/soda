@@ -230,4 +230,5 @@ project.lock.json
 Program.cs
 main__gen.go
 *__gen.java
+/**/ts/
 

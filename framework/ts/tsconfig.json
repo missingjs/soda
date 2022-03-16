@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
     "rootDir": "src"
   },
   "include": ["src/**/*"],

@@ -1,17 +1,16 @@
-import { TestWork, Utils } from './soda/unittest';
+import { TestWork, Utils } from 'soda/unittest';
 
 // step [1]: implement solution function
 /**
- * @param {number} a
- * @param {number} b
- * @return {number}
+ * @param {string[]} chars
+ * @return {string[]}
  */
-function add(a: number, b: number): number {
-    return a + b;
+function doubleList(chars: string[]): string[] {
+    return chars.concat(chars);
 }
 
 // step [2]: setup function/return/arguments
-let taskFunc = add;
+let taskFunc = doubleList;
 const work = TestWork.create<ReturnType<typeof taskFunc>>(taskFunc);
 // work = TestWork.forStruct(STRUCT);
 // work.validator = (x, y) => { ... };
