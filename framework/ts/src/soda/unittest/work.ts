@@ -1,7 +1,7 @@
 import * as process from 'process';
 
 import { ConverterFactory } from './convert';
-import { FeatureFactory } from './feature';
+import { FeatureFactory } from './featurefactory';
 import { Utils } from './utils';
 
 interface WorkInput {
@@ -12,9 +12,9 @@ interface WorkInput {
 
 export class TestWork<R> {
 
-    private func: Function;
-    private argumentTypes: string[];
-    private returnType: string | undefined;
+    private readonly func: Function;
+    private readonly argumentTypes: string[];
+    private readonly returnType: string | undefined;
     public  compareSerial = false;
     public  validator: { (e: R, r: R): boolean } | undefined;
     private arguments: any[] | undefined;
