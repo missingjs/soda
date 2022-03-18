@@ -1,6 +1,6 @@
 import { Utils } from './utils';
-import { TestWork } from './work';
 import { Validators } from "./validate";
+import { TestWork } from './work';
 
 export {
     TestWork,

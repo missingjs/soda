@@ -7,7 +7,7 @@ import {
     MinPriorityQueue,
     MaxPriorityQueue
 } from '@datastructures-js/priority-queue';
-import { ListNode } from './soda/leetcode';
+import { ListNode, NestedInteger } from './soda/leetcode';
 import { TestWork, Utils, Validators } from './soda/unittest';
 
 // step [1]: implement solution function

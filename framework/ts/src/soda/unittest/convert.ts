@@ -1,4 +1,5 @@
-import {ListNode, ListFactory as LinkedListFactory, ListFactory} from '../leetcode/list';
+import {ListNode, ListFactory as LinkedListFactory} from '../leetcode/list';
+import {NestedInteger, NestedIntegerFactory} from "../leetcode/nest";
 
 class InternalConverter {
 
@@ -63,8 +64,18 @@ export class ConverterFactory {
         );
         this.registerByFunc(
             'ListNode[]',
-            (ls: number[][]) => ls.map((e: number[]) => ListFactory.create(e)!),
-            (ts: ListNode[]) => ts.map(e => ListFactory.dump(e)),
+            (ls: number[][]) => ls.map((e: number[]) => LinkedListFactory.create(e)!),
+            (ts: ListNode[]) => ts.map(e => LinkedListFactory.dump(e)),
+        );
+        this.registerByFunc(
+            'NestedInteger',
+            (d: any) => NestedIntegerFactory.parse(d),
+            (n: NestedInteger) => NestedIntegerFactory.serialize(n)
+        );
+        this.registerByFunc(
+            'NestedInteger[]',
+            (ds: any[]) => NestedIntegerFactory.parseMulti(ds),
+            (ns: NestedInteger[]) => NestedIntegerFactory.serializeMulti(ns)
         );
     }
 
