@@ -2,6 +2,12 @@ import {
     AvlTree,
     BinarySearchTree
 } from '@datastructures-js/binary-search-tree';
+import {
+    PriorityQueue,
+    MinPriorityQueue,
+    MaxPriorityQueue
+} from '@datastructures-js/priority-queue';
+import { ListNode } from './soda/leetcode';
 import { TestWork, Utils, Validators } from './soda/unittest';
 
 // step [1]: implement solution function

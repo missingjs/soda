@@ -1,3 +1,4 @@
+import {ListNode, ListFactory as LinkedListFactory, ListFactory} from '../leetcode/list';
 
 class InternalConverter {
 
@@ -17,7 +18,6 @@ class InternalConverter {
 export class ObjectConverter<T> {
 
     constructor(private converter: InternalConverter) {
-        this.converter = converter;
     }
 
     fromJsonSerializable(js: any): T {
@@ -27,9 +27,15 @@ export class ObjectConverter<T> {
     toJsonSerializable(obj: T): any {
         return this.converter.toJsonSerializer(obj);
     }
+
+    internal(): InternalConverter {
+        return this.converter;
+    }
 }
 
 type FactoryType = (typ: string) => InternalConverter;
+type ParserFunc<T> = (js: any) => T;
+type SerialFunc<T> = (obj: T) => any;
 
 export class ConverterFactory {
 
@@ -39,6 +45,27 @@ export class ConverterFactory {
         let fact = this.factoryMap.get(typeName);
         let ic = fact ? fact(typeName) : new InternalConverter(j => j, o => o);
         return new ObjectConverter<T>(ic);
+    }
+
+    private static registerFactory(typeName: string, factory: FactoryType) {
+        this.factoryMap.set(typeName, factory);
+    }
+
+    private static registerByFunc<T>(typeName: string, parser: ParserFunc<T>, serializer: SerialFunc<T>) {
+        this.registerFactory(typeName, () => new InternalConverter(parser, serializer));
+    }
+
+    static {
+        this.registerByFunc(
+            'ListNode', 
+            LinkedListFactory.create, 
+            LinkedListFactory.dump
+        );
+        this.registerByFunc(
+            'ListNode[]',
+            (ls: number[][]) => ls.map((e: number[]) => ListFactory.create(e)!),
+            (ts: ListNode[]) => ts.map(e => ListFactory.dump(e)),
+        );
     }
 
 }

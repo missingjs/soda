@@ -42,7 +42,7 @@ case $cmd in
     new)
         template_file=$self_dir/src/bootstrap.ts
         create_source_file $template_file $srcfile
-        sed -i 's/\.\/soda/soda/1' $srcfile
+        sed -i 's/\.\/soda/soda/g' $srcfile
         ;;
     make)
         assert_testname
