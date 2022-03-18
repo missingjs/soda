@@ -23,7 +23,7 @@ export class FeatureFactory {
         );
     }
 
-    static registerFactory(typeName: string, factory: FactoryType) {
+    private static registerFactory(typeName: string, factory: FactoryType) {
         this.factoryMap.set(typeName, factory);
     }
 
