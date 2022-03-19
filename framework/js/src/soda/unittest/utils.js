@@ -41,8 +41,8 @@ class Utils {
     static functionTypeHints(filePath, funcName) {
         let lines = [];
         const allFileContents = fs.readFileSync(filePath, 'utf-8');
+        let exp = new RegExp(`^var\\s+${funcName}\\s+=\\s+function\\s*\\(`);
         for (let line of allFileContents.split(/\r?\n/)) {
-            let exp = new RegExp(`^var\\s+${funcName}\\s+=\\s+function\\s*\\(`);
             if (line.match(exp)) {
                 break;
             }
