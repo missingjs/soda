@@ -23,7 +23,7 @@ function add(a: number, b: number): number {
 // step [2]: setup function/return/arguments
 let taskFunc = add;
 const work = TestWork.create<ReturnType<typeof taskFunc>>(taskFunc);
-// work = TestWork.forStruct(STRUCT);
+// let work = TestWork.forStruct(STRUCT);
 // work.validator = (x, y) => { ... };
 work.compareSerial = true;
 console.log(work.run(Utils.fromStdin()));

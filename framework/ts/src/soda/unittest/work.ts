@@ -3,6 +3,7 @@ import * as process from 'process';
 import { ConverterFactory } from './convert';
 import { FeatureFactory } from './featurefactory';
 import { Utils } from './utils';
+import {StructTester} from "./struct";
 
 interface WorkInput {
     id:       number;
@@ -27,6 +28,11 @@ export class TestWork<R> {
 
     static create<R>(func: Function): TestWork<R> {
         return new TestWork<R>(func, Utils.functionTypeHints(process.argv[1], func.name));
+    }
+
+    static forStruct(classDef: Function): TestWork<any[]> {
+        let hintsMap = Utils.methodTypeHints(process.argv[1], classDef.name);
+        return new TestWork<any[]>(StructTester.create(classDef, hintsMap), StructTester.methodHints());
     }
 
     run(text: string): string {
