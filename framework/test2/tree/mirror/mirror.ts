@@ -7,21 +7,26 @@ import {
     MinPriorityQueue,
     MaxPriorityQueue
 } from '@datastructures-js/priority-queue';
-import { ListNode, NestedInteger, TreeNode } from './soda/leetcode';
-import { TestWork, Utils, Validators } from './soda/unittest';
+import { ListNode, NestedInteger, TreeNode } from 'soda/leetcode';
+import { TestWork, Utils, Validators } from 'soda/unittest';
 
 // step [1]: implement solution function
 /**
- * @param {number} a
- * @param {number} b
- * @return {number}
+ * @param {TreeNode} root
+ * @return {TreeNode}
  */
-function add(a: number, b: number): number {
-    return a + b;
+function mirror(root: TreeNode | null): TreeNode | null {
+    if (!root) {
+        return null;
+    }
+    mirror(root.left);
+    mirror(root.right);
+    [root.left, root.right] = [root.right, root.left];
+    return root;
 }
 
 // step [2]: setup function/return/arguments
-let taskFunc = add;
+let taskFunc = mirror;
 const work = TestWork.create<ReturnType<typeof taskFunc>>(taskFunc);
 // let work = TestWork.forStruct(STRUCT);
 // work.validator = (x, y) => { ... };

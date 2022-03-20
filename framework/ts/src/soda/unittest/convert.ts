@@ -1,5 +1,6 @@
 import {ListNode, ListFactory as LinkedListFactory} from '../leetcode/list';
 import {NestedInteger, NestedIntegerFactory} from "../leetcode/nest";
+import {TreeNode, TreeFactory} from '../leetcode/tree';
 
 class InternalConverter {
 
@@ -76,6 +77,11 @@ export class ConverterFactory {
             'NestedInteger[]',
             (ds: any[]) => NestedIntegerFactory.parseMulti(ds),
             (ns: NestedInteger[]) => NestedIntegerFactory.serializeMulti(ns)
+        );
+        this.registerByFunc(
+            'TreeNode',
+            (d: Array<number|null>) => TreeFactory.create(d),
+            (t: TreeNode|null) => TreeFactory.dump(t)
         );
     }
 
