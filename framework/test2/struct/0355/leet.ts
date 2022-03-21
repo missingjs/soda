@@ -5,8 +5,7 @@ import {
 import {
     PriorityQueue,
     MinPriorityQueue,
-    MaxPriorityQueue,
-    PriorityQueueItem
+    MaxPriorityQueue
 } from '@datastructures-js/priority-queue';
 import { ListNode, NestedInteger } from 'soda/leetcode';
 import { TestWork, Utils, Validators } from 'soda/unittest';
@@ -76,7 +75,7 @@ class Twitter {
         let res: number[] = [];
         let i = 0;
         while (i < this.Limit && !pq.isEmpty()) {
-            let node = (pq.dequeue() as PriorityQueueItem<Node>).element;
+            let node = pq.dequeue()['element'];
             res.push(node.current().id);
             --node.index;
             if (!node.isEnd()) {

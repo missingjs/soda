@@ -5,8 +5,7 @@ import {
 import {
     PriorityQueue,
     MinPriorityQueue,
-    MaxPriorityQueue,
-    PriorityQueueItem
+    MaxPriorityQueue
 } from '@datastructures-js/priority-queue';
 import { ListNode, NestedInteger, TreeNode } from 'soda/leetcode';
 import { TestWork, Utils, Validators } from 'soda/unittest';
@@ -32,7 +31,7 @@ function closestKValues(root: TreeNode | null, target: number, k: number): numbe
     solve(root, target, k, queue);
     let res = [];
     while (!queue.isEmpty()) {
-        res.push((queue.dequeue() as PriorityQueueItem<Node>).element.value);
+        res.push(queue.dequeue()['element'].value);
     }
     return res;
 }
@@ -44,7 +43,7 @@ function solve(root: TreeNode, target: number, k: number, queue: MaxPriorityQueu
 
     let node = Node.withTarget(root.val, target);
     if (queue.size() == k) {
-        if (node.diff < (queue.front() as PriorityQueueItem<Node>).element.diff) {
+        if (node.diff < queue.front()['element'].diff) {
             queue.dequeue();
             queue.enqueue(node);
         }

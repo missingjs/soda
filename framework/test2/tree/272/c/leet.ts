@@ -5,8 +5,7 @@ import {
 import {
     PriorityQueue,
     MinPriorityQueue,
-    MaxPriorityQueue,
-    PriorityQueueItem
+    MaxPriorityQueue
 } from '@datastructures-js/priority-queue';
 import { ListNode, NestedInteger, TreeNode } from 'soda/leetcode';
 import { TestWork, Utils, Validators } from 'soda/unittest';
