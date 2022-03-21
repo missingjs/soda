@@ -27,7 +27,7 @@ class Solution {
     }
 }
 
-class ListWork {
+class PermuteWork {
     String call(String input) {
         def work = TestWork.create(new Solution().&permutation)
         // def work = TestWork.forStruct(STRUCT)
@@ -37,4 +37,4 @@ class ListWork {
     }
 }
 
-println new ListWork()(System.in.getText('UTF-8'))
+println new PermuteWork()(System.in.getText('UTF-8'))

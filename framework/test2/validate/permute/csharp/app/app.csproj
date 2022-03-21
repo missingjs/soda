@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <RestoreSources>$(RestoreSources);/home/tangqiming/workspace/soda/framework/csharp/soda/bin/Debug;https://api.nuget.org/v3/index.json</RestoreSources>
-    <StartupObject>List</StartupObject>
+    <StartupObject>Permute</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

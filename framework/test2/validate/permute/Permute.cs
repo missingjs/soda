@@ -25,7 +25,7 @@ public class Solution {
     }
 }
 
-public class List
+public class Permute
 {
     public static void Main(string[] args)
     {

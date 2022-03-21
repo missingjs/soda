@@ -15,7 +15,7 @@ class Solution {
         return res.toArray(new String[0]);
     }
 
-    private void solve(char[] chars, int i, char[] buf, int j, java.util.List<String> res) {
+    private void solve(char[] chars, int i, char[] buf, int j, List<String> res) {
         if (j == buf.length) {
             res.add(new String(buf));
             return;
@@ -33,7 +33,7 @@ class Solution {
     }
 }
 
-public class List implements Function<String, String> {
+public class Permute implements Function<String, String> {
 
     @Override
     public String apply(String text) {
@@ -47,7 +47,7 @@ public class List implements Function<String, String> {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(new List().apply(Utils.fromStdin()));
+        System.out.println(new Permute().apply(Utils.fromStdin()));
     }
 
 }

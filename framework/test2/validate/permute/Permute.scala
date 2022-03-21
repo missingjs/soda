@@ -33,7 +33,7 @@ object Solution {
   }
 }
 
-class List extends (String => String) {
+class Permute extends (String => String) {
   override def apply(text: String): String = {
     val work = GenericTestWork.create2(Solution.permutation)
     // val work = GenericTestWork.forStruct(typeOf[STRUCT])
@@ -47,6 +47,6 @@ class List extends (String => String) {
   }
 }
 
-object List extends App {
-  println(new List()(Utils.fromStdin()))
+object Permute extends App {
+  println(new Permute()(Utils.fromStdin()))
 }
