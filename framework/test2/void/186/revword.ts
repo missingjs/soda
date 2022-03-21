@@ -1,17 +1,21 @@
-const {ListNode, NestedInteger, TreeNode} = require('soda/leetcode');
-const {TestWork, Utils, Validators} = require('soda/unittest');
-const {
+import {
+    AvlTree,
+    BinarySearchTree
+} from '@datastructures-js/binary-search-tree';
+import {
     PriorityQueue,
     MinPriorityQueue,
     MaxPriorityQueue
-} = require('@datastructures-js/priority-queue');
+} from '@datastructures-js/priority-queue';
+import { ListNode, NestedInteger, TreeNode } from 'soda/leetcode';
+import { TestWork, Utils, Validators } from 'soda/unittest';
 
 // step [1]: implement solution function
 /**
  * @param {string[]} s
  * @return {void}
  */
-var reverseWords = function(s) {
+function reverseWords(s: string[]): void {
     if (s.length == 0) {
         return;
     }
@@ -28,9 +32,9 @@ var reverseWords = function(s) {
     if (i < j) {
         reverse(s, i, j-1);
     }
-};
+}
 
-function reverse(s, i, j) {
+function reverse(s: string[], i: number, j: number) {
     while (i < j) {
         [s[i], s[j]] = [s[j], s[i]];
         ++i;
@@ -39,9 +43,9 @@ function reverse(s, i, j) {
 }
 
 // step [2]: setup function/return/arguments
-const work = TestWork.create(reverseWords);
-// work = TestWork.forStruct(STRUCT);
+let taskFunc = reverseWords;
+const work = TestWork.create<ReturnType<typeof taskFunc>>(taskFunc);
+// let work = TestWork.forStruct(STRUCT);
 // work.validator = (x, y) => { ... };
 work.compareSerial = true;
 console.log(work.run(Utils.fromStdin()));
-
