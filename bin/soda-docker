@@ -20,7 +20,7 @@ image=soda-$ilang
 
 case $cmd in
     new | run | clean | tool)
-        docker run --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
+        docker run --user $USER --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
         ;;
     *)
         usage
