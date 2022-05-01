@@ -1,0 +1,29 @@
+#!/bin/bash
+
+usage()
+{
+    local cmd=$(basename $0)
+    cat << EOF
+usage: soda-docker <new|run|clean|tool> <lang> [options]
+EOF
+    exit 1
+}
+
+self_dir=$(cd $(dirname $0) && pwd)
+soda_dir=$(dirname $self_dir)
+
+cmd=$1
+ilang=$2
+
+[ -z $ilang ] && usage
+image=soda-$ilang
+
+case $cmd in
+    new | run | clean | tool)
+        docker run --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
+        ;;
+    *)
+        usage
+        ;;
+esac
+
