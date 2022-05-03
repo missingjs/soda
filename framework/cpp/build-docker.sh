@@ -1,17 +1,8 @@
 #!/bin/bash
 
-uid=$(id | grep -oP '(?<=uid=)\d+')
-gid=$(id | grep -oP '(?<=gid=)\d+')
-group_name=$(id | grep -oP "(?<=gid=$gid[(])[a-zA-Z0-9_]+")
+self_dir=$(cd $(dirname $0) && pwd)
+framework_dir=$(dirname $self_dir)
+common_dir=$framework_dir/common
 
-cat >Dockerfile << EOF
-FROM soda-python
-RUN apt-get update; apt-get install -y gcc-9
-RUN groupadd -g $gid $group_name
-RUN useradd $USER -u $uid -g $gid -m -s /bin/bash
-USER $USER
-EOF
+$common_dir/build-image.sh Dockerfile-template soda-cpp
 
-docker build -t soda-cpp .
-
-rm Dockerfile

@@ -131,6 +131,17 @@ tags=
 force_rebuild=no
 remote_mode=no
 
+# get_script()
+# {
+#     local lang=$1
+#     if [ $lang == "cpp" ]; then
+#         soda_dir=$(dirname $self_dir)
+#         echo "docker run -i --rm --user $USER -v $soda_dir:/soda -v $(pwd):/task -w /task soda-cpp /soda/framework/$lang/work.sh"
+#     else
+#         echo "$framework_dir/$lang/work.sh"
+#     fi
+# }
+
 case $cmd in 
     init)
         work=$2
