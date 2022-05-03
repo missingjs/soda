@@ -20,10 +20,28 @@ image=soda-$ilang
 
 case $cmd in
     new | run | clean | tool)
-        docker run --user $USER --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
+        # DO NOTHING
         ;;
     *)
         usage
+        ;;
+esac
+
+case $ilang in
+    cpp | python)
+        docker run --user $USER --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
+        ;;
+    java)
+        docker run --user $USER --rm \
+            -v $soda_dir:/soda \
+            -v $(pwd):/task \
+            -v /home/$USER/.m2:/home/$USER/.m2 \
+            -w /task $image \
+            /soda/bin/soda "$@"
+        ;;
+    *)
+        echo "language $ilang not supported"
+        exit 2
         ;;
 esac
 

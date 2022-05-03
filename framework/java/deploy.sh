@@ -7,7 +7,13 @@ cd $self_dir
 
 [ -e soda-lib ] && rm -r soda-lib
 
-mvn clean && mvn package && mvn install
+docker run \
+    --user $USER \
+    --rm \
+    -v /home/$USER/.m2:/home/$USER/.m2 \
+    -v $(pwd):/task \
+    -w /task \
+    soda-java mvn clean package
 
 cp target/soda-java-*.jar soda-lib/
 
