@@ -33,5 +33,16 @@ public class ClassLoaderManager {
 	public synchronized void remove(String path) {
 		loaderMap.remove(path);
 	}
+
+	public synchronized void setupForJar(String key, String jarFile) throws MalformedURLException {
+		ClassLoader parent = ClassLoaderManager.class.getClassLoader();
+		URLClassLoader loader = new URLClassLoader(new URL[] {new URL("file:" + jarFile)}, parent);
+		loaderMap.put(key, loader);
+		Logger.info(String.format("new class loader for %s: %s", key, loader));
+	}
+
+	public synchronized ClassLoader getForJar(String key) {
+		return loaderMap.get(key);
+	}
 	
 }

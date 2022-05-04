@@ -49,6 +49,7 @@ assert_testname() {
 }
 testname=$(python3 -c "print('$testname'.capitalize())")
 output_dir=./java
+jarfile=work.jar
 
 remote_run()
 {
@@ -77,8 +78,15 @@ remote_setup()
     local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/java/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/java/reset"
-    curl --connect-timeout 2 -X POST -d "classpath=$classpath" -s "$url" && echo
+    local url="http://localhost:$server_port/soda/java/setup"
+    jar_b64=$(python3 << EOF
+import base64
+with open("$output_dir/$jarfile", "rb") as fp:
+    b64 = base64.urlsafe_b64encode(fp.read()).decode('utf-8')
+    print(b64)
+EOF
+)
+    curl --connect-timeout 2 -X POST -d "key=$classpath&jar=$jar_b64" -s "$url" && echo
 }
 
 case $cmd in
@@ -102,6 +110,9 @@ case $cmd in
             tmpdir=$(mktemp -d)
             perl -pe 's/GenericTestWork.create(\w+)\(new (.*)\(\)::(.*)\)/GenericTestWork.create\1(\2.class, "\3", new \2()::\3)/g' $srcfile > $tmpdir/$srcfile
             cp $tmpdir/$srcfile $output_dir/${testname}__gen.java
+
+            [ -e $output_dir/$jarfile ] && rm $output_dir/$jarfile
+
             echo "Compiling $srcfile ..."
             classpath=$(get_classpath)
             set -x
@@ -109,6 +120,7 @@ case $cmd in
             set +x
             rm -rf $tmpdir
             echo "Compile $srcfile OK"
+            (cd $output_dir && jar cf $jarfile *.class)
         fi
         ;;
     run)

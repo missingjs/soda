@@ -30,7 +30,7 @@ public class WorkHandler extends BaseHandler {
 		ObjectMapper om = new ObjectMapper();
 		WorkRequest jr = om.readValue(content, WorkRequest.class);
 		
-		ClassLoader loader = mgr.get(jr.classpath);
+		ClassLoader loader = mgr.getForJar(jr.classpath);
 		Class<?> klass = loader.loadClass(jr.bootClass);
 
 		Callable<String> callable = () -> {

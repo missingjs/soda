@@ -72,7 +72,7 @@ public class SodaServer {
 		server.createContext("/soda/java/work", new WorkHandler(classLoaderMgr, 5000));
 		
 		// POST, application/x-www-form-urlencoded
-		server.createContext("/soda/java/reset", new SetupHandler(classLoaderMgr));
+		server.createContext("/soda/java/setup", new SetupHandler(classLoaderMgr));
 	}
 	
 	public void start() {
