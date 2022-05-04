@@ -5,7 +5,7 @@ usage()
     cat << EOF
 usage: $(basename $0) <location> <lang> [--clean]
 
-lang: all, cpp|python|java|go|scala|ruby|cs|perl
+lang: all, cpp|python|java|go|scala|ruby|cs|perl|js|php|groovy|ts
 EOF
     exit 1
 }
@@ -17,7 +17,7 @@ location=$1
 languages=$2
 shift; shift;
 [ -z "$location" -o -z "$languages" ] && usage
-[ "$languages" == "all" ] && languages="cpp python java go scala ruby cs perl"
+[ "$languages" == "all" ] && languages="cpp python java go scala ruby cs perl js php groovy ts"
 options="$@"
 
 for lang in $languages; do
