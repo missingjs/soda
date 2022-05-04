@@ -59,6 +59,15 @@ case $ilang in
             -v /home/$USER/.cache:/home/$USER/.cache \
             $trail_args
         ;;
+    csharp)
+        docker run --rm -t $proxy_option \
+            --network host \
+            $user_option \
+            $task_option \
+            -v /home/$USER/.nuget:/home/$USER/.nuget \
+            -v /home/$USER/.dotnet:/home/$USER/.dotnet \
+            $trail_args
+        ;;
     *)
         echo "language $ilang not supported"
         exit 2

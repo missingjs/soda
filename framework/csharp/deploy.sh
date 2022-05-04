@@ -2,25 +2,14 @@
 
 self_dir=$(cd $(dirname $0) && pwd)
 
-[ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
-source $self_dir/setup_env.sh || exit
-source $self_dir/common.sh || exit
+cd $self_dir
 
-check_package
-
-set -e
-
-cd $self_dir/soda
-
-dotnet clean
-
-dotnet pack --configuration Debug
-
-dotnet pack --configuration Release
-
-# clear this package in global cache
-global_pack_dir=~/.nuget/packages/$package_id/$package_version
-[ -e $global_pack_dir ] && rm -rv $global_pack_dir
-
-# !!! OR clear all global package caches
-# dotnet nuget locals global-packages --clear
+docker run --rm -t \
+    --user $(id -u):$(id -g) \
+    -v "/etc/passwd:/etc/passwd:ro" \
+    -v "/etc/group:/etc/group:ro" \
+    -v /home/$USER/.nuget:/home/$USER/.nuget \
+    -v /home/$USER/.dotnet:/home/$USER/.dotnet \
+    -v $(pwd):/task \
+    -w /task \
+    soda-csharp /task/make-lib.sh
