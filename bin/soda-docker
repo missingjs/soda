@@ -29,15 +29,20 @@ esac
 
 case $ilang in
     cpp | python)
-        docker run --user $USER --rm -v $soda_dir:/soda -v $(pwd):/task -w /task $image /soda/bin/soda "$@"
+        docker run --user $USER --rm -t \
+            -v $soda_dir:/soda \
+            -v $(pwd):/task \
+            -w /task \
+            $image /soda/bin/soda "$@"
         ;;
     java)
-        docker run --user $USER --rm \
+        docker run --user $USER --rm -it \
+            --network host \
             -v $soda_dir:/soda \
             -v $(pwd):/task \
             -v /home/$USER/.m2:/home/$USER/.m2 \
-            -w /task $image \
-            /soda/bin/soda "$@"
+            -w /task \
+            $image /soda/bin/soda "$@"
         ;;
     *)
         echo "language $ilang not supported"
