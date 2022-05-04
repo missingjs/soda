@@ -55,13 +55,13 @@ case $cmd in
         suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
         go mod init "$package_name/coding/$suffix"
         go mod edit -require "$package_name@$package_version"
-        go mod edit -replace "$package_name=$self_dir/src"
         ;;
     make)
         if [[ ! -e $output_dir/$execfile ]] || [[ $srcfile -nt $output_dir/$execfile ]]; then
             set -e
             cp $srcfile $output_dir/main__gen.go
             cd $output_dir
+            go mod edit -replace "$package_name=$self_dir/src"
             go mod tidy
             go build -o $execfile main__gen.go
             echo "Build success."
@@ -70,7 +70,6 @@ case $cmd in
     run)
         ./$output_dir/$execfile
         ;;
-
     clean)
         [ -e $output_dir/$execfile ] && rm -v $output_dir/$execfile
         ;;

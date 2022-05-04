@@ -27,28 +27,37 @@ case $cmd in
         ;;
 esac
 
+proxy_option=
+if [ -n $HTTP_PROXY ]; then
+    proxy_option="--env HTTP_PROXY=$HTTP_PROXY --env HTTPS_PROXY=$HTTPS_PROXY"
+fi
+user_option="--user $(id -u):$(id -g) -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro"
+task_option="-v $soda_dir:/soda -v $(pwd):/task -w /task"
+trail_args="$image /soda/bin/soda $@"
+
 case $ilang in
     cpp | python)
         docker run --rm -t \
-            --user $(id -u):$(id -g) \
-            -v "/etc/passwd:/etc/passwd:ro" \
-            -v "/etc/group:/etc/group:ro" \
-            -v $soda_dir:/soda \
-            -v $(pwd):/task \
-            -w /task \
-            $image /soda/bin/soda "$@"
+            $user_option \
+            $task_option \
+            $trail_args
         ;;
     java)
         docker run --rm -t \
             --network host \
-            --user $(id -u):$(id -g) \
-            -v "/etc/passwd:/etc/passwd:ro" \
-            -v "/etc/group:/etc/group:ro" \
-            -v $soda_dir:/soda \
-            -v $(pwd):/task \
+            $user_option \
+            $task_option \
             -v /home/$USER/.m2:/home/$USER/.m2 \
-            -w /task \
-            $image /soda/bin/soda "$@"
+            $trail_args
+        ;;
+    go | golang)
+        docker run --rm -t $proxy_option \
+            --network host \
+            $user_option \
+            $task_option \
+            -v /home/$USER/go:/home/$USER/go \
+            -v /home/$USER/.cache:/home/$USER/.cache \
+            $trail_args
         ;;
     *)
         echo "language $ilang not supported"
