@@ -4,5 +4,9 @@ self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 common_dir=$framework_dir/common
 
-$common_dir/build-image.sh Dockerfile-template soda-python
+image_name=soda-python
+
+docker build -t ${image_name}-part . || exit
+
+$common_dir/make-image.sh $image_name
 
