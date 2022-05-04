@@ -9,7 +9,7 @@ usage:
     $cmd new   <lang>
     $cmd run   <lang> [-i <tag>]
     $cmd clean <lang>
-    $cmd tool  <lang> [options]
+    $cmd call  <lang> [options]
 EOF
     exit 1
 }
@@ -183,7 +183,7 @@ case $cmd in
         work=$(get_work_name)
         $script clean $work
         ;;
-    tool)
+    call)
         ilang=$(trans_lang_name $2)
         check_sdk $ilang
         script=$framework_dir/$ilang/work.sh

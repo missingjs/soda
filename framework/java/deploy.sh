@@ -7,9 +7,10 @@ cd $self_dir
 
 [ -e soda-lib ] && rm -r soda-lib
 
-docker run \
-    --user $USER \
-    --rm \
+docker run -rm -t \
+    --user $(id -u):$(id -g) \
+    -v "/etc/passwd:/etc/passwd:ro" \
+    -v "/etc/group:/etc/group:ro" \
     -v /home/$USER/.m2:/home/$USER/.m2 \
     -v $(pwd):/task \
     -w /task \

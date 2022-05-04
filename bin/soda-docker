@@ -4,7 +4,7 @@ usage()
 {
     local cmd=$(basename $0)
     cat << EOF
-usage: soda-docker <new|run|clean|tool> <lang> [options]
+usage: soda-docker <new|run|clean|call> <lang> [options]
 EOF
     exit 1
 }
@@ -19,7 +19,7 @@ ilang=$2
 image=soda-$ilang
 
 case $cmd in
-    new | run | clean | tool)
+    new | run | clean | call)
         # DO NOTHING
         ;;
     *)
@@ -29,15 +29,21 @@ esac
 
 case $ilang in
     cpp | python)
-        docker run --user $USER --rm -t \
+        docker run --rm -t \
+            --user $(id -u):$(id -g) \
+            -v "/etc/passwd:/etc/passwd:ro" \
+            -v "/etc/group:/etc/group:ro" \
             -v $soda_dir:/soda \
             -v $(pwd):/task \
             -w /task \
             $image /soda/bin/soda "$@"
         ;;
     java)
-        docker run --user $USER --rm -it \
+        docker run --rm -it \
             --network host \
+            --user $(id -u):$(id -g) \
+            -v "/etc/passwd:/etc/passwd:ro" \
+            -v "/etc/group:/etc/group:ro" \
             -v $soda_dir:/soda \
             -v $(pwd):/task \
             -v /home/$USER/.m2:/home/$USER/.m2 \

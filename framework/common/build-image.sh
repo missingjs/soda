@@ -11,9 +11,6 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 python_dir=$framework_dir/python
-uid=$(id | grep -oP '(?<=uid=)\d+')
-gid=$(id | grep -oP '(?<=gid=)\d+')
-group_name=$(id | grep -oP "(?<=gid=$gid[(])[a-zA-Z0-9_]+")
 
 docker_file=$1
 image_name=$2
@@ -31,9 +28,7 @@ RUN apt-get update
 RUN apt-get install -y python3-pip
 COPY requirements.txt /python/
 RUN pip3 install -r /python/requirements.txt
-RUN groupadd -g $gid $group_name
-RUN useradd $USER -u $uid -g $gid -m -s /bin/bash
-USER $USER
+RUN apt-get install -y curl
 EOF
 
 docker build -t $image_name .
