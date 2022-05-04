@@ -7,4 +7,4 @@ require (
 	missingjs.com/soda v0.0.1
 )
 
-replace missingjs.com/soda => /home/tangqiming/workspace/soda/framework/go/src
+replace missingjs.com/soda => /soda/framework/go/src
