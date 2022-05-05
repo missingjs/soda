@@ -23,10 +23,10 @@ class WorkHandler extends BaseHandler {
         String content = getPostBody(exchange)
         def jr = new WorkRequest(new JsonSlurper().parseText(content))
 
-        ClassLoader loader = mgr.get(jr.classpath)
-        def gcl = new GroovyClassLoader(loader)
-        gcl.parseClass(new File(jr.scriptFile))
-        def klass = gcl.loadClass(jr.bootClass)
+        ClassLoader loader = mgr.getForScript(jr.classpath)
+//        def gcl = new GroovyClassLoader(loader)
+//        gcl.parseClass(new File(jr.scriptFile))
+        def klass = loader.loadClass(jr.bootClass)
 
         def workClosure = { ->
             def ctor = klass.getDeclaredConstructor()

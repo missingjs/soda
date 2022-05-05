@@ -26,7 +26,7 @@ options:
     server start --fg
         start server foreground
 
-    remote-setup
+    remote-setup <testname>
         reset remote server, drop old work class
 
 EOF
@@ -54,12 +54,11 @@ remote_run()
     local input="$(</dev/stdin)"
     local classname="$1"
     local script_file="$2"
-    local classpath=$(cd $output_dir && pwd)
+    local classpath=$(pwd)
     pycode=$(cat << EOF
 import json; import sys;
 content = sys.stdin.read()
 info = {
-  "scriptFile": "$script_file",
   "classpath": "$classpath",
   "bootClass": "$classname",
   "testCase" : content
@@ -74,11 +73,18 @@ EOF
 
 remote_setup()
 {
-    local classpath=$(cd $output_dir && pwd)
+    local classpath=$(pwd)
     local echo_url="http://localhost:$server_port/soda/groovy/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/groovy/reset"
-    curl --connect-timeout 2 -X POST -d "classpath=$classpath" -s "$url" && echo
+    local url="http://localhost:$server_port/soda/groovy/setup"
+    sb64=$(python3 << EOF
+import base64
+with open("$execfile", "rb") as fp:
+    b64 = base64.urlsafe_b64encode(fp.read()).decode('utf-8')
+    print(b64)
+EOF
+)
+    curl --connect-timeout 2 -X POST -d "key=$classpath&script=$sb64" -s "$url" && echo
 }
 
 case $cmd in
@@ -119,6 +125,7 @@ case $cmd in
         fi
         ;;
     remote-setup)
+        assert_testname
         remote_setup
         ;;
     *)

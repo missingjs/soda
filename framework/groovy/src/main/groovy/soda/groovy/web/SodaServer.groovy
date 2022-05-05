@@ -70,7 +70,7 @@ class SodaServer {
         server.createContext("/soda/groovy/work", new WorkHandler(classLoaderMgr, 5000))
 
         // POST, application/x-www-form-urlencoded
-        server.createContext("/soda/groovy/reset", new SetupHandler(classLoaderMgr))
+        server.createContext("/soda/groovy/setup", new SetupHandler(classLoaderMgr))
     }
 
     void start() {

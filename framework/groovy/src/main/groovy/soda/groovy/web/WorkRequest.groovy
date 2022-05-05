@@ -8,10 +8,6 @@ class WorkRequest {
         this.obj = obj as Map
     }
 
-    String getScriptFile() {
-        obj.scriptFile as String
-    }
-
     String getClasspath() {
         obj.classpath as String
     }

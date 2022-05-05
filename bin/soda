@@ -171,7 +171,7 @@ case $cmd in
         commandStr="$script run $work"
         if [ "$remote_mode" == "yes" ]; then
             commandStr="$commandStr --remote"
-            $script remote-setup || exit
+            $script remote-setup $work || exit
         fi
         [ -z "$tags" ] || tag_options="--tags $tags"
         python3 -m $runner $work --command "$commandStr" $tag_options
