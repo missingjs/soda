@@ -5,7 +5,19 @@ self_dir=$(cd $(dirname $0) && pwd)
 soda_dir=$(cd $self_dir/../.. && pwd)
 lib_dir=soda-lib
 
-source $self_dir/setup_env.sh || exit
+run_gradlew()
+{
+    docker run --rm -t \
+        --network host \
+        --user $(id -u):$(id -g) \
+        -v "/etc/passwd:/etc/passwd:ro" \
+        -v "/etc/group:/etc/group:ro" \
+        -v /home/$USER/.m2:/home/$USER/.m2 \
+        -v /home/$USER/.gradle:/home/$USER/.gradle \
+        -v $(pwd):/task \
+        -w /task \
+        soda-groovy ./gradlew "$@"
+}
 
 cd $self_dir
 
@@ -13,7 +25,7 @@ cd $self_dir
 
 mkdir $lib_dir
 
-./gradlew clean && ./gradlew build
+run_gradlew clean && run_gradlew build
 
 cp build/libs/*.jar $lib_dir/
 

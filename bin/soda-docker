@@ -77,6 +77,15 @@ case $ilang in
             -v /home/$USER/.cache:/home/$USER/.cache \
             $trail_args
         ;;
+    groovy)
+        docker run --rm -t \
+            --network host \
+            $user_option \
+            $task_option \
+            -v /home/$USER/.m2:/home/$USER/.m2 \
+            -v /home/$USER/.gradle:/home/$USER/.cache \
+            $trail_args
+        ;;
     *)
         echo "language $ilang not supported"
         exit 2

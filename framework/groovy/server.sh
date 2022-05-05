@@ -59,7 +59,7 @@ case $cmd in
         test_server || { start_server || exit; }
         ;;
     stop)
-        curl --connect-timeout 2 "$prefix/stop" && echo
+        curl --connect-timeout 2 "$prefix/soda/groovy/stop" && echo
         ;;
     start-fg)
         start_server_fg
