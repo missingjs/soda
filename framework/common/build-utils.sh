@@ -7,7 +7,8 @@ usage()
 usage: $cmd <command> [options]
 
 commands:
-    proxy-arg         show proxy arguments activated by http_proxy
+    proxy-arg|build-proxy     show proxy arguments in 'docker build', activated by http_proxy
+    run-proxy                 show proxy arguments in 'docker run', activated by http_proxy
 EOF
     exit 1
 }
@@ -30,9 +31,26 @@ show_proxy_args()
     echo $proxy_arg
 }
 
+docker_run_proxy_option()
+{
+    local proxy_opt=
+    if [ -n "$HTTP_PROXY" ]; then
+        proxy_opt="$proxy_opt --env HTTP_PROXY=$HTTP_PROXY"
+        proxy_opt="$proxy_opt --env HTTPS_PROXY=$HTTPS_PROXY"
+        proxy_opt="$proxy_opt --env NO_PROXY=$NO_PROXY"
+        proxy_opt="$proxy_opt --env http_proxy=$http_proxy"
+        proxy_opt="$proxy_opt --env https_proxy=$https_proxy"
+        proxy_opt="$proxy_opt --env no_proxy=$no_proxy"
+    fi
+    echo $proxy_opt
+}
+
 case $cmd in
-    proxy-arg)
+    proxy-arg | build-proxy)
         show_proxy_args
+        ;;
+    run-proxy)
+        docker_run_proxy_option
         ;;
     *)
         usage

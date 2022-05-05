@@ -1,4 +1,3 @@
 FROM soda-jdk:11
 RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y maven
+RUN apt-get install -y curl maven

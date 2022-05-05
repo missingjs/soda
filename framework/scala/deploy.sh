@@ -8,6 +8,8 @@ run_sbt()
     docker run --rm -t \
         --network host \
         --user $(id -u):$(id -g) \
+        -v "/etc/passwd:/etc/passwd:ro" \
+        -v "/etc/group:/etc/group:ro" \
         -v /home/$USER/.m2:/home/$USER/.m2 \
         -v /home/$USER/.sbt:/home/$USER/.sbt \
         -v /home/$USER/.ivy2:/home/$USER/.ivy2 \
@@ -21,7 +23,6 @@ cd $self_dir
 
 [ -e soda-lib ] && rm -r soda-lib
 
-# sbt clean && sbt pack || exit
 run_sbt clean && run_sbt pack || exit
 
 [ -e soda-lib ] || mkdir soda-lib

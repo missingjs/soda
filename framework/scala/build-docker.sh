@@ -1,19 +1,7 @@
 #!/bin/bash
 
 self_dir=$(cd $(dirname $0) && pwd)
-framework_dir=$(dirname $self_dir)
-common_dir=$framework_dir/common
+build_cmd=$(realpath $self_dir/../common/2phase-build.sh)
 
-source $common_dir/vars.sh || exit
-
-image_name=soda-scala
-
-set -x
-
-docker build \
-    --network host \
-    $proxy_arg \
-    -t ${image_name}-part . || exit
-
-$common_dir/make-image.sh $image_name
-
+cd $self_dir
+$build_cmd soda-scala-base soda-scala

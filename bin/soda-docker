@@ -18,7 +18,7 @@ ilang=$2
 [ -z $ilang ] && usage
 image=soda-$ilang
 
-source $soda_dir/framework/common/vars.sh || exit
+proxy_option=$($soda_dir/framework/common/build-utils.sh run-proxy)
 
 case $cmd in
     new | run | clean | call)

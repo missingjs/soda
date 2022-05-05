@@ -1,12 +1,7 @@
 #!/bin/bash
 
 self_dir=$(cd $(dirname $0) && pwd)
-framework_dir=$(dirname $self_dir)
-common_dir=$framework_dir/common
+build_cmd=$(realpath $self_dir/../common/2phase-build.sh)
 
-image_name=soda-java
-
-docker build -t ${image_name}-part . || exit
-
-$common_dir/make-image.sh $image_name
-
+cd $self_dir
+$build_cmd soda-java-base soda-java
