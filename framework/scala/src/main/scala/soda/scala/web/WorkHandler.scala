@@ -23,7 +23,7 @@ class WorkHandler extends BaseHandler {
     val task: () => String = () => {
       val oldCtxLoader = Thread.currentThread().getContextClassLoader
       try {
-        val classLoader = ClassLoaderCache.get(jr.classpath)
+        val classLoader = ClassLoaderCache.getForJar(jr.classpath)
         Thread.currentThread().setContextClassLoader(classLoader)
         val rm = runtimeMirror(classLoader)
         val csym = rm.staticClass(jr.bootClass)

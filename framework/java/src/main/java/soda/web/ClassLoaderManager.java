@@ -19,16 +19,16 @@ public class ClassLoaderManager {
 		Logger.info(String.format("new class loader for %s: %s", path, loader));
 	}
 	
-	public synchronized ClassLoader get(String path) {
-		if (!loaderMap.containsKey(path)) {
-			try {
-				set(path);
-			} catch (MalformedURLException ex) {
-				Logger.exception("invalid path: " + path, ex);
-			}
-		}
-		return loaderMap.get(path);
-	}
+//	public synchronized ClassLoader get(String path) {
+//		if (!loaderMap.containsKey(path)) {
+//			try {
+//				set(path);
+//			} catch (MalformedURLException ex) {
+//				Logger.exception("invalid path: " + path, ex);
+//			}
+//		}
+//		return loaderMap.get(path);
+//	}
 
 	public synchronized void remove(String path) {
 		loaderMap.remove(path);

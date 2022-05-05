@@ -17,7 +17,7 @@ class Server(address: String, port: Int) {
   server.createContext("/soda/scala/echo", new EchoHandler)
 
   // POST
-  server.createContext("/soda/scala/reset", new ResetHandler)
+  server.createContext("/soda/scala/setup", new SetupHandler)
 
   // POST
   server.createContext("/soda/scala/work", new WorkHandler)
