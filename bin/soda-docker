@@ -34,7 +34,7 @@ task_option="-v $soda_dir:/soda -v $(pwd):/task -w /task"
 trail_args="$image /soda/bin/soda $@"
 
 case $ilang in
-    cpp | python | ruby)
+    cpp | python | ruby | js)
         docker run --rm -t \
             $user_option \
             $task_option \
