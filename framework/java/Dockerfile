@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM soda-jdk:11
 RUN apt-get update
-RUN apt-get install -y openjdk-11-jdk maven
 RUN apt-get install -y curl
+RUN apt-get install -y maven

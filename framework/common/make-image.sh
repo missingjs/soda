@@ -15,6 +15,8 @@ python_dir=$framework_dir/python
 image_name=$1
 [ -z $image_name ] && usage
 
+source $self_dir/vars.sh || exit
+
 tmpdir=$(mktemp -d)
 
 cd $tmpdir
@@ -27,9 +29,10 @@ RUN apt-get update
 RUN apt-get install -y python3-pip
 COPY requirements.txt /build/
 RUN pip3 install -r /build/requirements.txt
+RUN rm /build/requirements.txt
 EOF
 
-docker build -t $image_name .
+docker build --network host $proxy_arg -t $image_name .
 
 cd -
 

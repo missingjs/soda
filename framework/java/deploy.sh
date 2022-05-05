@@ -8,6 +8,7 @@ cd $self_dir
 [ -e soda-lib ] && rm -r soda-lib
 
 docker run --rm -t \
+    --network host \
     --user $(id -u):$(id -g) \
     -v "/etc/passwd:/etc/passwd:ro" \
     -v "/etc/group:/etc/group:ro" \

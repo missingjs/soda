@@ -18,6 +18,8 @@ ilang=$2
 [ -z $ilang ] && usage
 image=soda-$ilang
 
+source $soda_dir/framework/common/vars.sh || exit
+
 case $cmd in
     new | run | clean | call)
         # DO NOTHING
@@ -27,10 +29,6 @@ case $cmd in
         ;;
 esac
 
-proxy_option=
-if [ -n $HTTP_PROXY ]; then
-    proxy_option="--env HTTP_PROXY=$HTTP_PROXY --env HTTPS_PROXY=$HTTPS_PROXY"
-fi
 user_option="--user $(id -u):$(id -g) -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro"
 task_option="-v $soda_dir:/soda -v $(pwd):/task -w /task"
 trail_args="$image /soda/bin/soda $@"
@@ -66,6 +64,17 @@ case $ilang in
             $task_option \
             -v /home/$USER/.nuget:/home/$USER/.nuget \
             -v /home/$USER/.dotnet:/home/$USER/.dotnet \
+            $trail_args
+        ;;
+    scala)
+        docker run --rm -t \
+            --network host \
+            $user_option \
+            $task_option \
+            -v /home/$USER/.m2:/home/$USER/.m2 \
+            -v /home/$USER/.sbt:/home/$USER/.sbt \
+            -v /home/$USER/.ivy2:/home/$USER/.ivy2 \
+            -v /home/$USER/.cache:/home/$USER/.cache \
             $trail_args
         ;;
     *)

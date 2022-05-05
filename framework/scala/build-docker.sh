@@ -4,9 +4,16 @@ self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 common_dir=$framework_dir/common
 
-image_name=soda-java
+source $common_dir/vars.sh || exit
 
-docker build -t ${image_name}-part . || exit
+image_name=soda-scala
+
+set -x
+
+docker build \
+    --network host \
+    $proxy_arg \
+    -t ${image_name}-part . || exit
 
 $common_dir/make-image.sh $image_name
 
