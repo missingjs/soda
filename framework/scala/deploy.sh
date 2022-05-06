@@ -16,7 +16,7 @@ run_sbt()
         -v /home/$USER/.cache:/home/$USER/.cache \
         -v $(pwd):/task \
         -w /task \
-        soda-scala sbt "$@"
+        missingjs/soda-scala sbt "$@"
 }
 
 cd $self_dir

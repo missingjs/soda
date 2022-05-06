@@ -12,4 +12,4 @@ docker run --rm -t \
     -v /home/$USER/.dotnet:/home/$USER/.dotnet \
     -v $(pwd):/task \
     -w /task \
-    soda-csharp /task/make-lib.sh
+    missingjs/soda-csharp /task/make-lib.sh

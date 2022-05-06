@@ -16,7 +16,7 @@ cmd=$1
 ilang=$2
 
 [ -z $ilang ] && usage
-image=soda-$ilang
+image=missingjs/soda-$ilang
 
 proxy_option=$($soda_dir/framework/common/build-utils.sh run-proxy)
 
@@ -53,6 +53,8 @@ case $ilang in
             --network host \
             $user_option \
             $task_option \
+            --env GOMODCACHE=/home/$USER/go/pkg/mod \
+            --env GOPATH=/home/$USER/go \
             -v /home/$USER/go:/home/$USER/go \
             -v /home/$USER/.cache:/home/$USER/.cache \
             $trail_args

@@ -15,7 +15,7 @@ docker run --rm -t \
     -v /home/$USER/.m2:/home/$USER/.m2 \
     -v $(pwd):/task \
     -w /task \
-    soda-java mvn clean package
+    missingjs/soda-java mvn clean package
 
 cp target/soda-java-*.jar soda-lib/
 

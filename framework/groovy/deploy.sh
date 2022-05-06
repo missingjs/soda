@@ -16,7 +16,7 @@ run_gradlew()
         -v /home/$USER/.gradle:/home/$USER/.gradle \
         -v $(pwd):/task \
         -w /task \
-        soda-groovy ./gradlew "$@"
+        missingjs/soda-groovy ./gradlew "$@"
 }
 
 cd $self_dir

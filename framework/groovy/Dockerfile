@@ -1,4 +1,4 @@
-FROM soda-jdk:11
+FROM missingjs/soda-jdk:11
 RUN apt-get install -y zip unzip wget curl
 WORKDIR /opt
 RUN wget https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-4.0.2.zip

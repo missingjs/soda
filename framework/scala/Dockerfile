@@ -1,4 +1,4 @@
-FROM soda-jdk:11
+FROM missingjs/soda-jdk:11
 
 ARG SCALA_VERSION=2.13.8
 
@@ -8,7 +8,7 @@ RUN apt-get install -y curl ca-certificates gnupg unzip zip
 # install scala
 RUN mkdir /build
 WORKDIR /build
-RUN curl -o scala-${SCALA_VERSION}.deb -sL https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-${SCALA_VERSION}.deb
+RUN curl -o scala-${SCALA_VERSION}.deb -L https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-${SCALA_VERSION}.deb
 RUN dpkg -i scala-${SCALA_VERSION}.deb && rm scala-${SCALA_VERSION}.deb
 
 # install sbt

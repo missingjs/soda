@@ -24,6 +24,9 @@ shift
 
 [ -z "$base_image" -o -z "$final_image" ] && usage
 
+[[ "$base_image" =~ ^missingjs/.* ]] || base_image=missingjs/$base_image
+[[ "$final_image" =~ ^missingjs/.* ]] || final_image=missingjs/$final_image
+
 build_options="$@"
 
 proxy_arg=$($self_dir/build-utils.sh proxy-arg)
