@@ -25,7 +25,7 @@ for lang in $languages; do
         while read path; do
             directory=$(dirname $path)
             cd $directory && echo "[$lang] Enter $directory"
-            soda run $lang $options || exit
+            soda-docker run $lang $options || exit
             cd .. && echo -e "[$lang] Leave $directory\n"
         done < <(find $self_dir/$loc -name $prj_file)
     done
