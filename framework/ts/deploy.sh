@@ -7,15 +7,19 @@ out_dir=./dist
 cd $self_dir
 [ -d $out_dir ] && rm -r $out_dir
 
-set -x
-docker run --rm -t \
-    --user $(id -u):$(id -g) \
-    -v "/etc/passwd:/etc/passwd:ro" \
-    -v "/etc/group:/etc/group:ro" \
-    -v $(pwd):/task \
-    -w /task \
-    missingjs/soda-ts tsc --outDir $out_dir
-set +x
+run_image()
+{
+    docker run --rm -t \
+        --user $(id -u):$(id -g) \
+        -v "/etc/passwd:/etc/passwd:ro" \
+        -v "/etc/group:/etc/group:ro" \
+        -v /home/$USER:/home/$USER \
+        -v $(pwd):/task \
+        -w /task \
+        missingjs/soda-ts "$@"
+}
+
+run_image npm install && run_image tsc --outDir $out_dir
 
 echo '{"type":"module"}' > dist/soda/package.json
 
