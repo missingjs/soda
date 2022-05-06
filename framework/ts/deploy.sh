@@ -19,7 +19,13 @@ run_image()
         missingjs/soda-ts "$@"
 }
 
-run_image npm install && run_image tsc --outDir $out_dir
+set -e
 
-echo '{"type":"module"}' > dist/soda/package.json
+echo "running npm install..."
+run_image npm install
+
+echo "compiling project source code with tsc..."
+run_image tsc --outDir $out_dir
+
+echo '{"type":"module"}' > $out_dir/soda/package.json
 
