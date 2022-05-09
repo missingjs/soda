@@ -1,11 +1,17 @@
 FROM missingjs/soda-jdk:11
-RUN apt-get install -y zip unzip wget curl
+
+ARG GROOVY_VERSION=4.0.2
+ARG bin_package=apache-groovy-binary-${GROOVY_VERSION}.zip
+
 WORKDIR /opt
-RUN wget https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-4.0.2.zip
-RUN unzip apache-groovy-binary-4.0.2.zip
+RUN apt-get update \
+    && apt-get install -y zip unzip curl \
+    && curl -OL https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/$bin_package \
+    && unzip $bin_package \
+    && rm $bin_package
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-ENV GROOVY_HOME=/opt/groovy-4.0.2
+ENV GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
 ENV PATH="${GROOVY_HOME}/bin:${PATH}"
 
 WORKDIR /
