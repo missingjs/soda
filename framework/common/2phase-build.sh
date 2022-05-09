@@ -39,10 +39,10 @@ cd $tmpdir
 cp $python_dir/requirements.txt ./
 cat >>Dockerfile << EOF
 FROM $base_image
-RUN apt-get update
-RUN apt-get install -y python3-pip
 COPY requirements.txt /build/
-RUN pip3 install -r /build/requirements.txt
+RUN apt-get update \\
+        && apt-get install --fix-missing -y python3-pip \\
+        && pip3 install -r /build/requirements.txt
 RUN rm /build/requirements.txt
 EOF
 
