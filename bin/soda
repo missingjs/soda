@@ -21,9 +21,6 @@ export SODA_FRAMEWORK_DIR=$framework_dir
 project_file=soda.prj.yml
 dku=$self_dir/docker-utils.sh
 
-# TODO rename to dku
-dockerutil=$self_dir/docker-utils.sh
-
 cmd=$1
 
 function init_work()
@@ -220,7 +217,7 @@ case $cmd in
         lang_prepare "$2"
         docker_prepare
         work=$(get_work_name)
-        $dockerutil play $ilang /soda/framework/$ilang/work.sh clean $work
+        $dku play $ilang /soda/framework/$ilang/work.sh clean $work
         ;;
     call)
         lang_prepare "$2"
