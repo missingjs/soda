@@ -38,18 +38,7 @@ tmpdir=$(mktemp -d)
 cd $tmpdir
 cat >>Dockerfile <<EOF
 FROM $base_image
-RUN apt-get update \\
-    && apt-get install -y sshfs
 EOF
-# cp $python_dir/requirements.txt ./
-# cat >>Dockerfile << EOF
-# FROM $base_image
-# COPY requirements.txt /build/
-# RUN apt-get update \\
-#         && apt-get install --fix-missing -y python3-pip \\
-#         && pip3 install -r /build/requirements.txt
-# RUN rm /build/requirements.txt
-# EOF
 
 docker build --network host $proxy_arg -t $final_image .
 
