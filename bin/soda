@@ -78,50 +78,21 @@ function check_sdk()
     [ -e $sdk_dir ] || { echo "language '$ilang' not supported"; exit 3; }
 }
 
-function execute()
-{
-    local work=$1
-    local ilang=$2
-    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
-    runner=soda.engine.main
-    python3 -m $runner $work --script "$framework_dir/$ilang/work.sh"
-}
-
 function create_work()
 {
-    ilang=$1
-    check_sdk $ilang
+    local ilang=$1
     work=$(get_work_name)
     [ -z $work ] && exit
+    docker_prepare
+    $dockerutil play $ilang /soda/framework/$ilang/work.sh new $work
+}
+
+function docker_prepare()
+{
     set -e
     $dockerutil start $ilang
     $dockerutil sync-dir $ilang
-    $dockerutil play $ilang /soda/framework/$ilang/work.sh new $work
-#    $framework_dir/$ilang/work.sh new $work
-#     $framework_dir/$ilang/work.sh new $work || exit
-#     lowcase=$(echo "$work" | awk '{print tolower($0)}')
-#     test_file=${lowcase}.input
-#     [ -e $test_file ] || cat >$test_file <<EOF
-# #@format=case
-# 
-# # number of arguments
-# # @args=N
-# 
-# # test case directive, '@case' is required, all key value settings are optional
-# # @case skip=false timeout=10 tag=
-# #
-# # content:
-# #   format 1: @include=FILEPATH
-# #   format 2:
-# #       Input: nums = [1,2,3,1], k = 3, t = 0
-# #       Output: true
-# #   format 3:
-# #       [1,2,3,1]
-# #       3
-# #       0
-# #       true
-# 
-# EOF
+    set +e
 }
 
 function parse_run_args()
@@ -162,50 +133,68 @@ tags=
 force_rebuild=no
 remote_mode=no
 
+function lang_prepare()
+{
+    ilang=$1
+    ilang=$(trans_lang_name $ilang)
+    [ -z "$ilang" ] && usage
+    check_sdk $ilang
+}
+
+function run_work()
+{
+    docker_prepare
+
+    script="$dockerutil play $ilang /soda/framework/$ilang/work.sh"
+    work=$(get_work_name)
+
+    # build executable
+    [ "$force_rebuild" == "yes" ] && $script clean $work
+    $script make $work || exit 
+
+    # compose command arguments
+    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+    runner=soda.engine.main
+    commandStr="$script run $work"
+    if [ "$remote_mode" == "yes" ]; then
+        commandStr="$commandStr --remote"
+        # setup remote server
+        $script remote-setup $work || exit
+    fi
+
+    # tags to filter test case
+    [ -z "$tags" ] || tag_options="--tags $tags"
+
+    # run test cases
+    python3 -m $runner $work --command "$commandStr" $tag_options
+}
+
 case $cmd in 
     init)
         work=$2
         [ -z "$work" ] && usage
         init_work $work
-        [ -z $3 ] || create_work $(trans_lang_name "$3")
+        [ -z $3 ] || { lang_prepare "$3"; create_work $ilang; }
         ;;
     new)
-        ilang=$(trans_lang_name $2)
-        [ -z "$ilang" ] && usage
+        lang_prepare "$2"
         create_work $ilang
         ;;
     run)
-        # prepare sdk
-        ilang=$(trans_lang_name $2)
-        check_sdk $ilang
-        script=$framework_dir/$ilang/work.sh
-        work=$(get_work_name)
-        # parse command line options
+        lang_prepare "$2"
         parse_run_args "$@"
-        # build executable
-        [ "$force_rebuild" == "yes" ] && $script clean $work
-        $script make $work || exit 
-        # run test cases
-        export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
-        runner=soda.engine.main
-        commandStr="$script run $work"
-        if [ "$remote_mode" == "yes" ]; then
-            commandStr="$commandStr --remote"
-            $script remote-setup $work || exit
-        fi
-        [ -z "$tags" ] || tag_options="--tags $tags"
-        python3 -m $runner $work --command "$commandStr" $tag_options
+        run_work
         ;;
     clean)
-        ilang=$(trans_lang_name $2)
-        check_sdk $ilang
-        script=$framework_dir/$ilang/work.sh
+        lang_prepare "$2"
+        docker_prepare
         work=$(get_work_name)
-        $script clean $work
+        $dockerutil play $ilang /soda/framework/$ilang/work.sh clean $work
         ;;
     call)
-        ilang=$(trans_lang_name $2)
-        check_sdk $ilang
+#        ilang=$(trans_lang_name $2)
+#        check_sdk $ilang
+        lang_prepare "$2"
         script=$framework_dir/$ilang/work.sh
         shift; shift;
         $script "$@"

@@ -9,7 +9,9 @@ usage:
     $cmd stop  <lang>
     $cmd play  <lang> <command> [args...]
 
-    $cmd sync-dir <lang>    map current directory to docker container by sshfs
+    $cmd sync-dir <lang>       map current directory to docker container by sshfs
+
+    $cmd force-purge <lang>    stop and remove
 EOF
     exit 1
 }
@@ -24,28 +26,41 @@ soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
 loadconf=$self_dir/support/loadconf.sh
 
+docker_image="missingjs/soda-$lang"
+container="soda-task-$lang"
+
 docker_start()
 {
-    local lang=$1
-    local image="missingjs/soda-$lang"
-    local cont_name="soda-task-$lang"
     local proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
 
     # check if container exist
-    if ! docker container ls --all | grep $cont_name >/dev/null; then
+    if ! docker container ls --all | grep -q $container; then
         set -e
+        echo "create docker container $container"
         docker run -d \
             --privileged \
-            --name $cont_name \
+            --name $container \
             --network host $proxy_option \
             -v $soda_dir:/soda \
-            -w /task \
-            $image bash -c "while true; do sleep 5; done"
+            $docker_image bash -c "while true; do sleep 5; done"
 
         # initialize container
-        docker container exec $cont_name \
+        user_id=$(id -u)
+        user_name=$(id -un)
+        group_id=$(id -g)
+        group_name=$(id -gn)
+        echo "add user $user_name"
+        docker container exec $container \
             bash -c "
                 [ -e /task ] || mkdir /task
+                chmod 777 /task
+                groupadd -g $group_id $group_name
+                useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name
+            "
+
+        echo "initialize ssh keys"
+        docker container exec --user $user_name $container \
+            bash -c "
                 [ -e ~/.ssh ] || mkdir ~/.ssh
                 cd ~/.ssh
                 echo 'StrictHostKeyChecking no' >> config
@@ -59,58 +74,56 @@ docker_start()
         auth_file=~/.ssh/authorized_keys
         [ -e $auth_file ] || { touch $auth_file && chmod 600 $auth_file; }
         grep -q "$pk" $auth_file || echo "$pk" >> $auth_file
-        docker cp $priv_key $cont_name:/root/.ssh/id_rsa
+        cat $priv_key \
+            | docker exec -i --user $user_name $container \
+                bash -c "cat > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 
-        echo "docker container $cont_name created"
+        echo "docker container $container created"
         set +e
     fi
 
     # check if container running
-    docker container ls | grep $cont_name >/dev/null \
-        || docker container start $cont_name \
-        || exit
-}
-
-docker_stop()
-{
-    local lang=$1
-    local cont_name="soda-task-$lang"
-    docker container stop -t 1 $cont_name
-}
-
-docker_play()
-{
-    local lang=$1
-    local cont_name="soda-task-$lang"
-    shift
-    docker container exec -t -w /task$(pwd) $cont_name "$@"
+    if ! docker container ls | grep -q $container; then
+        echo "start container $container"
+        docker container start $container || exit
+    fi
 }
 
 sync_current_dir()
 {
-    local lang=$1
-    local cont_name="soda-task-$lang"
     local ip=$(ifconfig | grep -A 1 docker0 | grep inet | awk '{print $2}')
     local cur_dir="$(pwd)"
-    docker container exec $cont_name bash -c "
+    docker container exec --user $(id -un) $container bash -c "
         [ -e /task$cur_dir ] || mkdir -p /task$cur_dir
         [ -e /task$cur_dir/soda.prj.yml ] || sshfs $(id -un)@$ip:$cur_dir /task$cur_dir
     "
 }
 
+force_purge()
+{
+    echo "stop container $container ..."
+    docker stop -t 1 $container
+    echo "----"
+    echo "remote container $container ..."
+    docker container rm $container
+}
+
 case $subcmd in
     start)
-        docker_start $lang
+        docker_start
         ;;
     stop)
-        docker_stop $lang
+        docker stop -t 1 $container
         ;;
     play)
         shift; shift;
-        docker_play $lang "$@"
+        docker exec -i --user $(id -un) -w /task$(pwd) $container "$@"
         ;;
     sync-dir)
-        sync_current_dir $lang
+        sync_current_dir
+        ;;
+    force-purge)
+        force_purge
         ;;
     *)
         usage
