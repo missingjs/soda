@@ -11,6 +11,9 @@ options:
     new <testname>
         create source file with name <testname>.cpp
 
+    source <testname>
+        show source file name
+
     make <testname> 
         build executable
 
@@ -35,6 +38,7 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
+srcfile=${testname}.cpp
 makefile=Makefile.gen.$testname
 output_dir=./cpp
 
@@ -73,11 +77,13 @@ assert_testname
 case $cmd in
     new)
         template_file=$self_dir/src/soda/unittest/bootstrap.cpp
-        create_source_file $template_file ${testname}.cpp
+        create_source_file $template_file $srcfile
+        ;;
+    source)
+        echo $srcfile
         ;;
     make)
         [ -e $output_dir ] || mkdir $output_dir
-        srcfile=${testname}.cpp
         exefile=$output_dir/${testname}.out
         if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
             gen_source $srcfile > $output_dir/${testname}__gen.cpp
