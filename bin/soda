@@ -19,6 +19,7 @@ soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
 export SODA_FRAMEWORK_DIR=$framework_dir
 project_file=soda.prj.yml
+dockerutil=$self_dir/docker-utils.sh
 
 cmd=$1
 
@@ -32,6 +33,31 @@ soda:
   work_name: $work
 eof
     echo $project_file generated
+
+    # create file of test case
+    lowcase=$(echo "$work" | awk '{print tolower($0)}')
+    test_file=${lowcase}.input
+    cat >$test_file <<EOF
+#@format=case
+
+# number of arguments
+# @args=N
+
+# test case directive, '@case' is required, all key value settings are optional
+# @case skip=false timeout=10 tag=
+#
+# content:
+#   format 1: @include=FILEPATH
+#   format 2:
+#       Input: nums = [1,2,3,1], k = 3, t = 0
+#       Output: true
+#   format 3:
+#       [1,2,3,1]
+#       3
+#       0
+#       true
+
+EOF
 }
 
 function get_work_name()
@@ -67,30 +93,35 @@ function create_work()
     check_sdk $ilang
     work=$(get_work_name)
     [ -z $work ] && exit
-    $framework_dir/$ilang/work.sh new $work || exit
-    lowcase=$(echo "$work" | awk '{print tolower($0)}')
-    test_file=${lowcase}.input
-    [ -e $test_file ] || cat >$test_file <<EOF
-#@format=case
-
-# number of arguments
-# @args=N
-
-# test case directive, '@case' is required, all key value settings are optional
-# @case skip=false timeout=10 tag=
-#
-# content:
-#   format 1: @include=FILEPATH
-#   format 2:
-#       Input: nums = [1,2,3,1], k = 3, t = 0
-#       Output: true
-#   format 3:
-#       [1,2,3,1]
-#       3
-#       0
-#       true
-
-EOF
+    set -e
+    $dockerutil start $ilang
+    $dockerutil sync-dir $ilang
+    $dockerutil play $ilang /soda/framework/$ilang/work.sh new $work
+#    $framework_dir/$ilang/work.sh new $work
+#     $framework_dir/$ilang/work.sh new $work || exit
+#     lowcase=$(echo "$work" | awk '{print tolower($0)}')
+#     test_file=${lowcase}.input
+#     [ -e $test_file ] || cat >$test_file <<EOF
+# #@format=case
+# 
+# # number of arguments
+# # @args=N
+# 
+# # test case directive, '@case' is required, all key value settings are optional
+# # @case skip=false timeout=10 tag=
+# #
+# # content:
+# #   format 1: @include=FILEPATH
+# #   format 2:
+# #       Input: nums = [1,2,3,1], k = 3, t = 0
+# #       Output: true
+# #   format 3:
+# #       [1,2,3,1]
+# #       3
+# #       0
+# #       true
+# 
+# EOF
 }
 
 function parse_run_args()
@@ -130,17 +161,6 @@ function trans_lang_name()
 tags=
 force_rebuild=no
 remote_mode=no
-
-# get_script()
-# {
-#     local lang=$1
-#     if [ $lang == "cpp" ]; then
-#         soda_dir=$(dirname $self_dir)
-#         echo "docker run -i --rm --user $USER -v $soda_dir:/soda -v $(pwd):/task -w /task soda-cpp /soda/framework/$lang/work.sh"
-#     else
-#         echo "$framework_dir/$lang/work.sh"
-#     fi
-# }
 
 case $cmd in 
     init)
