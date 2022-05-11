@@ -19,6 +19,9 @@ soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
 export SODA_FRAMEWORK_DIR=$framework_dir
 project_file=soda.prj.yml
+dku=$self_dir/docker-utils.sh
+
+# TODO rename to dku
 dockerutil=$self_dir/docker-utils.sh
 
 cmd=$1
@@ -32,7 +35,7 @@ soda:
   version: 2.0.1
   work_name: $work
 eof
-    echo $project_file generated
+    echo $project_file DONE
 
     # create file of test case
     lowcase=$(echo "$work" | awk '{print tolower($0)}')
@@ -58,6 +61,8 @@ eof
 #       true
 
 EOF
+
+    echo $test_file DONE
 }
 
 function get_work_name()
@@ -78,21 +83,44 @@ function check_sdk()
     [ -e $sdk_dir ] || { echo "language '$ilang' not supported"; exit 3; }
 }
 
+function prepare_working_dir()
+{
+    local workdir=$($dku show $ilang workdir)
+    local container=$($dku show $ilang container)
+    docker exec -u $(id -un) $container bash -c "[ -e $workdir ] || mkdir -p $workdir"
+}
+
 function create_work()
 {
     local ilang=$1
     work=$(get_work_name)
     [ -z $work ] && exit
+
+    set -e
+
     docker_prepare
-    $dockerutil play $ilang /soda/framework/$ilang/work.sh new $work
+
+    # initialize working dir in container
+    prepare_working_dir
+
+    # sync project file
+#    $dku sync-file $ilang $project_file
+
+    # init source file in container
+    $dku play $ilang /soda/framework/$ilang/work.sh new $work
+
+    # pull source file to local
+    workdir=$($dku show $ilang workdir)
+    container=$($dku show $ilang container)
+    source_file=$($framework_dir/$ilang/work.sh source $work)
+    docker cp $container:$workdir/$source_file ./
+
+    set +e
 }
 
 function docker_prepare()
 {
-    set -e
-    $dockerutil start $ilang
-    $dockerutil sync-dir $ilang
-    set +e
+    $dku start $ilang
 }
 
 function parse_run_args()
@@ -143,10 +171,13 @@ function lang_prepare()
 
 function run_work()
 {
-    docker_prepare
+    docker_prepare && prepare_working_dir || exit
 
-    script="$dockerutil play $ilang /soda/framework/$ilang/work.sh"
+    script="$dku play $ilang /soda/framework/$ilang/work.sh"
     work=$(get_work_name)
+
+    source_file=$($framework_dir/$ilang/work.sh source $work)
+    $dku sync-file $ilang $source_file
 
     # build executable
     [ "$force_rebuild" == "yes" ] && $script clean $work
@@ -192,8 +223,6 @@ case $cmd in
         $dockerutil play $ilang /soda/framework/$ilang/work.sh clean $work
         ;;
     call)
-#        ilang=$(trans_lang_name $2)
-#        check_sdk $ilang
         lang_prepare "$2"
         script=$framework_dir/$ilang/work.sh
         shift; shift;

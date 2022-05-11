@@ -9,9 +9,13 @@ usage:
     $cmd stop  <lang>
     $cmd play  <lang> <command> [args...]
 
-    $cmd sync-dir <lang>       map current directory to docker container by sshfs
+    $cmd sync-file <lang>      sync local file to container
 
     $cmd force-purge <lang>    stop and remove
+
+    $cmd rm-proj <lang>        remove working dir of project
+
+    $cmd show <lang> <container|workdir>
 EOF
     exit 1
 }
@@ -28,6 +32,7 @@ loadconf=$self_dir/support/loadconf.sh
 
 docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
+workdir=/task$(pwd)
 
 docker_start()
 {
@@ -58,25 +63,25 @@ docker_start()
                 useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name
             "
 
-        echo "initialize ssh keys"
-        docker container exec --user $user_name $container \
-            bash -c "
-                [ -e ~/.ssh ] || mkdir ~/.ssh
-                cd ~/.ssh
-                echo 'StrictHostKeyChecking no' >> config
-                echo 'UserKnownHostsFile /dev/null' >> config
-            "
-
-        # setup ssh key
-        pub_key=$($loadconf public_key)
-        priv_key=$($loadconf private_key)
-        pk=$(cat $pub_key)
-        auth_file=~/.ssh/authorized_keys
-        [ -e $auth_file ] || { touch $auth_file && chmod 600 $auth_file; }
-        grep -q "$pk" $auth_file || echo "$pk" >> $auth_file
-        cat $priv_key \
-            | docker exec -i --user $user_name $container \
-                bash -c "cat > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
+#        echo "initialize ssh keys"
+#        docker container exec --user $user_name $container \
+#            bash -c "
+#                [ -e ~/.ssh ] || mkdir ~/.ssh
+#                cd ~/.ssh
+#                echo 'StrictHostKeyChecking no' >> config
+#                echo 'UserKnownHostsFile /dev/null' >> config
+#            "
+#
+#        # setup ssh key
+#        pub_key=$($loadconf public_key)
+#        priv_key=$($loadconf private_key)
+#        pk=$(cat $pub_key)
+#        auth_file=~/.ssh/authorized_keys
+#        [ -e $auth_file ] || { touch $auth_file && chmod 600 $auth_file; }
+#        grep -q "$pk" $auth_file || echo "$pk" >> $auth_file
+#        cat $priv_key \
+#            | docker exec -i --user $user_name $container \
+#                bash -c "cat > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 
         echo "docker container $container created"
         set +e
@@ -89,16 +94,6 @@ docker_start()
     fi
 }
 
-sync_current_dir()
-{
-    local ip=$(ifconfig | grep -A 1 docker0 | grep inet | awk '{print $2}')
-    local cur_dir="$(pwd)"
-    docker container exec --user $(id -un) $container bash -c "
-        [ -e /task$cur_dir ] || mkdir -p /task$cur_dir
-        [ -e /task$cur_dir/soda.prj.yml ] || sshfs $(id -un)@$ip:$cur_dir /task$cur_dir
-    "
-}
-
 force_purge()
 {
     echo "stop container $container ..."
@@ -106,6 +101,36 @@ force_purge()
     echo "----"
     echo "remote container $container ..."
     docker container rm $container
+}
+
+show_info()
+{
+    local key=$1
+    case $key in
+        container)
+            echo $container
+            ;;
+        workdir)
+            echo $workdir
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
+sync_file_to_container()
+{
+    local file=$1
+    if ! docker exec -w $workdir $container bash -c "[ -e $file ]"; then
+        docker cp $file $container:$workdir/$file
+    else
+        t1=$(docker exec -w $workdir $container date -r $file "+%s")
+        t2=$(date -r $file "+%s")
+        if [ $t2 -gt $t1 ]; then
+            docker cp $file $container:$workdir/$file
+        fi
+    fi
 }
 
 case $subcmd in
@@ -117,13 +142,23 @@ case $subcmd in
         ;;
     play)
         shift; shift;
-        docker exec -i --user $(id -un) -w /task$(pwd) $container "$@"
+        docker exec -i --user $(id -un) -w $workdir $container "$@"
         ;;
-    sync-dir)
-        sync_current_dir
+    sync-file)
+        file=$3
+        [ -z "$file" ] && usage
+        sync_file_to_container $file
         ;;
     force-purge)
         force_purge
+        ;;
+    rm-proj)
+        docker exec $container rm -rfv $workdir
+        ;;
+    show)
+        key=$3
+        [ -z $key ] && usage
+        show_info $key
         ;;
     *)
         usage
