@@ -9,6 +9,8 @@ usage:
     $cmd stop  <lang>
     $cmd play  <lang> <command> [args...]
 
+    $cmd exec  <lang> <command> [args...]
+
     $cmd sync-file <lang>      sync local file to container
 
     $cmd force-purge <lang>    stop and remove
@@ -143,6 +145,10 @@ case $subcmd in
     play)
         shift; shift;
         docker exec -i --user $(id -un) -w $workdir $container "$@"
+        ;;
+    exec)
+        shift; shift;
+        docker exec -i --user $(id -un) $container "$@"
         ;;
     sync-file)
         file=$3

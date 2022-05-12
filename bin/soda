@@ -221,9 +221,8 @@ case $cmd in
         ;;
     call)
         lang_prepare "$2"
-        script=$framework_dir/$ilang/work.sh
         shift; shift;
-        $script "$@"
+        $dku exec $ilang /soda/framework/$ilang/work.sh "$@"
         ;;
     *)
         usage
