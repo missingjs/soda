@@ -42,42 +42,49 @@ srcfile=${testname}.go
 execfile=${srcfile}.out
 output_dir=./go
 
-assert_testname()
-{
-    [ -z $testname ] && usage
-}
-
 package_name="missingjs.com/soda"
 package_version="v0.0.1"
 
-assert_testname
+function create_project()
+{
+    [ -e $output_dir/go.mod ] && { echo "$output_dir/go.mod already exists">&2; exit 2; }
+
+    set -e
+    create_source_file $self_dir/src/bootstrap.go $srcfile
+
+    mkdir $output_dir
+    cd $output_dir
+    suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
+    go mod init "$package_name/coding/$suffix"
+    go mod edit -require "$package_name@$package_version"
+    go mod edit -replace "$package_name=$self_dir/src"
+}
+
+function build_project()
+{
+    [ -e $output_dir/go.mod ] || { echo "$output_dir/go.mod not found" >&2; exit 2; }
+    if [[ ! -e $output_dir/$execfile ]] || [[ $srcfile -nt $output_dir/$execfile ]]; then
+        [ -n "$go_proxy" ] && export GOPROXY="$go_proxy"
+        set -e
+        cp $srcfile $output_dir/main__gen.go
+        cd $output_dir
+        go mod edit -replace "$package_name=$self_dir/src"
+        go mod tidy
+        go build -o $execfile main__gen.go
+        echo "Build success."
+    fi
+}
+
+[ -z $testname ] && usage
 case $cmd in
     new)
-        # check go project directory
-        [ -e $output_dir ] && { echo "$output_dir already exists">&2; exit 2; }
-        create_source_file $self_dir/src/bootstrap.go $srcfile
-        mkdir $output_dir
-        cd $output_dir || exit
-        suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
-        go mod init "$package_name/coding/$suffix"
-        go mod edit -require "$package_name@$package_version"
-        go mod edit -replace "$package_name=$self_dir/src"
-#        go mod tidy
+        create_project
         ;;
     source)
         echo $srcfile
         ;;
     make)
-        if [[ ! -e $output_dir/$execfile ]] || [[ $srcfile -nt $output_dir/$execfile ]]; then
-            [ -n "$go_proxy" ] && export GOPROXY="$go_proxy"
-            set -e
-            cp $srcfile $output_dir/main__gen.go
-            cd $output_dir
-            go mod edit -replace "$package_name=$self_dir/src"
-            go mod tidy
-            go build -o $execfile main__gen.go
-            echo "Build success."
-        fi
+        build_project
         ;;
     run)
         ./$output_dir/$execfile
