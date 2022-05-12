@@ -11,6 +11,9 @@ options:
     new <testname>
         create source file with name <testname>.java
 
+    source <testname>
+        show source file name
+
     make <testname> 
         compile test case
 
@@ -48,6 +51,7 @@ assert_testname() {
     [ -z $testname ] && usage
 }
 testname=$(python3 -c "print('$testname'.capitalize())")
+srcfile=${testname}.java
 output_dir=./java
 jarfile=work.jar
 
@@ -89,68 +93,108 @@ EOF
     curl --connect-timeout 2 -X POST -d "key=$classpath&jar=$jar_b64" -s "$url" && echo
 }
 
+new_project()
+{
+    assert_testname
+    target_file=$srcfile
+    template_file=$self_dir/src/main/java/soda/unittest/__Bootstrap__.java
+    create_source_file $template_file $target_file
+    classname=$testname
+    echo "import soda.unittest.*;" > ${classname}.tmp
+    cat $target_file \
+        | grep -v '^package ' \
+        | sed "s/__Bootstrap__/$classname/g" \
+        >> ${classname}.tmp
+    mv ${classname}.tmp $target_file
+}
+
+make_project()
+{
+    assert_testname
+    [ -e $output_dir ] || mkdir $output_dir
+    classfile=$output_dir/${testname}.class
+    if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
+        assert_framework
+        tmpdir=$(mktemp -d)
+        code='s/GenericTestWork.create(\w+)\(new (.*)\(\)::(.*)\)/GenericTestWork.create\1(\2.class, "\3", new \2()::\3)/g'
+        perl -pe "$code" $srcfile > $tmpdir/$srcfile
+        cp $tmpdir/$srcfile $output_dir/${testname}__gen.java
+
+        [ -e $output_dir/$jarfile ] && rm $output_dir/$jarfile
+
+        echo "Compiling $srcfile ..."
+        classpath=$(get_classpath)
+        set -x
+        javac -d $output_dir -cp $classpath $SODA_JAVA_COMPILE_OPTION $tmpdir/$srcfile || exit
+        set +x
+        rm -rf $tmpdir
+        echo "Compile $srcfile OK"
+        (cd $output_dir && jar cf $jarfile *.class)
+    fi
+}
+
+run_project()
+{
+    local run_mode=$1
+    assert_testname
+    classname=$testname
+    if [ "$run_mode" == "--remote" ]; then
+        remote_run $classname <&0
+    else
+        assert_framework
+        java -cp $(get_classpath):$output_dir $classname
+    fi
+}
+
+server_op()
+{
+    operation=$1
+    cmd=$self_dir/server.sh
+    if [ "$operation" == "start" ]; then
+        fore=$2
+        [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
+        $cmd start
+    elif [ "$operation" == "stop" ]; then
+        $cmd stop
+    elif [ "$operation" == "restart" ]; then
+        $cmd stop
+        $cmd start
+    fi
+}
+
 case $cmd in
     new)
-        assert_testname
-        target_file=${testname}.java
-        template_file=$self_dir/src/main/java/soda/unittest/__Bootstrap__.java
-        create_source_file $template_file $target_file
-        classname=$testname
-        echo "import soda.unittest.*;" > ${classname}.tmp
-        cat $target_file | grep -v '^package ' | sed "s/__Bootstrap__/$classname/g" >> ${classname}.tmp
-        mv ${classname}.tmp $target_file
+        new_project
+        ;;
+    source)
+        echo $srcfile
         ;;
     make)
-        assert_testname
-        srcfile=${testname}.java
-        [ -e $output_dir ] || mkdir $output_dir
-        classfile=$output_dir/${testname}.class
-        if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
-            assert_framework
-            tmpdir=$(mktemp -d)
-            perl -pe 's/GenericTestWork.create(\w+)\(new (.*)\(\)::(.*)\)/GenericTestWork.create\1(\2.class, "\3", new \2()::\3)/g' $srcfile > $tmpdir/$srcfile
-            cp $tmpdir/$srcfile $output_dir/${testname}__gen.java
-
-            [ -e $output_dir/$jarfile ] && rm $output_dir/$jarfile
-
-            echo "Compiling $srcfile ..."
-            classpath=$(get_classpath)
-            set -x
-            javac -d $output_dir -cp $classpath $SODA_JAVA_COMPILE_OPTION $tmpdir/$srcfile || exit
-            set +x
-            rm -rf $tmpdir
-            echo "Compile $srcfile OK"
-            (cd $output_dir && jar cf $jarfile *.class)
-        fi
+        make_project
         ;;
     run)
-        assert_testname
-        classname=$testname
-        run_mode=$3
-        if [ "$run_mode" == "--remote" ]; then
-            remote_run $classname <&0
-        else
-            assert_framework
-            java -cp $(get_classpath):$output_dir $classname
-        fi
+        shift; shift;
+        run_project "$@"
         ;;
     clean)
         assert_testname
         [ -e $output_dir ] && rm -v -r $output_dir
         ;;
     server)
-        operation=$2
-        cmd=$self_dir/server.sh
-        if [ "$operation" == "start" ]; then
-            fore=$3
-            [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-            $cmd start
-        elif [ "$operation" == "stop" ]; then
-            $cmd stop
-        elif [ "$operation" == "restart" ]; then
-            $cmd stop
-            $cmd start
-        fi
+        shift
+        server_op "$@"
+#        operation=$2
+#        cmd=$self_dir/server.sh
+#        if [ "$operation" == "start" ]; then
+#            fore=$3
+#            [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
+#            $cmd start
+#        elif [ "$operation" == "stop" ]; then
+#            $cmd stop
+#        elif [ "$operation" == "restart" ]; then
+#            $cmd stop
+#            $cmd start
+#        fi
         ;;
     remote-setup)
         remote_setup

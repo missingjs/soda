@@ -28,3 +28,5 @@ get_classpath()
 }
 
 server_port=9201
+
+maven_setting_file=
