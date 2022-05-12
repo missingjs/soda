@@ -183,18 +183,6 @@ case $cmd in
     server)
         shift
         server_op "$@"
-#        operation=$2
-#        cmd=$self_dir/server.sh
-#        if [ "$operation" == "start" ]; then
-#            fore=$3
-#            [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-#            $cmd start
-#        elif [ "$operation" == "stop" ]; then
-#            $cmd stop
-#        elif [ "$operation" == "restart" ]; then
-#            $cmd stop
-#            $cmd start
-#        fi
         ;;
     remote-setup)
         remote_setup
