@@ -11,6 +11,9 @@ options:
     new <testname>
         create source file with name <testname>.go
 
+    source <testname>
+        show source file name
+
     make <testname> [-f]
         build executable, force rebuild if -f present
 
@@ -27,6 +30,9 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 source $framework_dir/common/bashlib.sh || exit
+
+[ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
+source $self_dir/setup_env.sh || exit
 
 cmd=$1
 [ -z $cmd ] && usage
@@ -55,9 +61,15 @@ case $cmd in
         suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
         go mod init "$package_name/coding/$suffix"
         go mod edit -require "$package_name@$package_version"
+        go mod edit -replace "$package_name=$self_dir/src"
+#        go mod tidy
+        ;;
+    source)
+        echo $srcfile
         ;;
     make)
         if [[ ! -e $output_dir/$execfile ]] || [[ $srcfile -nt $output_dir/$execfile ]]; then
+            [ -n "$go_proxy" ] && export GOPROXY="$go_proxy"
             set -e
             cp $srcfile $output_dir/main__gen.go
             cd $output_dir
