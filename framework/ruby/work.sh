@@ -11,6 +11,9 @@ options:
     new <testname>
         create source file with name <testname>.rb
 
+    source <testname>
+        show source file name
+
     make <testname> 
         do nothing
 
@@ -34,15 +37,14 @@ cmd=$1
 testname=$2
 execfile=${testname}.rb
 
-assert_testname()
-{
-    [ -z $testname ] && usage
-}
-
+[ -z $testname ] && usage
 case $cmd in
     new)
         template_file=$self_dir/src/soda/unittest/bootstrap.rb
         create_source_file $template_file $execfile
+        ;;
+    source)
+        echo $execfile
         ;;
     make | clean)
         # Don't remove. Just for interface compatible
