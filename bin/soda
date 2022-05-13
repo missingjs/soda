@@ -94,7 +94,7 @@ function create_work()
 #    $dku sync-file $ilang $project_file
 
     # init source file in container
-    $dku play $ilang /soda/framework/$ilang/work.sh new $work
+    $dku play $ilang new $work
 
     # pull source file to local
     workdir=$($dku show $ilang workdir)
@@ -150,14 +150,14 @@ function restore_work_in_container()
     set -e
 
     # remote work if exists
-    $dku rm-proj $ilang
+    $dku drop-project $ilang
 
     # prepare working directory
     prepare_working_dir
 
     # create work
     local work=$(get_work_name)
-    $dku play $ilang /soda/framework/$ilang/work.sh new $work
+    $dku play $ilang new $work
 }
 
 function run_work()
@@ -176,7 +176,7 @@ function run_work()
     source_file=$($framework_dir/$ilang/work.sh source $work)
     $dku sync-file $ilang $source_file
 
-    script="$dku play $ilang /soda/framework/$ilang/work.sh"
+    script="$dku play $ilang"
     # build executable
     [ "$force_rebuild" == "yes" ] && $script clean $work
     $script make $work || exit 
@@ -220,7 +220,7 @@ case $cmd in
         lang_prepare "$2"
         docker_prepare
         work=$(get_work_name)
-        $dku play $ilang /soda/framework/$ilang/work.sh clean $work
+        $dku play $ilang clean $work
         ;;
     *)
         usage

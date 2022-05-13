@@ -12,9 +12,8 @@ cd $self_dir
 dku=$soda_dir/bin/docker-utils.sh 
 $dku start scala
 
-$dku exec scala bash -c "
-    cd /soda/framework/scala && sbt clean && sbt pack
-"
+$dku exec scala -w /soda/framework/scala \
+    bash -c "sbt clean && sbt pack"
 
 [ -e soda-lib ] || mkdir soda-lib
 

@@ -16,8 +16,8 @@ mkdir $lib_dir
 dku=$soda_dir/bin/docker-utils.sh 
 $dku start groovy
 
-$dku exec groovy bash -c "
-    cd /soda/framework/groovy && ./gradlew clean && ./gradlew build
+$dku exec groovy -w /soda/framework/groovy bash -c "
+    ./gradlew clean && ./gradlew build
 "
 
 cp build/libs/*.jar $lib_dir/

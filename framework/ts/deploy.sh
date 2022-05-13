@@ -11,9 +11,8 @@ cd $self_dir
 dku=$soda_dir/bin/docker-utils.sh 
 $dku start ts || exit
 
-$dku exec ts bash -c "
+$dku exec ts -w /soda/framework/ts bash -c "
     set -e
-    cd /soda/framework/ts
     echo 'running npm install...'
     npm install
     echo 'compiling project source code with tsc...'

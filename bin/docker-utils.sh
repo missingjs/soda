@@ -7,15 +7,18 @@ usage()
 usage: 
     $cmd start <lang>
     $cmd stop  <lang>
-    $cmd play  <lang> <command> [args...]
 
-    $cmd exec  <lang> <command> [args...]
+    $cmd play  <lang> <command> [args...]
+        just for framework/{lang}/work.sh
+
+    $cmd exec  <lang> [-w <dir>] <command> [args...]
+        for common commands
 
     $cmd sync-file <lang>      sync local file to container
 
     $cmd force-purge <lang>    stop and remove
 
-    $cmd rm-proj <lang>        remove working dir of project
+    $cmd drop-project <lang>   remove whole content of project in container
 
     $cmd show <lang> <container|workdir>
 EOF
@@ -35,11 +38,10 @@ loadconf=$self_dir/support/loadconf.sh
 docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
 workdir=/task$(pwd)
+proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
 
 docker_start()
 {
-    local proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
-
     # check if container exist
     if ! docker container ls --all | grep -q $container; then
         set -e
@@ -115,6 +117,22 @@ sync_file_to_container()
     fi
 }
 
+function exec_command()
+{
+    if [ "$1" == '-w' ]; then
+        local dir=$2
+        shift; shift
+        docker exec -i -u $(id -u) -w $dir $proxy_option $container "$@"
+    else
+        docker exec -i -u $(id -u) $proxy_option $container "$@"
+    fi
+}
+
+function drop_project_in_container()
+{
+    [ -e soda.prj.yml ] && docker exec $container rm -rfv $workdir
+}
+
 case $subcmd in
     start)
         docker_start
@@ -123,14 +141,12 @@ case $subcmd in
         docker stop -t 1 $container
         ;;
     play)
-        proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
-        shift; shift;
-        docker exec -i --user $(id -u) -w $workdir $proxy_option $container "$@"
+        shift; shift
+        exec_command -w $workdir /soda/framework/$lang/work.sh "$@"
         ;;
     exec)
-        proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
-        shift; shift;
-        docker exec -i --user $(id -u) $proxy_option $container "$@"
+        shift; shift
+        exec_command "$@"
         ;;
     sync-file)
         file=$3
@@ -140,8 +156,8 @@ case $subcmd in
     force-purge)
         force_purge
         ;;
-    rm-proj)
-        docker exec $container rm -rfv $workdir
+    drop-project)
+        drop_project_in_container
         ;;
     show)
         key=$3
@@ -152,3 +168,4 @@ case $subcmd in
         usage
         ;;
 esac
+
