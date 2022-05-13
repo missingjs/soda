@@ -51,7 +51,7 @@ start_server_fg()
 
 test_server()
 {
-    curl -s --connect-timeout 2 "$prefix/soda/java/echo?a=x"
+    curl -s --connect-timeout 2 "$prefix/soda/java/echo?a=x" && echo
 }
 
 function start_server()
