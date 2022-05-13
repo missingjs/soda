@@ -5,11 +5,14 @@ usage()
     local cmd=$(basename $0)
     cat>&2 << EOF
 usage:
-    soda python [options]
+    $cmd <command> [options]
 
 options:
     new <testname>
         create source file with name <testname>.pl
+
+    source <testname>
+        show source file name
 
     make <testname> 
         do nothing
@@ -34,15 +37,14 @@ cmd=$1
 testname=$2
 execfile=${testname}.pl
 
-assert_testname()
-{
-    [ -z $testname ] && usage
-}
-
+[ -z $testname ] && usage
 case $cmd in
     new)
         template_file=$self_dir/src/Soda/Unittest/bootstrap.pl
         create_source_file $template_file $execfile
+        ;;
+    source)
+        echo $execfile
         ;;
     make | clean)
         # Don't remove. Just for interface compatible
