@@ -84,7 +84,7 @@ function prepare_working_dir()
 {
     local workdir=$($dku show $ilang workdir)
     local container=$($dku show $ilang container)
-    docker exec -u $(id -un) $container bash -c "[ -e $workdir ] || mkdir -p $workdir"
+    docker exec -u $(id -u) $container bash -c "[ -e $workdir ] || mkdir -p $workdir"
 }
 
 function create_work()

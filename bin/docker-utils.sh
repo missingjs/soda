@@ -61,8 +61,8 @@ docker_start()
             bash -c "
                 [ -e /task ] || mkdir /task
                 chmod 777 /task
-                groupadd -g $group_id $group_name
-                useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name
+                groupadd -g $group_id $group_name || true
+                useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name || true
             "
 
         echo "docker container $container created"
@@ -125,12 +125,12 @@ case $subcmd in
     play)
         proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
         shift; shift;
-        docker exec -i --user $(id -un) -w $workdir $proxy_option $container "$@"
+        docker exec -i --user $(id -u) -w $workdir $proxy_option $container "$@"
         ;;
     exec)
         proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
         shift; shift;
-        docker exec -i --user $(id -un) $proxy_option $container "$@"
+        docker exec -i --user $(id -u) $proxy_option $container "$@"
         ;;
     sync-file)
         file=$3
