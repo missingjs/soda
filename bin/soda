@@ -9,19 +9,14 @@ usage:
     $cmd new   <lang>
     $cmd run   <lang> [-i <tag>]
     $cmd clean <lang>
-    $cmd call  <lang> [options]
 EOF
     exit 1
 }
 
 self_dir=$(cd $(dirname $0) && pwd)
-soda_dir=$(dirname $self_dir)
-framework_dir=$soda_dir/framework
-export SODA_FRAMEWORK_DIR=$framework_dir
-project_file=soda.prj.yml
-dku=$self_dir/docker-utils.sh
+source $self_dir/support/commonlib.sh || exit
 
-cmd=$1
+project_file=soda.prj.yml
 
 function init_work()
 {
@@ -70,14 +65,6 @@ with open("$project_file", "rt") as fp:
     config = yaml.load(fp, Loader=yaml.FullLoader)
     print(config['soda']['work_name'])
 eof
-}
-
-function check_sdk()
-{
-    ilang=$1
-    [ -z "$ilang" ] && usage
-    sdk_dir=$framework_dir/$ilang
-    [ -e $sdk_dir ] || { echo "language '$ilang' not supported"; exit 3; }
 }
 
 function prepare_working_dir()
@@ -142,22 +129,6 @@ function parse_run_args()
     done
 }
 
-function trans_lang_name()
-{
-    local name=$1
-    case $name in
-        cs)
-            name=csharp
-            ;;
-        py)
-            name=python
-            ;;
-        *)
-            ;;
-    esac
-    echo $name
-}
-
 tags=
 force_rebuild=no
 remote_mode=no
@@ -165,10 +136,13 @@ restore_work=no
 
 function lang_prepare()
 {
-    ilang=$1
-    ilang=$(trans_lang_name $ilang)
-    [ -z "$ilang" ] && usage
-    check_sdk $ilang
+    local lang=$1
+    lang=$(trans_lang_name $lang)
+    [ -z "$lang" ] && usage
+    check_sdk $lang
+
+    # !!! expose global variable $ilang
+    ilang=$lang
 }
 
 function restore_work_in_container()
@@ -224,6 +198,8 @@ function run_work()
     python3 -m $runner $work --command "$commandStr" $tag_options
 }
 
+cmd=$1
+
 case $cmd in 
     init)
         work=$2
@@ -246,12 +222,8 @@ case $cmd in
         work=$(get_work_name)
         $dku play $ilang /soda/framework/$ilang/work.sh clean $work
         ;;
-    call)
-        lang_prepare "$2"
-        shift; shift;
-        $dku exec $ilang /soda/framework/$ilang/work.sh "$@"
-        ;;
     *)
         usage
         ;;
 esac
+

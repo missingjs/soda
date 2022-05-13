@@ -1,0 +1,25 @@
+#!/bin/bash
+
+usage()
+{
+    local cmd=$(basename $0)
+    cat << EOF
+usage:
+    $cmd <lang> start [-d]
+    $cmd <lang> stop
+    $cmd <lang> restart
+EOF
+    exit 1
+}
+
+self_dir=$(cd $(dirname $0) && pwd)
+source $self_dir/support/commonlib.sh
+
+lang=$1
+[ -z $lang ] && usage
+
+lang=$(trans_lang_name $lang)
+
+shift
+$dku exec $lang /soda/framework/$lang/server.sh "$@"
+
