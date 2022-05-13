@@ -1,7 +1,7 @@
 #!/bin/bash
 
 self_dir=$(cd $(dirname $0) && pwd)
-soda_dir=$(cd $self_dir/../.. && pwd)
+soda_dir=$(realpath $self_dir/../..)
 
 set -e
 
@@ -12,7 +12,9 @@ cd $self_dir
 dku=$soda_dir/bin/docker-utils.sh 
 $dku start scala
 
-$dku exec scala bash -c "cd /soda/framework/scala && sbt clean && sbt pack"
+$dku exec scala bash -c "
+    cd /soda/framework/scala && sbt clean && sbt pack
+"
 
 [ -e soda-lib ] || mkdir soda-lib
 
