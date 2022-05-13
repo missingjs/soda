@@ -23,12 +23,6 @@ options:
     clean <testname>
         do nothing
 
-    server (start|stop|restart)
-        server management
-
-    server start --fg
-        start server foreground
-
     remote-setup <testname>
         reset remote server, drop old work class
 
@@ -114,30 +108,9 @@ function run_work()
     fi
 }
 
-function server_op()
-{
-    operation=$1
-    cmd=$self_dir/server.sh
-    if [ "$operation" == "start" ]; then
-        fore=$2
-        [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-        $cmd start
-    elif [ "$operation" == "stop" ]; then
-        $cmd stop
-    elif [ "$operation" == "restart" ]; then
-        $cmd stop
-        $cmd start
-    fi
-}
-
 case $cmd in
     new)
         create_work
-#        template_file=$self_dir/src/main/groovy/bootstrap.groovy
-#        create_source_file $template_file $execfile
-#        classname=$workclass
-#        cat $execfile | sed "s/__Bootstrap__/$classname/g" > $classname.tmp
-#        mv $classname.tmp $execfile
         ;;
     source)
         echo $execfile
@@ -148,32 +121,6 @@ case $cmd in
     run)
         shift; shift
         run_work "$@"
-#        assert_testname
-#        classpath=$(get_classpath)
-#        run_mode=$3
-#        if [ "$run_mode" == "--remote" ]; then
-#            cur_dir=$(pwd)
-#            remote_run $workclass "$cur_dir/$execfile" <&0
-#        else
-#            assert_framework
-#            groovy -cp $classpath $execfile
-#        fi
-        ;;
-    server)
-        shift
-        server_op "$@"
-#        operation=$2
-#        cmd=$self_dir/server.sh
-#        if [ "$operation" == "start" ]; then
-#            fore=$3
-#            [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-#            $cmd start
-#        elif [ "$operation" == "stop" ]; then
-#            $cmd stop
-#        elif [ "$operation" == "restart" ]; then
-#            $cmd stop
-#            $cmd start
-#        fi
         ;;
     remote-setup)
         assert_testname

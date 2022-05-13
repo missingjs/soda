@@ -54,7 +54,7 @@ function start_server_background()
     "
 
     for i in 1 2 3 4 5; do
-        sleep 1
+        sleep 2
         test_server && { echo "$lang server started, listening port $port"; return 0; }
     done
 
