@@ -65,26 +65,6 @@ docker_start()
                 useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name
             "
 
-#        echo "initialize ssh keys"
-#        docker container exec --user $user_name $container \
-#            bash -c "
-#                [ -e ~/.ssh ] || mkdir ~/.ssh
-#                cd ~/.ssh
-#                echo 'StrictHostKeyChecking no' >> config
-#                echo 'UserKnownHostsFile /dev/null' >> config
-#            "
-#
-#        # setup ssh key
-#        pub_key=$($loadconf public_key)
-#        priv_key=$($loadconf private_key)
-#        pk=$(cat $pub_key)
-#        auth_file=~/.ssh/authorized_keys
-#        [ -e $auth_file ] || { touch $auth_file && chmod 600 $auth_file; }
-#        grep -q "$pk" $auth_file || echo "$pk" >> $auth_file
-#        cat $priv_key \
-#            | docker exec -i --user $user_name $container \
-#                bash -c "cat > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
-
         echo "docker container $container created"
         set +e
     fi
@@ -143,12 +123,14 @@ case $subcmd in
         docker stop -t 1 $container
         ;;
     play)
+        proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
         shift; shift;
-        docker exec -i --user $(id -un) -w $workdir $container "$@"
+        docker exec -i --user $(id -un) -w $workdir $proxy_option $container "$@"
         ;;
     exec)
+        proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
         shift; shift;
-        docker exec -i --user $(id -un) $container "$@"
+        docker exec -i --user $(id -un) $proxy_option $container "$@"
         ;;
     sync-file)
         file=$3
