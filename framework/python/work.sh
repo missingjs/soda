@@ -5,7 +5,7 @@ usage()
     local cmd=$(basename $0)
     cat>&2 << EOF
 usage:
-    soda python [options]
+    $cmd <command> [options]
 
 options:
     new <testname>

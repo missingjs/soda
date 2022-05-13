@@ -3,9 +3,9 @@
 usage()
 {
     local cmd=$(basename $0)
-    cat << EOF
+    cat>&2 << EOF
 usage:
-    soda scala <cmd> [options]
+    $cmd <command> [options]
 
 options:
     new <testname>
