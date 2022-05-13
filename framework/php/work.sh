@@ -5,11 +5,14 @@ usage()
     local cmd=$(basename $0)
     cat>&2 << EOF
 usage:
-    soda python [options]
+    $cmd <command> [options]
 
 options:
     new <testname>
         create source file with name <testname>.php
+
+    source <testname>
+        show source file name
 
     make <testname> 
         do nothing
@@ -38,6 +41,9 @@ case $cmd in
     new)
         template_file=$self_dir/src/Soda/Unittest/bootstrap.php
         create_source_file $template_file $execfile
+        ;;
+    source)
+        echo $execfile
         ;;
     make | clean)
         # Don't remove. Just for interface compatible
