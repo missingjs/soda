@@ -23,12 +23,6 @@ options:
     clean <testname>
         remove all class files under current directory
 
-    server start [-d]
-        start server, run background with -d option
-
-    server stop|restart
-        server management
-
     remote-setup
         reset remote server, drop old work class
 
@@ -146,25 +140,6 @@ run_project()
     fi
 }
 
-#server_op()
-#{
-#    operation=$1
-#    local srv=$self_dir/server.sh
-#    if [ "$operation" == "start" ]; then
-#        fore=$2
-#        if [ "$fore" == "-d" ]; then
-#            $srv ;
-#        fi
-#        [ "$fore" == "-d" ] && { $cmd start-fg; exit; }
-#        $cmd start
-#    elif [ "$operation" == "stop" ]; then
-#        $cmd stop
-#    elif [ "$operation" == "restart" ]; then
-#        $cmd stop
-#        $cmd start
-#    fi
-#}
-
 case $cmd in
     new)
         new_project
@@ -182,11 +157,6 @@ case $cmd in
     clean)
         assert_testname
         [ -e $output_dir ] && rm -v -r $output_dir
-        ;;
-    server)
-        shift
-        $self_dir/server.sh "$@"
-#        server_op "$@"
         ;;
     remote-setup)
         remote_setup

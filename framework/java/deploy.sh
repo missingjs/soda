@@ -27,15 +27,5 @@ fi
 docker exec -it -u $user -w /soda/framework/java $container \
     bash -c "cd /soda/framework/java && mvn clean package"
 
-# docker run --rm -t \
-#     --network host \
-#     --user $(id -u):$(id -g) \
-#     -v "/etc/passwd:/etc/passwd:ro" \
-#     -v "/etc/group:/etc/group:ro" \
-#     -v /home/$USER/.m2:/home/$USER/.m2 \
-#     -v $(pwd):/task \
-#     -w /task \
-#     missingjs/soda-java mvn clean package
-
 cp target/soda-java-*.jar soda-lib/
 
