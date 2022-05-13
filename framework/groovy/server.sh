@@ -47,11 +47,12 @@ start_server_fg()
     trap "rm $tmp_file" INT
     set -x
     groovy -cp $classpath $tmp_file -p $port 
+    rm $tmp_file
 }
 
 test_server()
 {
-    curl --connect-timeout 2 "$prefix/soda/groovy/echo?a=x" >/dev/null 2>&1
+    curl -s --connect-timeout 2 "$prefix/soda/groovy/echo?a=x" >/dev/null 2>&1
 }
 
 case $cmd in
@@ -59,7 +60,7 @@ case $cmd in
         test_server || { start_server || exit; }
         ;;
     stop)
-        curl --connect-timeout 2 "$prefix/soda/groovy/stop" && echo
+        curl -s --connect-timeout 2 "$prefix/soda/groovy/stop" && echo
         ;;
     start-fg)
         start_server_fg

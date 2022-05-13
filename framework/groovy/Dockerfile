@@ -5,7 +5,7 @@ ARG bin_package=apache-groovy-binary-${GROOVY_VERSION}.zip
 
 WORKDIR /opt
 RUN apt-get update \
-    && apt-get install -y zip unzip curl \
+    && apt-get install -y zip unzip curl python3 \
     && curl -OL https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/$bin_package \
     && unzip $bin_package \
     && rm $bin_package
