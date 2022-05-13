@@ -7,7 +7,7 @@ usage()
 usage:
     $cmd <lang> start [-d]
     $cmd <lang> stop
-    $cmd <lang> restart
+    $cmd <lang> test
 EOF
     exit 1
 }
@@ -16,10 +16,80 @@ self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/support/commonlib.sh
 
 lang=$1
-[ -z $lang ] && usage
+cmd=$2
+[ -z "$lang" -o -z "$cmd" ] && usage
+check_sdk $lang
 
 lang=$(trans_lang_name $lang)
+host=localhost
+port=$($framework_dir/$lang/server.sh port)
 
-shift
-$dku exec $lang /soda/framework/$lang/server.sh "$@"
+[ -z $port ] && { echo "$lang server port not specified"; exit 1; }
+
+function stop_server()
+{
+    curl -s --connect-timeout 2 "http://$host:$port/soda/$lang/stop" && echo
+}
+
+function test_server()
+{
+    local url="http://$host:$port/soda/$lang/echo?a=x"
+    curl -sS --connect-timeout 2 "$url" >/dev/null
+}
+
+function start_server_foreground()
+{
+    $dku exec $lang "/soda/framework/$lang/server.sh" start
+}
+
+function start_server_background()
+{
+    $dku exec $lang bash -c "
+        set -e
+        log_path=~/.soda/server/logs
+        [ -e \$log_path ] || mkdir -p \$log_path
+
+        log_file=\$log_path/soda-server-${lang}.log
+        nohup /soda/framework/$lang/server.sh start >>\$log_file 2>&1 &
+    "
+
+    for i in 1 2 3 4 5; do
+        sleep 1
+        test_server && { echo "$lang server started, listening port $port"; return 0; }
+    done
+
+    echo "Error: Failed to start $lang server"
+    return 1
+}
+
+function start_server()
+{
+    local bg=$1
+
+    # ensure docker container start
+    $dku start $lang
+
+    # server operation
+    if [ "$bg" == '-d' ]; then
+        test_server 2>/dev/null || start_server_background
+    else
+        start_server_foreground
+    fi
+}
+
+case $cmd in
+    start)
+        shift; shift
+        start_server "$@"
+        ;;
+    stop)
+        stop_server
+        ;;
+    test)
+        test_server && echo "$lang server alive at $host:$port"
+        ;;
+    *)
+        usage
+        ;;
+esac
 
