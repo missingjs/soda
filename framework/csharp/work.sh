@@ -11,6 +11,9 @@ options:
     new <testname>
         create source file with name <testname>.java
 
+    source <testname>
+        show source file name
+
     make <testname> 
         compile test case
 
@@ -36,9 +39,6 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
-assert_testname() {
-    [ -z $testname ] && usage
-}
 testname=$(python3 -c "print('$testname'.capitalize())")
 output_dir=./csharp
 appname=app
@@ -82,46 +82,67 @@ function check_framework()
     [[ ! -f $pkg_file || ! -f $lib_file ]] && tell_to_build
 }
 
-assert_testname
+function create_work()
+{
+    # check dotnet project directory
+    [ -e $output_dir ] && { echo "$output_dir already exists">&2; exit 2; }
+    # prepare source file
+    target_file=${testname}.cs
+    template_file=$self_dir/soda/unittest/__Bootstrap__.cs
+    create_source_file $template_file $target_file
+    classname=$testname
+    tmpfile=${classname}.tmp
+    echo "using Soda.Unittest;" > $tmpfile
+    cat $target_file | grep -v '^namespace ' \
+        | sed "s/__Bootstrap__/$classname/g" \
+        | sed "s/__Solution__/Solution/g" >> $tmpfile
+    mv $tmpfile $target_file
+    # create dotnet project
+    mkdir $output_dir
+    cd $output_dir || exit
+    # use debug version
+    lib_path=$self_dir/soda/bin/$build_conf
+    init_dotnet_project $classname "$lib_path"
+}
+
+function build_work()
+{
+    srcfile=${testname}.cs
+    exefile=$app_dir/bin/$build_conf/$dotnet_version/$appname
+    if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
+        set -e
+        cp $srcfile $app_dir/Program.cs
+        cd $app_dir
+        dotnet build --configuration $build_conf
+        set +e
+    fi
+}
+
+function clean_work()
+{
+    set -e
+    cd $app_dir
+    [ -e bin ] && rm -rvf bin
+    [ -e obj ] && rm -rvf obj
+}
+
+[ -z $testname ] && usage
 check_framework
 case $cmd in
     new)
-        # check dotnet project directory
-        [ -e $output_dir ] && { echo "$output_dir already exists">&2; exit 2; }
-        # prepare source file
-        target_file=${testname}.cs
-        template_file=$self_dir/soda/unittest/__Bootstrap__.cs
-        create_source_file $template_file $target_file
-        classname=$testname
-        tmpfile=${classname}.tmp
-        echo "using Soda.Unittest;" > $tmpfile
-        cat $target_file | grep -v '^namespace ' \
-            | sed "s/__Bootstrap__/$classname/g" \
-            | sed "s/__Solution__/Solution/g" >> $tmpfile
-        mv $tmpfile $target_file
-        # create dotnet project
-        mkdir $output_dir
-        cd $output_dir || exit
-        # use debug version
-        lib_path=$self_dir/soda/bin/$build_conf
-        init_dotnet_project $classname "$lib_path"
+        create_work
+        ;;
+    source)
+        echo ${testname}.cs
         ;;
     make)
-        srcfile=${testname}.cs
-        exefile=$app_dir/bin/$build_conf/$dotnet_version/$appname
-        if [[ ! -e $exefile ]] || [[ $srcfile -nt $exefile ]]; then
-            set -e
-            cp $srcfile $app_dir/Program.cs
-            cd $app_dir
-            dotnet build --configuration $build_conf
-            set +e
-        fi
+        build_work
         ;;
     run)
         cd $app_dir && ./bin/$build_conf/$dotnet_version/$appname
         ;;
     clean)
-        cd $app_dir && rm -rv bin obj
+        clean_work
         ;;
     *)
         usage
