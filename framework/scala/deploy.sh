@@ -3,27 +3,19 @@
 self_dir=$(cd $(dirname $0) && pwd)
 soda_dir=$(cd $self_dir/../.. && pwd)
 
-run_sbt()
-{
-    docker run --rm -t \
-        --network host \
-        --user $(id -u):$(id -g) \
-        -v "/etc/passwd:/etc/passwd:ro" \
-        -v "/etc/group:/etc/group:ro" \
-        -v /home/$USER/.m2:/home/$USER/.m2 \
-        -v /home/$USER/.sbt:/home/$USER/.sbt \
-        -v /home/$USER/.ivy2:/home/$USER/.ivy2 \
-        -v /home/$USER/.cache:/home/$USER/.cache \
-        -v $(pwd):/task \
-        -w /task \
-        missingjs/soda-scala sbt "$@"
-}
+set -e
 
 cd $self_dir
 
 [ -e soda-lib ] && rm -r soda-lib
 
-run_sbt clean && run_sbt pack || exit
+dku=$soda_dir/bin/docker-utils.sh 
+$dku start scala
+
+container=$($dku show scala container)
+user=$(id -un)
+
+$dku exec scala bash -c "cd /soda/framework/scala; sbt clean && sbt pack"
 
 [ -e soda-lib ] || mkdir soda-lib
 

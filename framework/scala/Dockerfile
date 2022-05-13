@@ -3,7 +3,7 @@ FROM missingjs/soda-jdk:11
 ARG SCALA_VERSION=2.13.8
 
 RUN apt-get update \
-    && apt-get install -y curl ca-certificates gnupg unzip zip
+    && apt-get install -y curl ca-certificates gnupg unzip zip python3
 
 # install scala
 RUN mkdir /build
