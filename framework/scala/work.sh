@@ -23,12 +23,6 @@ options:
     clean <testname>
         remove all class files in class output directory (./scala)
 
-    server (start|stop|restart)
-        server management
-
-    server start --fg
-        start server foreground
-
     remote-setup
         reset remote server, drop old work class
 
@@ -138,22 +132,6 @@ function run_work()
     fi
 }
 
-function server_op()
-{
-    operation=$1
-    cmd=$self_dir/server.sh
-    if [ "$operation" == "start" ]; then
-        fore=$2
-        [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-        $cmd start
-    elif [ "$operation" == "stop" ]; then
-        $cmd stop
-    elif [ "$operation" == "restart" ]; then
-        $cmd stop
-        $cmd start
-    fi
-}
-
 case $cmd in
     new)
         create_work
@@ -171,10 +149,6 @@ case $cmd in
     clean)
         assert_testname
         [ -e $output_dir ] && rm -v -r $output_dir
-        ;;
-    server)
-        shift
-        server_op "$@"
         ;;
     remote-setup)
         remote_setup
