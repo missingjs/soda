@@ -23,11 +23,11 @@ options:
     clean <testname>
         remove all class files under current directory
 
-    server (start|stop|restart)
-        server management
+    server start [-d]
+        start server, run background with -d option
 
-    server start --fg
-        start server foreground
+    server stop|restart
+        server management
 
     remote-setup
         reset remote server, drop old work class
@@ -146,21 +146,24 @@ run_project()
     fi
 }
 
-server_op()
-{
-    operation=$1
-    cmd=$self_dir/server.sh
-    if [ "$operation" == "start" ]; then
-        fore=$2
-        [ "$fore" == "--fg" ] && { $cmd start-fg; exit; }
-        $cmd start
-    elif [ "$operation" == "stop" ]; then
-        $cmd stop
-    elif [ "$operation" == "restart" ]; then
-        $cmd stop
-        $cmd start
-    fi
-}
+#server_op()
+#{
+#    operation=$1
+#    local srv=$self_dir/server.sh
+#    if [ "$operation" == "start" ]; then
+#        fore=$2
+#        if [ "$fore" == "-d" ]; then
+#            $srv ;
+#        fi
+#        [ "$fore" == "-d" ] && { $cmd start-fg; exit; }
+#        $cmd start
+#    elif [ "$operation" == "stop" ]; then
+#        $cmd stop
+#    elif [ "$operation" == "restart" ]; then
+#        $cmd stop
+#        $cmd start
+#    fi
+#}
 
 case $cmd in
     new)
@@ -182,7 +185,8 @@ case $cmd in
         ;;
     server)
         shift
-        server_op "$@"
+        $self_dir/server.sh "$@"
+#        server_op "$@"
         ;;
     remote-setup)
         remote_setup

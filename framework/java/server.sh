@@ -2,9 +2,11 @@
 
 usage()
 {
+    local cmd=$(basename $0)
     cat>&2 << EOF
 usage:
-    server.sh start|stop
+    $cmd start [-d]
+    $cmd stop | restart
 EOF
     exit 1
 }
@@ -21,13 +23,16 @@ prefix="http://localhost:$port"
 cmd=$1
 [ -z $cmd ] && usage
 
-start_server()
+start_server_bg()
 {
     old_path=$(pwd)
     cd $work_dir
     logfile=./soda-server.log
-    errfile=./soda-server.err
-    nohup java -cp $(get_classpath) $server_class $port >>$logfile 2>&1 &
+    classpath=$(get_classpath)
+
+    # all log in java code written to stderr
+    nohup java -cp $classpath $server_class -p $port >>$logfile 2>&1 &
+
     cd $old_path
     for i in 1 2 3 4 5; do
         sleep 1
@@ -46,18 +51,35 @@ start_server_fg()
 
 test_server()
 {
-    curl -s --connect-timeout 2 "$prefix/soda/java/echo?a=x" >/dev/null 2>&1
+    curl -s --connect-timeout 2 "$prefix/soda/java/echo?a=x"
+}
+
+function start_server()
+{
+    local bg=$1
+    if [ "$bg" == '-d' ]; then
+        test_server || start_server_bg
+    else
+        start_server_fg
+    fi
+}
+
+function stop_server()
+{
+    curl -s --connect-timeout 2 "$prefix/soda/java/stop" && echo
 }
 
 case $cmd in
     start)
-        test_server || { start_server || exit; }
+        shift
+        start_server "$@"
         ;;
     stop)
-        curl -s --connect-timeout 2 "$prefix/soda/java/stop" && echo
+        stop_server
         ;;
-    start-fg)
-        start_server_fg
+    restart)
+        stop_server
+        start_server
         ;;
     *)
         usage
