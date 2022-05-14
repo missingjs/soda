@@ -90,7 +90,7 @@ case $cmd in
         ./$output_dir/$execfile
         ;;
     clean)
-        [ -e $output_dir/$execfile ] && rm -v $output_dir/$execfile
+        [ -e $output_dir/$execfile ] && rm -v $output_dir/$execfile || true
         ;;
     *)
         usage

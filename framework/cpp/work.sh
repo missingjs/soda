@@ -100,7 +100,7 @@ case $cmd in
         ASAN_OPTIONS="detect_leaks=0" $execfile
         ;;
     clean)
-        [ -e $output_dir ] && rm -rv $output_dir
+        [ -e $output_dir ] && rm -rfv $output_dir || true
         ;;
     *)
         usage

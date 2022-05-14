@@ -120,10 +120,10 @@ function build_work()
 
 function clean_work()
 {
-    set -e
+    [ -e $app_dir ] || exit 0
     cd $app_dir
-    [ -e bin ] && rm -rvf bin
-    [ -e obj ] && rm -rvf obj
+    [ -e bin ] && rm -rvf bin || true
+    [ -e obj ] && rm -rvf obj || true
 }
 
 [ -z $testname ] && usage

@@ -89,7 +89,7 @@ case $cmd in
         cd $output_dir && node --experimental-specifier-resolution=node $exefile
         ;;
     clean)
-        [ -e $output_dir ] && rm -rv $output_dir
+        [ -e $output_dir ] && rm -rfv $output_dir || true
         ;;
     *)
         usage

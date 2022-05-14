@@ -156,7 +156,7 @@ case $cmd in
         ;;
     clean)
         assert_testname
-        [ -e $output_dir ] && rm -v -r $output_dir
+        [ -e $output_dir ] && rm -rfv $output_dir || true
         ;;
     remote-setup)
         remote_setup
