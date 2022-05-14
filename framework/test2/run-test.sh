@@ -22,12 +22,12 @@ options="$@"
 
 for lang in $languages; do
     for loc in $(echo $location | tr ':' ' '); do
-        while read path; do
+        while read -u 233 path; do
             directory=$(dirname $path)
             cd $directory && echo "[$lang] Enter $directory"
-            soda-docker run $lang $options || exit
+            soda run $lang $options || exit
             cd .. && echo -e "[$lang] Leave $directory\n"
-        done < <(find $self_dir/$loc -name $prj_file)
+        done 233< <(find $self_dir/$loc -name $prj_file)
     done
     echo -e "[$lang] DONE\n"
 done
