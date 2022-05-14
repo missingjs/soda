@@ -75,6 +75,7 @@ eof
 
 function prepare_working_dir()
 {
+    local workdir=$($dku show $ilang workdir)
     $dku exec $ilang bash -c "[ -e $workdir ] || mkdir -p $workdir"
 }
 
@@ -159,6 +160,12 @@ function restore_work_in_container()
 
     # create work
     $dku play $ilang new $work_name
+
+    # remove source template
+    local work=$work_name
+    local srcfile=$($framework_dir/$ilang/work.sh source $work)
+    local workdir=$($dku show $ilang workdir)
+    $dku exec $ilang -w $workdir rm $srcfile
 }
 
 _t1=
