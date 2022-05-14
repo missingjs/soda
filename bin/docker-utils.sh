@@ -106,15 +106,19 @@ show_info()
 sync_file_to_container()
 {
     local file=$1
-    if ! docker exec -w $workdir $container bash -c "[ -e $file ]"; then
-        docker cp $file $container:$workdir/$file
-    else
-        t1=$(docker exec -w $workdir $container date -r $file "+%s")
-        t2=$(date -r $file "+%s")
-        if [ $t2 -gt $t1 ]; then
-            docker cp $file $container:$workdir/$file
-        fi
-    fi
+    [ -e $file ] || { echo "file not exist: $file"; exit 2; }
+
+    local host_file_mod_time=$(date -r $file "+%s")
+    local up_to_date="
+        [ -e $workdir ] || mkdir -p $workdir
+        cd $workdir
+        [ -e $file ] || exit 1
+        guest_file_mod_time=\$(date -r $file '+%s')
+        [ $host_file_mod_time -gt \$guest_file_mod_time ] && exit 1
+        exit 0
+    "
+    docker exec -u $(id -u) $container bash -c "$up_to_date" \
+        || { set -x; docker cp $file $container:$workdir/$file; }
 }
 
 function exec_command()

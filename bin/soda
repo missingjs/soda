@@ -17,6 +17,11 @@ self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/support/commonlib.sh || exit
 
 project_file=soda.prj.yml
+work_name_file=.work_name
+
+# will be set later
+work_name=
+ilang=
 
 function init_work()
 {
@@ -59,25 +64,24 @@ EOF
 
 function get_work_name()
 {
-    python3 << eof
+    [ -e $work_name_file ] || python3 >$work_name_file << eof
 import yaml
 with open("$project_file", "rt") as fp:
     config = yaml.load(fp, Loader=yaml.FullLoader)
     print(config['soda']['work_name'])
 eof
+    cat $work_name_file
 }
 
 function prepare_working_dir()
 {
-    local workdir=$($dku show $ilang workdir)
-    local container=$($dku show $ilang container)
-    docker exec -u $(id -u) $container bash -c "[ -e $workdir ] || mkdir -p $workdir"
+    $dku exec $ilang bash -c "[ -e $workdir ] || mkdir -p $workdir"
 }
 
 function create_work()
 {
     local ilang=$1
-    work=$(get_work_name)
+    local work=$work_name
     [ -z $work ] && exit
 
     source_file=$($framework_dir/$ilang/work.sh source $work)
@@ -89,9 +93,6 @@ function create_work()
 
     # initialize working dir in container
     prepare_working_dir
-
-    # sync project file
-#    $dku sync-file $ilang $project_file
 
     # init source file in container
     $dku play $ilang new $work
@@ -134,14 +135,15 @@ force_rebuild=no
 remote_mode=no
 restore_work=no
 
-function lang_prepare()
+function global_prepare()
 {
     local lang=$1
     lang=$(trans_lang_name $lang)
     [ -z "$lang" ] && usage
     check_sdk $lang
 
-    # !!! expose global variable $ilang
+    # !!! expose global variables
+    work_name=$(get_work_name)
     ilang=$lang
 }
 
@@ -156,23 +158,28 @@ function restore_work_in_container()
     prepare_working_dir
 
     # create work
-    local work=$(get_work_name)
-    $dku play $ilang new $work
+    $dku play $ilang new $work_name
+}
+
+_t1=
+_t2=
+function timer_start()
+{
+    _t1=`date +%s%N`
+}
+function timer_end()
+{
+    _t2=`date +%s%N`
+    echo time elapse $((($_t2 - $_t1) / 1000000)) ms
 }
 
 function run_work()
 {
     set -e
 
-    docker_prepare
+    [ "$restore_work" == "yes" ] && restore_work_in_container
 
-    if [ "$restore_work" == "yes" ]; then
-        restore_work_in_container
-    else
-        prepare_working_dir
-    fi
-
-    work=$(get_work_name)
+    local work=$work_name
     source_file=$($framework_dir/$ilang/work.sh source $work)
     $dku sync-file $ilang $source_file
 
@@ -205,22 +212,21 @@ case $cmd in
         work=$2
         [ -z "$work" ] && usage
         init_work $work
-        [ -z $3 ] || { lang_prepare "$3"; create_work $ilang; }
+        [ -z $3 ] || { global_prepare "$3"; create_work $ilang; }
         ;;
     new)
-        lang_prepare "$2"
+        global_prepare "$2"
         create_work $ilang
         ;;
     run)
-        lang_prepare "$2"
+        global_prepare "$2"
         parse_run_args "$@"
         run_work
         ;;
     clean)
-        lang_prepare "$2"
+        global_prepare "$2"
         docker_prepare
-        work=$(get_work_name)
-        $dku play $ilang clean $work
+        $dku play $ilang clean $work_name
         ;;
     *)
         usage
