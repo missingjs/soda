@@ -232,4 +232,5 @@ main__gen.go
 *__gen.java
 /**/ts/
 work.jar
+.work_name
 
