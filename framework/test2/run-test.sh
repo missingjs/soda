@@ -23,10 +23,13 @@ options="$@"
 for lang in $languages; do
     for loc in $(echo $location | tr ':' ' '); do
         while read -u 233 path; do
+            set -e
             directory=$(dirname $path)
-            cd $directory && echo "[$lang] Enter $directory"
-            soda run $lang $options || exit
-            cd .. && echo -e "[$lang] Leave $directory\n"
+            cd $directory
+            echo "[$lang] Enter $directory"
+            soda run $lang $options
+            cd - >/dev/null 2>&1
+            echo -e "[$lang] Leave $directory\n"
         done 233< <(find $self_dir/$loc -name $prj_file)
     done
     echo -e "[$lang] DONE\n"
