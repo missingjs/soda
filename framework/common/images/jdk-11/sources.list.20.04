@@ -43,12 +43,12 @@ deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe m
 # deb http://archive.canonical.com/ubuntu focal partner
 # deb-src http://archive.canonical.com/ubuntu focal partner
 
-deb http://security.ubuntu.com/ubuntu focal-security main restricted
-# deb-src http://security.ubuntu.com/ubuntu focal-security main restricted
-deb http://security.ubuntu.com/ubuntu focal-security universe
-# deb-src http://security.ubuntu.com/ubuntu focal-security universe
-deb http://security.ubuntu.com/ubuntu focal-security multiverse
-# deb-src http://security.ubuntu.com/ubuntu focal-security multiverse
+deb http://mirrors.aliyun.com/ubuntu focal-security main restricted
+# deb-src http://mirrors.aliyun.com/ubuntu focal-security main restricted
+deb http://mirrors.aliyun.com/ubuntu focal-security universe
+# deb-src http://mirrors.aliyun.com/ubuntu focal-security universe
+deb http://mirrors.aliyun.com/ubuntu focal-security multiverse
+# deb-src http://mirrors.aliyun.com/ubuntu focal-security multiverse
 
 # This system was installed using small removable media
 # (e.g. netinst, live or single CD). The matching "deb cdrom"
