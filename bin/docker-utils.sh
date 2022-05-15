@@ -51,7 +51,7 @@ docker_start()
             --name $container \
             --network host $proxy_option \
             -v $soda_dir:/soda \
-            $docker_image bash -c "while true; do sleep 5; done"
+            $docker_image tail -f /dev/null
 
         # initialize container
         user_id=$(id -u)
