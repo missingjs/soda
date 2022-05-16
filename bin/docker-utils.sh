@@ -108,17 +108,32 @@ sync_file_to_container()
     local file=$1
     [ -e $file ] || { echo "file not exist: $file"; exit 2; }
 
-    local host_file_mod_time=$(date -r $file "+%s")
+    local host_mt=$(date -r $file "+%s")
     local up_to_date="
         [ -e $workdir ] || mkdir -p $workdir
+
         cd $workdir
-        [ -e $file ] || exit 1
-        guest_file_mod_time=\$(date -r $file '+%s')
-        [ $host_file_mod_time -gt \$guest_file_mod_time ] && exit 1
-        exit 0
+        [ ! -e $file ] && { echo no; exit; }
+
+        guest_mt=\$(date -r $file '+%s')
+        [ $host_mt -gt \$guest_mt ] && { echo no; exit; }
+
+        echo yes
     "
-    docker exec -u $(id -u) $container bash -c "$up_to_date" \
-        || { set -x; docker cp $file $container:$workdir/$file; }
+
+    local res=$(docker exec -u $(id -u) $container bash -c "$up_to_date")
+    case "$res" in
+        no)
+            set -x; docker cp $file $container:$workdir/$file
+            ;;
+        yes)
+            # nothing to do
+            ;;
+        *)
+            # docker exec failed
+            exit 2
+            ;;
+    esac
 }
 
 function exec_command()
