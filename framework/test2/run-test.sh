@@ -21,6 +21,7 @@ shift; shift;
 options="$@"
 
 for lang in $languages; do
+    docker-utils.sh start $lang || exit
     for loc in $(echo $location | tr ':' ' '); do
         while read -u 233 path; do
             set -e
