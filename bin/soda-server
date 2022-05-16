@@ -5,9 +5,9 @@ usage()
     local cmd=$(basename $0)
     cat << EOF
 usage:
-    $cmd <lang> start [-d]
-    $cmd <lang> stop
-    $cmd <lang> test
+    $cmd start <lang> [-d]
+    $cmd stop  <lang>
+    $cmd test  <lang>
 EOF
     exit 1
 }
@@ -15,8 +15,8 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/support/commonlib.sh
 
-lang=$1
-cmd=$2
+cmd=$1
+lang=$2
 [ -z "$lang" -o -z "$cmd" ] && usage
 check_sdk $lang
 
