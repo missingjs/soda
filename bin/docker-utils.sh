@@ -34,6 +34,7 @@ self_dir=$(cd $(dirname $0) && pwd)
 soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
 loadconf=$self_dir/support/loadconf.sh
+volume_dir=~/.soda/volumes/$lang
 
 docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
@@ -44,28 +45,42 @@ docker_start()
 {
     # check if container exist
     if ! docker container ls --all | grep -q $container; then
+        local home_vol="$volume_dir/home"
+        local user="$(id -un)"
+
         set -e
+        [ -d $home_vol ] || mkdir -p $home_vol
+
         echo "create docker container $container"
         docker run -d \
             --privileged \
             --name $container \
             --network host $proxy_option \
-            -v $soda_dir:/soda \
+            -v "$soda_dir:/soda" \
+            -v "/etc/group:/etc/group:ro" \
+            -v "/etc/passwd:/etc/passwd:ro" \
+            -v "$home_vol:/home/$user" \
             $docker_image tail -f /dev/null
 
         # initialize container
-        user_id=$(id -u)
-        user_name=$(id -un)
-        group_id=$(id -g)
-        group_name=$(id -gn)
-        echo "add user $user_name"
         docker container exec $container \
             bash -c "
                 [ -e /task ] || mkdir /task
                 chmod 777 /task
-                groupadd -g $group_id $group_name || true
-                useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name || true
             "
+
+#        user_id=$(id -u)
+#        user_name=$(id -un)
+#        group_id=$(id -g)
+#        group_name=$(id -gn)
+#        echo "add user $user_name"
+#        docker container exec $container \
+#            bash -c "
+#                [ -e /task ] || mkdir /task
+#                chmod 777 /task
+#                groupadd -g $group_id $group_name || true
+#                useradd -rm -d /home/$user_name -s /bin/bash -g $group_id -u $user_id $user_name || true
+#            "
 
         echo "docker container $container created"
         set +e
@@ -83,7 +98,7 @@ force_purge()
     echo "stop container $container ..."
     docker stop -t 1 $container
     echo "----"
-    echo "remote container $container ..."
+    echo "remove container $container ..."
     docker container rm $container
 }
 

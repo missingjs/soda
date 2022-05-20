@@ -45,6 +45,9 @@ output_dir=./go
 package_name="missingjs.com/soda"
 package_version="v0.0.1"
 
+export GOPATH=~/go
+export GOMODCACHE=~/go/pkg/mod
+
 function create_project()
 {
     [ -e $output_dir/go.mod ] && { echo "$output_dir/go.mod already exists">&2; exit 2; }

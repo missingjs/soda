@@ -14,6 +14,9 @@ cd $self_dir/soda
 
 dotnet clean
 
+[ -d bin ] && rm -rfv bin || true
+[ -d obj ] && rm -rfv obj || true
+
 dotnet pack --configuration Debug
 
 dotnet pack --configuration Release
