@@ -43,8 +43,8 @@ cmd=$1
 testname=$2
 testname=$(python3 -c "print('$testname'.capitalize())")
 output_dir=./kotlin
-jarfile=work.jar
 srcfile=${testname}.kt
+jarfile=${testname}.jar
 
 remote_run()
 {
@@ -94,31 +94,30 @@ function create_work()
 function build_work()
 {
     assert_testname
-    srcfile=${testname}.scala
     [ -e $output_dir ] || mkdir $output_dir
-    classfile=$output_dir/${testname}.class
-    if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
+    local jar="$output_dir/$jarfile"
+    if [[ ! -e $jar ]] || [[ $srcfile -nt $jar ]]; then
         assert_framework
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
-        set -x
-        scalac -d $output_dir $SODA_SCALA_COMPILE_OPTION -cp $classpath $srcfile || exit
-        set +x
+        set -ex
+        kotlinc $SODA_KOTLIN_COMPILE_OPTION -d $jar -cp $classpath $srcfile
+        set +ex
         echo "Compile $srcfile OK"
-        (cd $output_dir && jar cf $jarfile *.class)
     fi
 }
 
 function run_work()
 {
-    local run_mode=$1
     assert_testname
-    classname=$testname
+
+    local run_mode="$1"
+    local classname="${testname}Kt"
     if [ "$run_mode" == "--remote" ]; then
         remote_run $classname <&0
     else
         assert_framework
-        scala -cp $(get_classpath):$output_dir $classname
+        kotlin -cp $(get_classpath):$output_dir/$jarfile $classname
     fi
 }
 
