@@ -1,4 +1,8 @@
 import argparse
+from concurrent.futures import (
+    as_completed,
+    ThreadPoolExecutor
+)
 from contextlib import (
     redirect_stderr,
     redirect_stdout
@@ -97,9 +101,12 @@ def omit_too_long(s, prefix=60, suffix=10):
 def execute(command, testname, config, testobj):
     pbuf = PrintBuffer()
     res = execute_impl(command, testname, config, testobj, pbuf)
-    print(pbuf.getvalue(), end = '')
-    pbuf.close()
-    return res
+    return (res, pbuf)
+#    pbuf = PrintBuffer()
+#    res = execute_impl(command, testname, config, testobj, pbuf)
+#    print(pbuf.getvalue(), end = '')
+#    pbuf.close()
+#    return res
 
 def execute_impl(command, testname, config, testobj, pb):
     seq_number = testobj['id']
@@ -122,9 +129,12 @@ def execute_impl(command, testname, config, testobj, pb):
 
     try:
         begin_time = time.time()
-        response = call_process(command, testobj, config.timeout)
+        resp, errs = call_process(command, json.dumps(testobj), config.timeout)
         end_time = time.time()
         total_time = end_time - begin_time
+        if errs:
+            pb.print(f'Error: {errs}')
+        response = json.loads(resp)
     except Exception as ex:
         pb.print(f'Error: {ex}')
         return False
@@ -187,15 +197,66 @@ def run_single_thread(testname, command, input_files, include_tags):
                 config.inputFile = infile
                 config.seqNum = seq_in_file
                 if include_tags:
-                    if str(counter) not in include_tags and config.tag not in include_tags:
+                    if str(seq_in_file) not in include_tags and config.tag not in include_tags:
                         continue
-                if not execute(command, testname, config, testobj):
+
+                res, pbuf = execute(command, testname, config, testobj)
+                print(pbuf.getvalue(), end = '')
+                pbuf.close()
+                if not res:
                     sys.exit(3)
+
         if seq_in_file == 0:
-            logger.error('No test case')
+            logger.error(f'No test case in {infile}')
 
 def run_concurrency(N, testname, command, input_files, include_tags):
-    pass
+    counter = 0
+    with ThreadPoolExecutor(max_workers = N) as executor:
+        futures = []
+        # future -> sequence number
+        future_seq_map = {}
+        for infile in input_files:
+            seq_in_file = 0
+            with open(infile, 'r') as fp:
+                for config, testobj in parse_input(fp):
+                    seq_in_file += 1
+                    counter += 1
+                    testobj['id'] = counter
+                    config.inputFile = infile
+                    config.seqNum = seq_in_file
+                    if include_tags:
+                        if (str(seq_in_file) not in include_tags
+                                and config.tag not in include_tags):
+                            continue
+                    fut = executor.submit(execute, command, testname, config, testobj)
+                    future_seq_map[fut] = testobj['id']
+                    futures.append(fut)
+            if seq_in_file == 0:
+                logger.error(f'No test case in {infile}')
+
+        res_buffer = [None] * (counter + 1)
+        expected_seq = 1
+        for future in as_completed(futures):
+            try:
+                res, pbuf = future.result()
+                if res:
+                    seq = future_seq_map[future]
+                    res_buffer[seq] = pbuf
+                    while expected_seq < len(res_buffer) and res_buffer[expected_seq]:
+                        pb_ = res_buffer[expected_seq]
+                        expected_seq += 1
+                        print(pb_.getvalue(), end = '')
+                        pb_.close()
+                else:
+                    # print possible error message
+                    print(pbuf.getvalue(), end = '')
+                    pbuf.close()
+                    executor.shutdown(False, cancel_futures = True)
+                    break
+            except Exception as ex:
+                logger.error(f'task failed: {ex}')
+                executor.shutdown(False, cancel_futures = True)
+                break
 
 def main():
     parser = argparse.ArgumentParser(prog='soda')
@@ -235,7 +296,13 @@ def main():
     if args.concurrency < 2:
         run_single_thread(testname, args.command, input_files, include_tags)
     else:
-        run_concurrency(args.concurrency, testname, args.command, input_files, include_tags)
+        run_concurrency(
+            args.concurrency,
+            testname,
+            args.command,
+            input_files,
+            include_tags
+        )
 
 if __name__ == '__main__':
     main()

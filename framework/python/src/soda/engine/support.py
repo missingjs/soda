@@ -102,13 +102,12 @@ class KV:
     def intValue(cls, kv_str):
         return int(cls.split(kv_str)[1])
 
-def call_process(command, testobj, timeout):
-    datatext = json.dumps(testobj)
+def call_process(command, data_input, timeout):
     return_code = None
     # DONOT capture stderr! Message from stderr should print to console
-    with Popen(command, shell=True, stdin=PIPE, stdout=PIPE, encoding='utf-8') as proc:
+    with Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='utf-8') as proc:
         try:
-            outs, _ = proc.communicate(datatext, timeout=timeout)
+            outs, errs = proc.communicate(data_input, timeout=timeout)
         except subprocess.TimeoutExpired as ex:
             kill_all_child_processes(proc.pid)
             raise Exception(f'Time Limit Exceeded, timeout={timeout}s')
@@ -121,12 +120,10 @@ def call_process(command, testobj, timeout):
     if return_code != 0:
         logger.error(ColorText.red('test failed'))
         logger.error(f'<stdout>: {outs}')
+        logger.error(f'<stderr>: {errs}')
         raise Exception(f'Sub process exit with {return_code}')
 
-    try:
-        return json.loads(outs)
-    except:
-        raise Exception(f'Invalid response: {outs}')
+    return outs, errs
 
 def build_test_object(lines):
     testobj = {}
