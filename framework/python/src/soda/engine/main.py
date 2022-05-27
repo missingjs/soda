@@ -1,15 +1,19 @@
 import argparse
+from contextlib import (
+    redirect_stderr,
+    redirect_stdout
+)
+import io
 import json
 import logging
 import os
-from subprocess import Popen, PIPE
 import sys
 import time
 
 from soda.engine import diff
 from soda.engine.legacy import parse_input_legacy
 from soda.engine.support import *
-from soda.engine.util import ColorText
+from soda.engine.util import ColorText, PrintBuffer
 
 framework_dir = os.environ['SODA_FRAMEWORK_DIR']
 verbose = False
@@ -91,22 +95,29 @@ def omit_too_long(s, prefix=60, suffix=10):
         return s[:prefix] + f'...({size-prefix-suffix} chars)...' + s[-suffix:]
 
 def execute(command, testname, config, testobj):
+    pbuf = PrintBuffer()
+    res = execute_impl(command, testname, config, testobj, pbuf)
+    print(pbuf.getvalue(), end = '')
+    pbuf.close()
+    return res
+
+def execute_impl(command, testname, config, testobj, pb):
     seq_number = testobj['id']
-    print(f'**[{seq_number}]**')
+    pb.print(f'**[{seq_number}]**')
     tag_str = f'[{config.tag}]' if config.tag else ''
-    print(f'* {config.inputFile} <{config.seqNum}> {tag_str}')
+    pb.print(f'* {config.inputFile} <{config.seqNum}> {tag_str}')
 
     if verbose:
-        print('config:', json.dumps(config.cfg))
-        print('request:', json.dumps(testobj))
+        pb.print('config:', json.dumps(config.cfg))
+        pb.print('request:', json.dumps(testobj))
 
     if config.showArgs:
-        print('input:')
+        pb.print('input:')
         for s in map(omit_too_long, map(json.dumps, testobj['args'])):
-            print(s)
+            pb.print(s)
 
     if config.skip:
-        print(ColorText.red('SKIP') + '\n')
+        pb.print(ColorText.red('SKIP') + '\n')
         return True
 
     try:
@@ -115,11 +126,11 @@ def execute(command, testname, config, testobj):
         end_time = time.time()
         total_time = end_time - begin_time
     except Exception as ex:
-        print(f'Error: {ex}')
+        pb.print(f'Error: {ex}')
         return False
 
     if verbose:
-        print('response:', json.dumps(response))
+        pb.print('response:', json.dumps(response))
 
     if not response['success']:
         logger.error(ColorText.red('TEST FAILED'))
@@ -127,16 +138,16 @@ def execute(command, testname, config, testobj):
         expected = testobj['expected']
         if expected is not None:
             if res is None:
-                print('Error: result is null')
+                pb.print('Error: result is null')
                 return False
 
-            print('result:', omit_too_long(json.dumps(res)))
-            print('expect:', omit_too_long(json.dumps(expected)))
+            pb.print('result:', omit_too_long(json.dumps(res)))
+            pb.print('expect:', omit_too_long(json.dumps(expected)))
 
             def not_numeric(v):
                 return type(v) not in (int, float)
             if type(expected) != type(res) and not_numeric(expected) and not_numeric(res):
-                print('Error: result and expected is not the same type')
+                pb.print('Error: result and expected is not the same type')
                 return False
 
             # if isinstance(res, list):
@@ -145,23 +156,23 @@ def execute(command, testname, config, testobj):
             #     info = f'Wrong answer {json.dumps(res)}, but {json.dumps(expected)} expected'
             #     print(info)
         else:
-            print('expected: [not present]', )
-            print('result:', omit_too_long(json.dumps(res)))
+            pb.print('expected: [not present]', )
+            pb.print('result:', omit_too_long(json.dumps(res)))
         return False
 
-    print(ColorText.green('SUCCESS'))
+    pb.print(ColorText.green('SUCCESS'))
     if config.showResult:
-        print('output: ' + omit_too_long(json.dumps(response['result'])))
+        pb.print('output: ' + omit_too_long(json.dumps(response['result'])))
         expected = testobj['expected']
         if expected is not None:
-            print('expect: ' + omit_too_long(json.dumps(expected)))
+            pb.print('expect: ' + omit_too_long(json.dumps(expected)))
         else:
-            print('expect: -')
+            pb.print('expect: -')
 
-    print('----')
+    pb.print('----')
     elapse = response['elapse']
-    print(f'solve: {elapse:.3f} ms')
-    print(f'total: {total_time * 1000:.3f} ms\n')
+    pb.print(f'solve: {elapse:.3f} ms')
+    pb.print(f'total: {total_time * 1000:.3f} ms\n')
     return True
 
 def main():
