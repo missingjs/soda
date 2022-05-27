@@ -194,6 +194,9 @@ def run_single_thread(testname, command, input_files, include_tags):
         if seq_in_file == 0:
             logger.error('No test case')
 
+def run_concurrency(N, testname, command, input_files, include_tags):
+    pass
+
 def main():
     parser = argparse.ArgumentParser(prog='soda')
 
@@ -203,6 +206,7 @@ def main():
     parser.add_argument('--verbose', action='store_true', default=False)
     parser.add_argument('--command', required=True)
     parser.add_argument('--tags')
+    parser.add_argument('--concurrency', metavar='N', type=int, nargs='?', default=1)
 
     args = parser.parse_args()
 
@@ -215,7 +219,10 @@ def main():
     global verbose
     verbose = args.verbose
 
-    logging.basicConfig(level = logging.INFO, format = '%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level = logging.INFO,
+        format = '%(levelname)s: %(message)s'
+    )
 
     if not input_files:
         logger.error('No test case specified')
@@ -223,9 +230,12 @@ def main():
 
     include_tags = set()
     if args.tags:
-        include_tags = set(args.tags.split(','))
+        include_tags = set(args.tags.split(args.delim))
 
-    run_single_thread(testname, args.command, input_files, include_tags)
+    if args.concurrency < 2:
+        run_single_thread(testname, args.command, input_files, include_tags)
+    else:
+        run_concurrency(args.concurrency, testname, args.command, input_files, include_tags)
 
 if __name__ == '__main__':
     main()

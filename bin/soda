@@ -7,8 +7,11 @@ usage()
 usage:
     $cmd init  <work> [lang]
     $cmd new   <lang>
-    $cmd run   <lang> [-i <tag>]
     $cmd clean <lang>
+
+    $cmd run   <lang> [--tags <tags>] [--testcase <list>]
+                [--delim <char>] [--verbose] [--clean]
+                [--remote] [--restore]
 EOF
     exit 1
 }
@@ -111,31 +114,6 @@ function docker_prepare()
     $dku start $ilang
 }
 
-function parse_run_args()
-{
-    local args=("$@")
-    local i=0
-    while [ $i -lt "${#args[@]}" ]; do
-        local t=${args[$i]}
-        if [ "$t" == "-i" ]; then
-            ((i++))
-            tags=${args[$i]}
-        elif [ "$t" == "--clean" ]; then
-            force_rebuild=yes
-        elif [ "$t" == "--remote" ]; then
-            remote_mode=yes
-        elif [ "$t" == "--restore" ]; then
-            restore_work=yes
-        fi
-        ((i++))
-    done
-}
-
-tags=
-force_rebuild=no
-remote_mode=no
-restore_work=no
-
 function global_prepare()
 {
     local lang=$1
@@ -182,6 +160,27 @@ function timer_end()
 
 function run_work()
 {
+    local tags=
+    local force_rebuild=no
+    local remote_mode=no
+    local restore_work=no
+    local args=("$@")
+    local i=0
+    local py_args=()
+    while [ $i -lt "${#args[@]}" ]; do
+        local t=${args[$i]}
+        if [ "$t" == "--clean" ]; then
+            force_rebuild=yes
+        elif [ "$t" == "--remote" ]; then
+            remote_mode=yes
+        elif [ "$t" == "--restore" ]; then
+            restore_work=yes
+        else
+            py_args+=("$t")
+        fi
+        ((i++))
+    done
+
     set -e
 
     [ "$restore_work" == "yes" ] && restore_work_in_container
@@ -205,11 +204,8 @@ function run_work()
         $script remote-setup $work || exit
     fi
 
-    # tags to filter test case
-    [ -z "$tags" ] || tag_options="--tags $tags"
-
     # run test cases
-    python3 -m $runner $work --command "$commandStr" $tag_options
+    python3 -m $runner $work --command "$commandStr" "${py_args[@]}"
 }
 
 cmd=$1
@@ -227,8 +223,8 @@ case $cmd in
         ;;
     run)
         global_prepare "$2"
-        parse_run_args "$@"
-        run_work
+        shift; shift;
+        run_work "$@"
         ;;
     clean)
         global_prepare "$2"

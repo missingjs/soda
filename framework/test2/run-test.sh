@@ -3,7 +3,7 @@
 usage()
 {
     cat << EOF
-usage: $(basename $0) <location> <lang> [--clean]
+usage: $(basename $0) <location> <lang> [--clean] [--remote] [--restore] [--concurrency <N>]
 
 lang: all, cpp|python|java|go|scala|ruby|cs|perl|js|php|groovy|ts
 EOF
