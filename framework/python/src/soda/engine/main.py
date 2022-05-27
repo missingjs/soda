@@ -175,6 +175,25 @@ def execute_impl(command, testname, config, testobj, pb):
     pb.print(f'total: {total_time * 1000:.3f} ms\n')
     return True
 
+def run_single_thread(testname, command, input_files, include_tags):
+    counter = 0
+    for infile in input_files:
+        seq_in_file = 0
+        with open(infile, 'r') as fp:
+            for config, testobj in parse_input(fp):
+                seq_in_file += 1
+                counter += 1
+                testobj['id'] = counter
+                config.inputFile = infile
+                config.seqNum = seq_in_file
+                if include_tags:
+                    if str(counter) not in include_tags and config.tag not in include_tags:
+                        continue
+                if not execute(command, testname, config, testobj):
+                    sys.exit(3)
+        if seq_in_file == 0:
+            logger.error('No test case')
+
 def main():
     parser = argparse.ArgumentParser(prog='soda')
 
@@ -206,23 +225,7 @@ def main():
     if args.tags:
         include_tags = set(args.tags.split(','))
 
-    counter = 0
-    for infile in input_files:
-        seq_in_file = 0
-        with open(infile, 'r') as fp:
-            for config, testobj in parse_input(fp):
-                seq_in_file += 1
-                counter += 1
-                testobj['id'] = counter
-                config.inputFile = infile
-                config.seqNum = seq_in_file
-                if include_tags:
-                    if str(counter) not in include_tags and config.tag not in include_tags:
-                        continue
-                if not execute(args.command, testname, config, testobj):
-                    sys.exit(3)
-        if seq_in_file == 0:
-            logger.error('No test case')
+    run_single_thread(testname, args.command, input_files, include_tags)
 
 if __name__ == '__main__':
     main()
