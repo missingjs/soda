@@ -98,15 +98,10 @@ def omit_too_long(s, prefix=60, suffix=10):
     else:
         return s[:prefix] + f'...({size-prefix-suffix} chars)...' + s[-suffix:]
 
-def execute(command, testname, config, testobj):
-    pbuf = PrintBuffer()
-    res = execute_impl(command, testname, config, testobj, pbuf)
-    return (res, pbuf)
-#    pbuf = PrintBuffer()
-#    res = execute_impl(command, testname, config, testobj, pbuf)
-#    print(pbuf.getvalue(), end = '')
-#    pbuf.close()
-#    return res
+def execute(command, testname, config, testobj, pbuf = None):
+    if pbuf is None:
+        pbuf = PrintBuffer()
+    return execute_impl(command, testname, config, testobj, pbuf)
 
 def execute_impl(command, testname, config, testobj, pb):
     seq_number = testobj['id']
@@ -143,7 +138,7 @@ def execute_impl(command, testname, config, testobj, pb):
         pb.print('response:', json.dumps(response))
 
     if not response['success']:
-        logger.error(ColorText.red('TEST FAILED'))
+        pb.print(ColorText.red('TEST FAILED'))
         res = response['result']
         expected = testobj['expected']
         if expected is not None:
@@ -200,9 +195,7 @@ def run_single_thread(testname, command, input_files, include_tags):
                     if str(seq_in_file) not in include_tags and config.tag not in include_tags:
                         continue
 
-                res, pbuf = execute(command, testname, config, testobj)
-                print(pbuf.getvalue(), end = '')
-                pbuf.close()
+                res = execute(command, testname, config, testobj)
                 if not res:
                     sys.exit(3)
 
@@ -228,8 +221,10 @@ def run_concurrency(N, testname, command, input_files, include_tags):
                         if (str(seq_in_file) not in include_tags
                                 and config.tag not in include_tags):
                             continue
-                    fut = executor.submit(execute, command, testname, config, testobj)
-                    future_seq_map[fut] = testobj['id']
+
+                    pbuf = PrintBuffer(io.StringIO())
+                    fut = executor.submit(execute, command, testname, config, testobj, pbuf)
+                    future_seq_map[fut] = (testobj['id'], pbuf)
                     futures.append(fut)
             if seq_in_file == 0:
                 logger.error(f'No test case in {infile}')
@@ -238,9 +233,9 @@ def run_concurrency(N, testname, command, input_files, include_tags):
         expected_seq = 1
         for future in as_completed(futures):
             try:
-                res, pbuf = future.result()
+                seq, pbuf = future_seq_map[future]
+                res = future.result()
                 if res:
-                    seq = future_seq_map[future]
                     res_buffer[seq] = pbuf
                     while expected_seq < len(res_buffer) and res_buffer[expected_seq]:
                         pb_ = res_buffer[expected_seq]

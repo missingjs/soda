@@ -1,4 +1,5 @@
 import io
+import sys
 
 class ColorText:
 
@@ -16,8 +17,13 @@ class ColorText:
 
 
 class PrintBuffer:
-    def __init__(self):
-        self.fileobj = io.StringIO()
+    def __init__(self, fileobj = None):
+        if fileobj is None:
+            self.use_std = True
+            self.fileobj = sys.stdout
+        else:
+            self.use_std = False
+            self.fileobj = fileobj
 
     def print(self, *args, **kwargs):
         if 'file' in kwargs:
@@ -25,8 +31,9 @@ class PrintBuffer:
         print(*args, file=self.fileobj, **kwargs)
 
     def getvalue(self):
-        return self.fileobj.getvalue()
+        return self.fileobj.getvalue() if not self.use_std else ''
 
     def close(self):
-        self.fileobj.close()
+        if not self.use_std:
+            self.fileobj.close()
 
