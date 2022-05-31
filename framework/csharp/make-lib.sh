@@ -12,10 +12,10 @@ set -e
 
 cd $self_dir/soda
 
-dotnet clean
-
 [ -d bin ] && rm -rfv bin || true
 [ -d obj ] && rm -rfv obj || true
+
+dotnet clean
 
 dotnet pack --configuration Debug
 
