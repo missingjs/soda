@@ -22,7 +22,7 @@ class WorkInput(jstr: String) {
 
   def expected: JsValue = (root \ "expected").get
 
-  def arg(index: Int): JsValue = (root \ "args" \ 1).get
+  def arg(index: Int): JsValue = (root \ "args" \ index).get
 
   def arguments: JsValue = (root \ "args").get
 
