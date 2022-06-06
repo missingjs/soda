@@ -25,8 +25,7 @@ abstract class TaskBase<R>(private val _resKType: KType) : TaskProxy<R> {
 
     protected fun run(argTypes: List<KType>, input: WorkInput, task: () -> R): R {
         _argTypes = argTypes
-        // TODO parse arguments
-        // _args =
+         _args = Utils.parseArguments(argTypes, input.arguments)
         val startNano = System.nanoTime()
         val result = task()
         val endNano = System.nanoTime()

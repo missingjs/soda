@@ -67,7 +67,7 @@ EOF
 
 function get_work_name()
 {
-    [ -e $work_name_file -a -n "$(cat $work_name_file)" ] || python3 >$work_name_file << eof
+    [ -e $work_name_file -a -n "$(cat $work_name_file 2>/dev/null)" ] || python3 >$work_name_file << eof
 import yaml
 with open("$project_file", "rt") as fp:
     config = yaml.load(fp, Loader=yaml.FullLoader)

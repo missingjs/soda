@@ -1,12 +1,21 @@
+import soda.kotlin.unittest.*
+
+class Solution {
+    fun add(a: Int, b: Int): Int {
+        return a + b
+    }
+}
 
 class __Bootstrap__ : (String) -> String {
     override fun invoke(text: String): String {
-        TODO("Not yet implemented")
+        val work = GenericTestWork.create(Solution()::add)
+        // work.validator = (T, T) -> Boolean
+        work.compareSerial = true
+        return work.run(text)
     }
 
 }
 
-fun main(args: Array<String>) {
-    val input = generateSequence(::readLine).joinToString("\n")
-    print(input)
+fun main() {
+    print(__Bootstrap__()(Utils.fromStdin()))
 }

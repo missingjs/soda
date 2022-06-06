@@ -101,7 +101,7 @@ function build_work()
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
         set -ex
-        kotlinc $SODA_KOTLIN_COMPILE_OPTION -d $jar -cp $classpath $srcfile
+        kotlinc -jvm-target 11 -d $jar -cp $classpath $srcfile
         set +ex
         echo "Compile $srcfile OK"
     fi

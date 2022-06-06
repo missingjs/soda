@@ -11,14 +11,13 @@ object ConverterFactory {
     private val factoryMap = mutableMapOf<String, () -> OCHandle>()
 
     fun <T> create(elemType: KType): ObjectConverter<T> {
-        val typeName = elemType.toString()
-        return factoryMap[typeName]?.invoke()?.get() ?: newDefaultConverter(elemType)
+        return factoryMap[elemType.toString()]?.invoke()?.get() ?: newDefaultConverter(elemType)
     }
 
     private fun <T> newDefaultConverter(elemType: KType): ObjectConverter<T> {
         @Suppress("UNCHECKED_CAST")
         val ks = serializer(elemType) as KSerializer<T>
-        val parser = { it: JsonElement -> Json.decodeFromJsonElement<T>(ks, it) }
+        val parser = { it: JsonElement -> Json.decodeFromJsonElement(ks, it) }
         val serial = { e: T -> Json.encodeToJsonElement(ks, e) }
         return ObjectConverter(parser, serial)
     }

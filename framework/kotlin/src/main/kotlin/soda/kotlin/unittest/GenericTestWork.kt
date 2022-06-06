@@ -10,7 +10,7 @@ class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
 
     var compareSerial: Boolean = false
 
-    private var validator: ((T, T) -> Boolean)? = null
+    var validator: ((T, T) -> Boolean)? = null
 
     private var _arguments: List<Any?> = emptyList()
 
