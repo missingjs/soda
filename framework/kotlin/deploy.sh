@@ -20,8 +20,6 @@ $dku exec kotlin -w /soda/framework/kotlin bash -c "
     ./gradlew clean && ./gradlew build
 "
 
-# cp build/libs/*.jar $lib_dir/
-
 zipfile=$(cd build/distributions && ls soda-kotlin*.zip | head -n 1)
 fruit=${zipfile%.zip}
 

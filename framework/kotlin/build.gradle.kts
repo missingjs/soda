@@ -25,27 +25,13 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+    exclude("bootstrap.kt", "Main.kt")
 }
 
-application {
-    mainClass.set("MainKt")
-}
+//application {
+//    mainClass.set("MainKt")
+//}
 
 task("copyDependencies", Copy::class) {
     from(configurations.default).into("$buildDir/dependencies")
 }
-
-//tasks.register("getFlatDependencies") {
-//    subprojects {
-//        val runtimeClasspath =
-//            project.configurations.matching { it.name == "desktopRuntimeClasspath" }
-//        runtimeClasspath.all {
-//            for (dep in map { file: File -> file.absoluteFile }) {
-//                project.copy {
-//                    from(dep)
-//                    into("${rootProject.projectDir}/build/libs")
-//                }
-//            }
-//        }
-//    }
-//}

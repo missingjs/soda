@@ -99,11 +99,13 @@ function create_work()
     prepare_working_dir
 
     # init source file in container
+    workdir=$($dku show $ilang workdir)
+    container=$($dku show $ilang container)
+    echo "container: $container"
+    echo "work path: $workdir"
     $dku play $ilang new $work
 
     # pull source file to local
-    workdir=$($dku show $ilang workdir)
-    container=$($dku show $ilang container)
     docker cp $container:$workdir/$source_file ./
 
     set +e

@@ -72,7 +72,8 @@ remote_setup()
 {
     local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
-    curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
+    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
+        || { echo "server not open" >&2; exit 2; }
     local url="http://localhost:$server_port/soda/scala/setup"
     jar_b64=$(python3 << EOF
 import base64
@@ -88,7 +89,10 @@ function create_work()
 {
     assert_testname
     local template_file="$self_dir/src/main/kotlin/bootstrap.kt"
+    set -e
     create_source_file $template_file $srcfile
+    sed -i "s/__Bootstrap__/$testname/g" $srcfile
+    set +e
 }
 
 function build_work()
