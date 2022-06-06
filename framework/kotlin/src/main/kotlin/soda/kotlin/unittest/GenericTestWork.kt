@@ -1,9 +1,44 @@
 package soda.kotlin.unittest
 
+import soda.kotlin.unittest.conv.ConverterFactory
+import soda.kotlin.unittest.conv.ObjectConverter
+import soda.kotlin.unittest.validate.FeatureFactory
 import kotlin.reflect.full.createType
 import kotlin.reflect.typeOf
 
-class GenericTestWork<Return>(private val proxy: TaskProxy<Return>) {
+class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
+
+    var compareSerial: Boolean = false
+
+    private var validator: ((T, T) -> Boolean)? = null
+
+    private var _arguments: List<Any?> = emptyList()
+
+    fun run(text: String): String {
+        val input = WorkInput(text)
+        val result = proxy.execute(input)
+        _arguments = proxy.arguments
+
+        val retType = proxy.returnType
+        val resConv = ConverterFactory.create<T>(retType)
+        val serialResult = resConv.toJsonSerializable(result)
+        val output = WorkOutput()
+        output.id = input.id ?: -1
+        output.result = serialResult
+        output.elapse = proxy.elapseMillis
+
+        var success = true
+        if (input.hasExpected) {
+            if (compareSerial && validator == null) {
+                success = input.expected.toString() == serialResult.toString()
+            } else {
+                val expect = resConv.fromJsonSerializable(input.expected)
+                success = validator?.invoke(expect, result) ?: FeatureFactory.create<T>(retType).isEqual(expect, result)
+            }
+        }
+        output.success = success
+        return output.toJsonString()
+    }
 
     companion object {
         inline fun <reified P1, reified R> create(noinline func: (P1) -> R): GenericTestWork<R> {
@@ -15,31 +50,4 @@ class GenericTestWork<Return>(private val proxy: TaskProxy<Return>) {
         }
     }
 
-}
-
-class Solution {
-    fun add(a: Int, b: Double): String {
-        return "$a + $b"
-    }
-
-    fun add1(a: Int): Int {
-        return a + 1024
-    }
-}
-
-fun main() {
-    GenericTestWork.create(Solution()::add)
-
-    // val su = Solution()
-    val m = Solution()::add
-    for (p in m.parameters) {
-        println(p.type)
-    }
-
-    println(m.returnType)
-//    val types = listOf(String::class, Int::class)
-
-    val t = Solution::class.createType()
-    val t2 = Solution::class.createType()
-    println(t == t2)
 }
