@@ -1,10 +1,9 @@
 package soda.kotlin.unittest
 
+import kotlinx.serialization.json.JsonElement
 import soda.kotlin.unittest.conv.ConverterFactory
-import soda.kotlin.unittest.conv.ObjectConverter
 import soda.kotlin.unittest.validate.FeatureFactory
-import kotlin.reflect.full.createType
-import kotlin.reflect.typeOf
+import kotlin.reflect.KClass
 
 class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
 
@@ -45,8 +44,16 @@ class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
             return GenericTestWork(Task1(func))
         }
 
+        inline fun <reified P1> createVoid(noinline func: (P1) -> Unit): GenericTestWork<P1> {
+            return GenericTestWork(Task1 { p: P1 -> func(p); p })
+        }
+
         inline fun <reified P1, reified P2, reified R> create(noinline func: (P1, P2) -> R): GenericTestWork<R> {
             return GenericTestWork(Task2(func))
+        }
+
+        fun forStruct(structClass: KClass<*>): GenericTestWork<JsonElement> {
+            return create(StructTester(structClass)::test)
         }
     }
 
