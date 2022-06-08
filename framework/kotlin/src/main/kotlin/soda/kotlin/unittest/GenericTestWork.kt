@@ -13,6 +13,9 @@ class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
 
     private var _arguments: List<Any?> = emptyList()
 
+    val arguments: List<Any?>
+        get() = _arguments
+
     fun run(text: String): String {
         val input = WorkInput(text)
         val result = proxy.execute(input)
