@@ -5,6 +5,7 @@ import kotlinx.serialization.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 object ConverterFactory {
 
@@ -20,6 +21,10 @@ object ConverterFactory {
         val parser = { it: JsonElement -> Json.decodeFromJsonElement(ks, it) }
         val serial = { e: T -> Json.encodeToJsonElement(ks, e) }
         return ObjectConverter(parser, serial)
+    }
+
+    private inline fun <reified T> registerFactory(noinline factory: () -> ObjectConverter<T>) {
+        factoryMap[typeOf<T>().toString()] = { OCHandle(factory()) }
     }
 
 }
