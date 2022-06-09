@@ -50,28 +50,53 @@ abstract class TaskBase<R>(private val _resKType: KType) : TaskProxy<R> {
 
 }
 
-class Task1<P1, R>(private val func: (P1) -> R, private val argTypes: List<KType>, resKType: KType) :
+class Task1<P1, R>(
+    private val func: (P1) -> R,
+    private val argTypes: List<KType>, resKType: KType
+) :
     TaskBase<R>(resKType) {
     override fun execute(input: WorkInput): R {
         return run(argTypes, input) { func(arg(0)) }
     }
 
     companion object {
-        inline operator fun <reified P1, reified R> invoke(noinline func: (P1) -> R): Task1<P1, R> {
+        inline operator fun <reified P1, reified R>
+                invoke(noinline func: (P1) -> R): Task1<P1, R> {
             return Task1(func, listOf(typeOf<P1>()), typeOf<R>())
         }
     }
 }
 
-class Task2<P1, P2, R>(private val func: (P1, P2) -> R, private val argTypes: List<KType>, resKType: KType) :
+class Task2<P1, P2, R>(
+    private val func: (P1, P2) -> R,
+    private val argTypes: List<KType>, resKType: KType
+) :
     TaskBase<R>(resKType) {
     override fun execute(input: WorkInput): R {
         return run(argTypes, input) { func(arg(0), arg(1)) }
     }
 
     companion object {
-        inline operator fun <reified P1, reified P2, reified R> invoke(noinline func: (P1, P2) -> R): Task2<P1, P2, R> {
+        inline operator fun <reified P1, reified P2, reified R>
+                invoke(noinline func: (P1, P2) -> R): Task2<P1, P2, R> {
             return Task2(func, listOf(typeOf<P1>(), typeOf<P2>()), typeOf<R>())
+        }
+    }
+}
+
+class Task3<P1, P2, P3, R>(
+    private val func: (P1, P2, P3) -> R,
+    private val argTypes: List<KType>, resKType: KType
+) :
+    TaskBase<R>(resKType) {
+    override fun execute(input: WorkInput): R {
+        return run(argTypes, input) { func(arg(0), arg(1), arg(2)) }
+    }
+
+    companion object {
+        inline operator fun <reified P1, reified P2, reified P3, reified R>
+                invoke(noinline func: (P1, P2, P3) -> R): Task3<P1, P2, P3, R> {
+            return Task3(func, listOf(typeOf<P1>(), typeOf<P2>(), typeOf<P3>()), typeOf<R>())
         }
     }
 }
