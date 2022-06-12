@@ -44,7 +44,7 @@ abstract class BaseHandler implements HttpHandler {
 
     protected Map<String, String> parseQuery(String query) {
         query.split('&')
-                .collect {it.split('=')}
+                .collect {it.split('=', 2)}
                 .findAll {it.length==2}
                 .collectEntries {[it[0], it[1]]}
     }

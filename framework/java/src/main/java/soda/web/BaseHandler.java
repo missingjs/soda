@@ -52,8 +52,8 @@ public abstract class BaseHandler implements HttpHandler {
     }
     
 	protected Map<String, String> parseQuery(String query) {
-    	return Arrays.stream(query.split("[&]"))
-        		.map(s -> s.split("="))
+    	return Arrays.stream(query.split("&"))
+        		.map(s -> s.split("=", 2))
         		.filter(ss -> ss.length == 2)
         		.collect(Collectors.toMap(ss -> ss[0], ss->ss[1]));
     }
