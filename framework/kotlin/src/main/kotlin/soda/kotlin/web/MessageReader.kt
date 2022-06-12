@@ -12,7 +12,7 @@ interface MessageReader {
 
     fun parseQuery(query: String): Map<String, String> {
         return query.split("&")
-            .map { it.split("=") }
+            .map { it.split("=", limit = 2) }
             .filter { it.size == 2 }
             .associate { it[0] to it[1] }
     }
