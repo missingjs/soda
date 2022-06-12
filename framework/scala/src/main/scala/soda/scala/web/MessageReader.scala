@@ -11,8 +11,8 @@ trait MessageReader {
   }
 
   def parseQuery(query: String): Map[String, String] = {
-    query.split("[&]")
-      .map(_.split("="))
+    query.split("&")
+      .map(_.split("=", 2))
       .filter(_.length == 2)
       .map(a => (a(0), a(1)))
       .toMap
