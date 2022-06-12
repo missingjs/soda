@@ -42,4 +42,46 @@ object Validators {
         }
     }
 
+    fun forIntArray(ordered: Boolean): (IntArray, IntArray) -> Boolean {
+        return { a, b -> forList<Int>(ordered)(a.toList(), b.toList()) }
+    }
+
+    fun forIntArray2d(dim1Ordered: Boolean, dim2Ordered: Boolean): (Array<IntArray>, Array<IntArray>) -> Boolean {
+        return { a, b ->
+            forList2d<Int>(dim1Ordered, dim2Ordered)(
+                a.map { it.toList() }.toList(),
+                b.map { it.toList() }.toList()
+            )
+        }
+    }
+
+    fun forLongArray(ordered: Boolean): (LongArray, LongArray) -> Boolean {
+        return { a, b -> forList<Long>(ordered)(a.toList(), b.toList()) }
+    }
+
+    fun forLongArray2d(dim1Ordered: Boolean, dim2Ordered: Boolean): (Array<LongArray>, Array<LongArray>) -> Boolean {
+        return { a, b ->
+            forList2d<Long>(dim1Ordered, dim2Ordered)(
+                a.map { it.toList() }.toList(),
+                b.map { it.toList() }.toList()
+            )
+        }
+    }
+
+    fun forDoubleArray(ordered: Boolean): (DoubleArray, DoubleArray) -> Boolean {
+        return { a, b -> forList<Double>(ordered)(a.toList(), b.toList()) }
+    }
+
+    fun forDoubleArray2d(
+        dim1Ordered: Boolean,
+        dim2Ordered: Boolean
+    ): (Array<DoubleArray>, Array<DoubleArray>) -> Boolean {
+        return { a, b ->
+            forList2d<Double>(dim1Ordered, dim2Ordered)(
+                a.map { it.toList() }.toList(),
+                b.map { it.toList() }.toList()
+            )
+        }
+    }
+
 }
