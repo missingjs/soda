@@ -9,7 +9,7 @@ usage:
 
 options:
     new <testname>
-        create source file with name <testname>.scala
+        create source file with name <testname>.kt
 
     source <testname>
         show source file name
@@ -21,7 +21,7 @@ options:
         run test case
 
     clean <testname>
-        remove all class files in class output directory (./scala)
+        remove all class files in class output directory (./kotlin)
 
     remote-setup
         reset remote server, drop old work class
@@ -64,17 +64,17 @@ print(json.dumps(info))
 EOF
 )
     post_content=$(echo "$input" | python3 -c "$pycode")
-    local url="http://localhost:$server_port/soda/scala/work"
+    local url="http://localhost:$server_port/soda/kotlin/work"
     curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
 }
 
 remote_setup()
 {
     local classpath=$(cd $output_dir && pwd)
-    local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
+    local echo_url="http://localhost:$server_port/soda/kotlin/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null \
         || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/scala/setup"
+    local url="http://localhost:$server_port/soda/kotlin/setup"
     jar_b64=$(python3 << EOF
 import base64
 with open("$output_dir/$jarfile", "rb") as fp:
@@ -116,12 +116,13 @@ function run_work()
     assert_testname
 
     local run_mode="$1"
-    local classname="${testname}Kt"
     if [ "$run_mode" == "--remote" ]; then
+        local classname=$testname
         remote_run $classname <&0
     else
+        local classname="${testname}Kt"
         assert_framework
-        kotlin -cp $(get_classpath):$output_dir/$jarfile $classname
+        java -cp $(get_classpath):$output_dir/$jarfile $classname
     fi
 }
 

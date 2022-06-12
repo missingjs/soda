@@ -29,5 +29,6 @@ cd $lib_dir
 
 mv $fruit/lib/*.jar ./
 
-rm -rf $fruit kotlin-stdlib-*.jar annotations-*.jar
+# rm -rf $fruit kotlin-stdlib-*.jar annotations-*.jar
+rm -rf $fruit
 

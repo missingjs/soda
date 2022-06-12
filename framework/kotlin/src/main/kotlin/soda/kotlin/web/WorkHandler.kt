@@ -35,12 +35,10 @@ class WorkHandler : BaseHandler() {
         val job = TimeLimitedWork(task)
         val future = job.start()
         try {
-            future.get(timeoutMillis, TimeUnit.MILLISECONDS)
+            return future.get(timeoutMillis, TimeUnit.MILLISECONDS)
         } catch (ex: TimeoutException) {
             job.kill()
             throw RuntimeException("work execution timeout", ex)
         }
-
-        return ""
     }
 }

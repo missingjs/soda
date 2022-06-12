@@ -10,6 +10,7 @@ class SetupHandler: BaseHandler() {
 
     override fun handleWork(exchange: HttpExchange): String {
         val q = parseQuery(readPostBody(exchange))
+
         val key = q["key"] ?: ""
         ClassLoaderCache.remove(key)
 

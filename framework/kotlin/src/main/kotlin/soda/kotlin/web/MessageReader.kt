@@ -11,7 +11,7 @@ interface MessageReader {
     }
 
     fun parseQuery(query: String): Map<String, String> {
-        return query.split("[&]")
+        return query.split("&")
             .map { it.split("=") }
             .filter { it.size == 2 }
             .associate { it[0] to it[1] }
