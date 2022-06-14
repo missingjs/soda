@@ -5,6 +5,7 @@ import kotlinx.serialization.serializer
 import kotlinx.serialization.json.*
 import soda.kotlin.leetcode.ListFactory
 import soda.kotlin.leetcode.ListNode
+import soda.kotlin.leetcode.TreeFactory
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -55,6 +56,9 @@ object ConverterFactory {
             { data: List<List<Int>> -> data.map(ListFactory::create).toTypedArray() },
             { nodes: Array<ListNode?> -> nodes.map(ListFactory::dump).toList() }
         )
+
+        // TreeNode
+        registerFactory(TreeFactory::create, TreeFactory::dump)
     }
 
 }
