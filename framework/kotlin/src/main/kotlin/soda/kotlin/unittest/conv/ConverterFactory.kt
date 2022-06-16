@@ -5,6 +5,7 @@ import kotlinx.serialization.serializer
 import kotlinx.serialization.json.*
 import soda.kotlin.leetcode.ListFactory
 import soda.kotlin.leetcode.ListNode
+import soda.kotlin.leetcode.NestedInteger
 import soda.kotlin.leetcode.TreeFactory
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -59,6 +60,17 @@ object ConverterFactory {
 
         // TreeNode
         registerFactory(TreeFactory::create, TreeFactory::dump)
+
+        // NestedInteger
+        registerFactory(NestedIntegerConverter::create)
+
+        // List<NestedInteger>
+        registerFactory {
+            ObjectConverter(
+                { js: JsonElement -> js.jsonArray.map(NestedIntegerConverter::parse) },
+                { elem: List<NestedInteger> -> Json.encodeToJsonElement(elem.map(NestedIntegerConverter::serialize)) }
+            )
+        }
     }
 
 }
