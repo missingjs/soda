@@ -24,24 +24,24 @@ func withTarget(value int, target float64) *Node {
 }
 
 func closestKValues(root *TreeNode, target float64, k int) []int {
-    queue := NewPriorityQueue(func(a,b *Node)bool{return a.Diff > b.Diff})
+    queue := NewGenericPriorityQueue(func(a, b *Node)bool { return a.Diff > b.Diff })
     solve(root, target, k, queue)
 
     var res []int
     for !queue.Empty() {
-        res = append(res, queue.Pop().(*Node).Value)
+        res = append(res, queue.Pop().Value)
     }
     return res
 }
 
-func solve(root *TreeNode, target float64, k int, queue *PriorityQueue) {
+func solve(root *TreeNode, target float64, k int, queue *GenericPriorityQueue[*Node]) {
     if root == nil {
         return;
     }
 
     node := withTarget(root.Val, target)
     if (queue.Size() == k) {
-        if (node.Diff < queue.Top().(*Node).Diff) {
+        if (node.Diff < queue.Top().Diff) {
             queue.Pop()
             queue.Push(node)
         }
