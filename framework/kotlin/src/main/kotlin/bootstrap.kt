@@ -1,3 +1,4 @@
+import kotlin.math.*
 import soda.kotlin.leetcode.*
 import soda.kotlin.unittest.*
 
@@ -28,3 +29,4 @@ class __Bootstrap__ : (String) -> String {
 fun main() {
     print(__Bootstrap__()(Utils.fromStdin()))
 }
+
