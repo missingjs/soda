@@ -18,14 +18,16 @@ public class SetupHandler extends BaseHandler {
 
 	@Override
 	protected String handleWork(HttpExchange exchange) throws Exception {
-		// key=xxx&jar=xxx
-		String content = getPostBody(exchange);
-		Map<String, String> params = parseQuery(content);
-		final String key = params.get("key");
+		// multipart/form-data, key = ?, jar = ?
+		var parts = parseMultipart(exchange);
+//		String content = getPostBody(exchange);
+//		Map<String, String> params = parseQuery(content);
+		String key = parts.get("key").bodyString();
 		mgr.remove(key);
 
-		String jarB64 = params.get("jar");
-		byte[] bytes = Base64.getUrlDecoder().decode(jarB64);
+//		String jarB64 = params.get("jar");
+//		byte[] bytes = Base64.getUrlDecoder().decode(jarB64);
+		var bytes = parts.get("jar").contentBytes;
 		mgr.setupForJar(key, bytes);
 
 		return "reset class loader with " + key;

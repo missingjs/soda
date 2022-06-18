@@ -73,6 +73,8 @@ public class SodaServer {
 		
 		// POST, application/x-www-form-urlencoded
 		server.createContext("/soda/java/setup", new SetupHandler(classLoaderMgr));
+
+
 	}
 	
 	public void start() {

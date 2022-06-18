@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -68,6 +71,38 @@ public abstract class BaseHandler implements HttpHandler {
     	reader.close();
     	return buf.toString();
     }
+
+	protected Map<String, Part> parseMultipart(HttpExchange exchange) throws IOException {
+		var headers = exchange.getRequestHeaders();
+		var contentType = headers.getFirst("Content-Type");
+		if (contentType == null || !contentType.startsWith("multipart/form-data")) {
+			throw new RuntimeException("content type must be multipart/form-data");
+		}
+
+		String boundary = null;
+		boundary = match("boundary=\"(.+?)\"", contentType, 1);
+		if (boundary == null) {
+			boundary = match("boundary=(\\S+)", contentType, 1);
+			if (boundary == null) {
+				throw new RuntimeException("no boundary found in content type header");
+			}
+		}
+
+		var input = exchange.getRequestBody();
+		var parser = new MultipartParser(input, boundary);
+		var parts = parser.parse();
+		var resMap = new HashMap<String, Part>();
+		for (var pt : parts) {
+			resMap.put(pt.getName(), pt);
+		}
+		return resMap;
+	}
+
+	private String match(String pattern, String text, int group) {
+		var p = Pattern.compile(pattern);
+		var m = p.matcher(text);
+		return m.find() ? m.group(group) : null;
+	}
 	
 }
 

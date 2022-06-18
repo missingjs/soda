@@ -73,18 +73,16 @@ EOF
 
 remote_setup()
 {
-    local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/java/echo?a=b"
-    curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/java/setup"
-    jar_b64=$(python3 << EOF
-import base64
-with open("$output_dir/$jarfile", "rb") as fp:
-    b64 = base64.urlsafe_b64encode(fp.read()).decode('utf-8')
-    print(b64)
-EOF
-)
-    curl --connect-timeout 2 -X POST -d "key=$classpath&jar=$jar_b64" -s "$url" && echo
+    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
+        || { echo "server not open" >&2; exit 2; }
+
+    local setup_url="http://localhost:$server_port/soda/java/setup"
+    local pathkey=$(cd $output_dir && pwd)
+    curl --connect-timeout 2 -s -X POST \
+        -F "key=$pathkey" \
+        -F "jar=@$output_dir/$jarfile" \
+        "$setup_url" && echo
 }
 
 new_project()
