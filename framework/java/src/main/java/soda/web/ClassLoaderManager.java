@@ -1,6 +1,7 @@
 package soda.web;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,6 +29,13 @@ public class ClassLoaderManager {
 		URLClassLoader loader = new URLClassLoader(new URL[] {new URL("file:" + jarFile)}, parent);
 		loaderMap.put(key, loader);
 		Logger.info(String.format("new class loader for %s: %s", key, loader));
+	}
+
+	public synchronized void setupForJar(String key, byte[] jarBytes) throws IOException {
+		var parent = ClassLoaderManager.class.getClassLoader();
+		var loader = new JarFileBytesClassLoader(jarBytes, parent);
+		loaderMap.put(key, loader);
+		Logger.info(String.format("new class loader for %s", key));
 	}
 
 	public synchronized ClassLoader getForJar(String key) {

@@ -26,17 +26,7 @@ public class SetupHandler extends BaseHandler {
 
 		String jarB64 = params.get("jar");
 		byte[] bytes = Base64.getUrlDecoder().decode(jarB64);
-
-		String jarDir = "/tmp/soda-java/works";
-		Files.createDirectories(Paths.get(jarDir));
-
-		String filename = key.replace('/', '-');
-		String jarFile = jarDir + "/" + filename + ".jar";
-		try (FileOutputStream out = new FileOutputStream(jarFile)) {
-			out.write(bytes);
-		}
-		mgr.setupForJar(key, jarFile);
-		Logger.infof("key: %s, jar file: %s", key, jarFile);
+		mgr.setupForJar(key, bytes);
 
 		return "reset class loader with " + key;
 	}
