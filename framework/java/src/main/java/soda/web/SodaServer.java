@@ -71,10 +71,8 @@ public class SodaServer {
 		// POST, application/json
 		server.createContext("/soda/java/work", new WorkHandler(classLoaderMgr, 5000));
 		
-		// POST, application/x-www-form-urlencoded
+		// POST, multipart/form-data
 		server.createContext("/soda/java/setup", new SetupHandler(classLoaderMgr));
-
-
 	}
 	
 	public void start() {
