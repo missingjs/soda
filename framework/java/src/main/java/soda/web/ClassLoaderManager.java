@@ -11,24 +11,9 @@ import java.util.Map;
 public class ClassLoaderManager {
 
 	private Map<String, ClassLoader> loaderMap = new HashMap<>();
-	
-	public synchronized void set(String path) throws MalformedURLException {
-		File file = new File(path);
-		ClassLoader parent = ClassLoaderManager.class.getClassLoader();
-    	URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, parent);
-    	loaderMap.put(path, loader);
-		Logger.info(String.format("new class loader for %s: %s", path, loader));
-	}
 
 	public synchronized void remove(String path) {
 		loaderMap.remove(path);
-	}
-
-	public synchronized void setupForJar(String key, String jarFile) throws MalformedURLException {
-		ClassLoader parent = ClassLoaderManager.class.getClassLoader();
-		URLClassLoader loader = new URLClassLoader(new URL[] {new URL("file:" + jarFile)}, parent);
-		loaderMap.put(key, loader);
-		Logger.info(String.format("new class loader for %s: %s", key, loader));
 	}
 
 	public synchronized void setupForJar(String key, byte[] jarBytes) throws IOException {

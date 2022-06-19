@@ -8,31 +8,15 @@ object ClassLoaderCache {
 
   private val loaderMap = mutable.Map[String, ClassLoader]()
 
-  def set(path: String): Unit = this.synchronized {
-    val parent = Thread.currentThread().getContextClassLoader
-    val loader = new URLClassLoader(Array(new File(path).toURI.toURL), parent)
-    loaderMap(path) = loader
-    Logger.info(s"new class loader for $path: $loader")
-  }
-
-//  def get(path: String): ClassLoader = this.synchronized {
-//    loaderMap.get(path) match {
-//      case Some(loader) => loader
-//      case None =>
-//        set(path)
-//        loaderMap(path)
-//    }
-//  }
-
   def remove(path: String): Unit = this.synchronized {
     loaderMap.remove(path)
   }
 
-  def setupForJar(key: String, jarFile: String): Unit = this.synchronized {
+  def setupForJar(key: String, jarBytes: Array[Byte]): Unit = this.synchronized {
     val parent = Thread.currentThread().getContextClassLoader
-    val loader = new URLClassLoader(Array(new URL(s"file:$jarFile")), parent)
+    val loader = new JarFileBytesClassLoader(jarBytes, parent)
     loaderMap(key) = loader
-    Logger.info(s"new class loader for $key: $loader")
+    Logger.info(s"new class loader for $key")
   }
 
   def getForJar(key: String): ClassLoader = this.synchronized {

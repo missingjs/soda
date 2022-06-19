@@ -7,21 +7,6 @@ import java.util.List;
 
 public class MultipartParser {
 
-    public static void main(String[] args) throws Exception {
-        var file = "/home/tangqiming/temp/java/006/post-body";
-        var input = new FileInputStream(file);
-        var boundary = "------------------------54a9a98a2e5ceff5";
-        var parser = new MultipartParser(input, boundary);
-        var output = new FileOutputStream("/home/tangqiming/temp/java/006/body-content");
-        for (var p : parser.parse()) {
-            System.out.println(p.contentDisposition.name);
-            if (p.contentDisposition.name.equals("doc")) {
-                output.write(p.contentBytes);
-            }
-        }
-        output.close();
-    }
-
     private InputStream source;
 
     private final String boundary;

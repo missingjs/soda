@@ -12,7 +12,7 @@ class TimeLimitedWork(job: () => String) {
     jobThread.start()
     task
   }
-
+  
   def kill(): Unit = {
     try {
       if (jobThread != null) {
