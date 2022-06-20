@@ -1,6 +1,7 @@
 package soda.web;
 
 import com.sun.net.httpserver.HttpExchange;
+import soda.web.http.RequestHelper;
 
 public class SetupHandler extends BaseHandler {
 	
@@ -11,16 +12,18 @@ public class SetupHandler extends BaseHandler {
 	}
 
 	@Override
-	protected String handleWork(HttpExchange exchange) throws Exception {
+	protected void doPost(HttpExchange exchange) throws Exception {
 		// multipart/form-data, key = ?, jar = ?
-		var parts = parseMultipart(exchange);
-		String key = parts.get("key").bodyString();
+		var data = RequestHelper.multipartFormData(exchange);
+		var key = data.firstValue("key");
 		mgr.remove(key);
 
-		var bytes = parts.get("jar").payload;
+		var bytes = data.firstFile("jar");
 		mgr.setupForJar(key, bytes);
 
-		return "reset class loader with " + key;
+		Logger.infof("reset class loader for key %s", key);
+
+		Utils.setResponse(exchange, 200, "success");
 	}
 
 }

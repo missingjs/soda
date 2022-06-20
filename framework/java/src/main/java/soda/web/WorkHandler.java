@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 
 import soda.unittest.TestWork;
+import soda.web.http.RequestHelper;
 
 public class WorkHandler extends BaseHandler {
 	
@@ -25,8 +26,9 @@ public class WorkHandler extends BaseHandler {
 	}
 
 	@Override
-	protected String handleWork(HttpExchange exchange) throws Exception {
-		String content = getPostBody(exchange);
+	protected void doPost(HttpExchange exchange) throws Exception {
+		String content = RequestHelper.bodyString(exchange);
+		Logger.infof("test input: %s", content);
 		ObjectMapper om = new ObjectMapper();
 		WorkRequest jr = om.readValue(content, WorkRequest.class);
 		
@@ -51,7 +53,9 @@ public class WorkHandler extends BaseHandler {
 		TimeLimitedJob tLJob = new TimeLimitedJob(callable);
 		FutureTask<String> future = tLJob.start();
     	try {
-    		return future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+    		var result = future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+			Logger.infof("test output: %s", result);
+			Utils.setResponse(exchange, 200, result);
     	} catch (TimeoutException tex) {
     		tLJob.kill();
     		throw new RuntimeException("Job timeout");

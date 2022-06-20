@@ -55,9 +55,9 @@ public class SodaServer {
 	
 	private class StopHandler extends BaseHandler {
 		@Override
-		public String handleWork(HttpExchange exchange) throws Exception {
+		public void doGet(HttpExchange exchange) throws Exception {
 			stop();
-			return "Stop signal sent";
+			Utils.setResponse(exchange, 200, "stop signal sent");
 		}
 	}
 	

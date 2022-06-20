@@ -20,7 +20,7 @@ public class MultipartParser {
     }
 
     public List<Part> parse() throws IOException {
-        var contentBytes = loadAll(source);
+        var contentBytes = Utils.toByteArray(source);
         var bounds = boundary.getBytes(StandardCharsets.UTF_8);
         var parts = new ArrayList<Part>();
 
@@ -98,16 +98,6 @@ public class MultipartParser {
             }
         }
         return true;
-    }
-
-    private byte[] loadAll(InputStream in) throws IOException {
-        var buf = new byte[1024];
-        var outs = new ByteArrayOutputStream();
-        int size = 0;
-        while ((size = in.read(buf)) != -1) {
-            outs.write(buf, 0, size);
-        }
-        return outs.toByteArray();
     }
 
 }
