@@ -1,5 +1,8 @@
 package soda.web;
 
+import soda.web.http.ContentDisposition;
+import soda.web.http.Part;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -41,7 +44,7 @@ public class MultipartParser {
                 var header = new String(contentBytes, start, end - start, StandardCharsets.UTF_8);
                 start = end + 2;
                 if (header.startsWith("Content-Disposition:")) {
-                    part.contentDisposition = Part.Disposition.parse(header);
+                    part.contentDisposition = ContentDisposition.fromHeaderLine(header);
                 } else if (header.startsWith("Content-Type:")) {
                     part.contentType = header.split(":", 2)[1];
                 }
@@ -63,7 +66,7 @@ public class MultipartParser {
                 start = end + 2;
                 ++n;
             }
-            part.contentBytes = bytebuf.toByteArray();
+            part.payload = bytebuf.toByteArray();
             parts.add(part);
 
         } while (contentBytes[end-1] != '-' || contentBytes[end-2] != '-');

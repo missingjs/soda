@@ -1,12 +1,9 @@
 package soda.web;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -14,6 +11,7 @@ import java.util.stream.Collectors;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import soda.unittest.Utils;
+import soda.web.http.Part;
 
 public abstract class BaseHandler implements HttpHandler {
 	
@@ -89,7 +87,7 @@ public abstract class BaseHandler implements HttpHandler {
 		}
 
 		var input = exchange.getRequestBody();
-		var parser = new MultipartParser(input, boundary);
+		var parser = new MultipartParserEx(input, boundary);
 		var parts = parser.parse();
 		var resMap = new HashMap<String, Part>();
 		for (var pt : parts) {

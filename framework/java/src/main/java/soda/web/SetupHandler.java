@@ -17,7 +17,7 @@ public class SetupHandler extends BaseHandler {
 		String key = parts.get("key").bodyString();
 		mgr.remove(key);
 
-		var bytes = parts.get("jar").contentBytes;
+		var bytes = parts.get("jar").payload;
 		mgr.setupForJar(key, bytes);
 
 		return "reset class loader with " + key;
