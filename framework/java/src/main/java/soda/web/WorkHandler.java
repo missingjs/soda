@@ -13,6 +13,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 import soda.unittest.TestWork;
 import soda.web.http.RequestHelper;
+import soda.web.resp.Response;
+import soda.web.resp.ResponseFactory;
 
 public class WorkHandler extends BaseHandler {
 	
@@ -26,7 +28,7 @@ public class WorkHandler extends BaseHandler {
 	}
 
 	@Override
-	protected void doPost(HttpExchange exchange) throws Exception {
+	protected Response doPost(HttpExchange exchange) throws Exception {
 		String content = RequestHelper.bodyString(exchange);
 		Logger.infof("test input: %s", content);
 		ObjectMapper om = new ObjectMapper();
@@ -55,7 +57,8 @@ public class WorkHandler extends BaseHandler {
     	try {
     		var result = future.get(timeoutMillis, TimeUnit.MILLISECONDS);
 			Logger.infof("test output: %s", result);
-			Utils.setResponse(exchange, 200, result);
+			// Utils.setResponse(exchange, 200, result);
+			return ResponseFactory.text(result);
     	} catch (TimeoutException tex) {
     		tLJob.kill();
     		throw new RuntimeException("Job timeout");

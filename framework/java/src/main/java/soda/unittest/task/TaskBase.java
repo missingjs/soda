@@ -1,6 +1,5 @@
 package soda.unittest.task;
 
-import soda.unittest.TestWork;
 import soda.unittest.Utils;
 import soda.unittest.WorkInput;
 

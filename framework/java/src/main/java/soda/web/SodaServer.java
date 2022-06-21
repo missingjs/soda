@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import soda.web.resp.Response;
+import soda.web.resp.ResponseFactory;
+
 public class SodaServer {
 
 	private String bindAddress;
@@ -55,9 +58,9 @@ public class SodaServer {
 	
 	private class StopHandler extends BaseHandler {
 		@Override
-		public void doGet(HttpExchange exchange) throws Exception {
+		public Response doGet(HttpExchange exchange) throws Exception {
 			stop();
-			Utils.setResponse(exchange, 200, "stop signal sent");
+			return ResponseFactory.success("stop signal sent");
 		}
 	}
 	
