@@ -7,7 +7,7 @@ import scala.util.control.Breaks.{break, breakable}
 class MultipartParser(source: InputStream, boundary: String) {
 
   def parse(): List[Part] = {
-    val contentBytes = loadAll(source)
+    val contentBytes = Utils.toByteArray(source)
     val bounds = boundary.getBytes(StandardCharsets.UTF_8)
     var parts = List.empty[Part]
 
@@ -90,16 +90,6 @@ class MultipartParser(source: InputStream, boundary: String) {
       p += 1
     }
     p
-  }
-
-  private def loadAll(in: InputStream): Array[Byte] = {
-    val buf = Array.fill[Byte](1024)(0)
-    val outs = new ByteArrayOutputStream()
-    var size = 0
-    while ({size = in.read(buf); size != -1}) {
-      outs.write(buf, 0, size)
-    }
-    outs.toByteArray
   }
 
 }
