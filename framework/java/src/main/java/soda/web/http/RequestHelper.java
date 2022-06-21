@@ -101,32 +101,6 @@ public class RequestHelper {
         return boundary;
     }
 
-//    protected Map<String, Part> parseMultipart(HttpExchange exchange) throws IOException {
-//        var headers = exchange.getRequestHeaders();
-//        var contentType = headers.getFirst("Content-Type");
-//        if (contentType == null || !contentType.startsWith("multipart/form-data")) {
-//            throw new RuntimeException("content type must be multipart/form-data");
-//        }
-//
-//        String boundary = null;
-//        boundary = match("boundary=\"(.+?)\"", contentType, 1);
-//        if (boundary == null) {
-//            boundary = match("boundary=(\\S+)", contentType, 1);
-//            if (boundary == null) {
-//                throw new RuntimeException("no boundary found in content type header");
-//            }
-//        }
-//
-//        var input = exchange.getRequestBody();
-//        var parser = new MultipartParserEx(input, boundary);
-//        var parts = parser.parse();
-//        var resMap = new HashMap<String, Part>();
-//        for (var pt : parts) {
-//            resMap.put(pt.getName(), pt);
-//        }
-//        return resMap;
-//    }
-
     private static String match(String pattern, String text, int group) {
         var p = Pattern.compile(pattern);
         var m = p.matcher(text);

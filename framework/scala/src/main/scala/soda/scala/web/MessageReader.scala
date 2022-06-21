@@ -1,6 +1,7 @@
 package soda.scala.web
 
 import com.sun.net.httpserver.HttpExchange
+import soda.scala.web.http.Part
 
 import java.util.regex.Pattern
 import scala.io.Source

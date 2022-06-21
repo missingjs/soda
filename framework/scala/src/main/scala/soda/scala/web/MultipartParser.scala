@@ -1,5 +1,7 @@
 package soda.scala.web
 
+import soda.scala.web.http.Part
+
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets
 import scala.util.control.Breaks.{break, breakable}
@@ -56,7 +58,7 @@ class MultipartParser(source: InputStream, boundary: String) {
           n += 1
         }
       }
-      part.contentBytes = bytebuf.toByteArray
+      part.payload = bytebuf.toByteArray
       parts = part :: parts
     } while (contentBytes(end-1) != '-' || contentBytes(end-2) != '-')
 

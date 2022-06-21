@@ -8,7 +8,7 @@ class SetupHandler extends BaseHandler {
     val key: String = parts("key").bodyString
     ClassLoaderCache.remove(key)
 
-    val bytes: Array[Byte] = parts("jar").contentBytes
+    val bytes: Array[Byte] = parts("jar").payload
     ClassLoaderCache.setupForJar(key, bytes)
 
     s"reset class loader with $key"
