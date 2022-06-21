@@ -11,8 +11,6 @@ import java.util.List;
 
 public class MultipartParserEx {
 
-    private InputStream source;
-
     private final String boundary;
 
     private ByteLineInputStream lineInput;
@@ -20,7 +18,6 @@ public class MultipartParserEx {
     private static final int BUF_SIZE = 1024;
 
     public MultipartParserEx(InputStream input, String boundary) {
-        this.source = input;
         this.boundary = boundary;
         lineInput = new ByteLineInputStream(input, 4096);
     }

@@ -18,7 +18,6 @@ public class StructTester {
         return new TestWork(new StructTester(structClass), "test");
     }
 
-    @SuppressWarnings("unchecked")
     public Object test(List<String> operations, List<Object> parameters) {
         return Utils.wrapEx(() -> {
             var ctor = structClass.getConstructors()[0];

@@ -37,7 +37,6 @@ public class FeatureFactory {
         );
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> ObjectFeature<T> create(Type type) {
         var fact = factoryMap.get(type);
         if (fact != null) {
