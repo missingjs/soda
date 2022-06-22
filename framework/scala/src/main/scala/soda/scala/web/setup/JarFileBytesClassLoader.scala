@@ -1,4 +1,4 @@
-package soda.scala.web
+package soda.scala.web.setup
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.util.jar.{JarEntry, JarInputStream}

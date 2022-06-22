@@ -29,17 +29,6 @@ public class Utils {
         return outs.toByteArray();
     }
 
-    public static void setResponse(HttpExchange exchange, int code, String body) throws IOException {
-        var data = body.getBytes(StandardCharsets.UTF_8);
-        setResponse(exchange, code, data);
-    }
-
-    public static void setResponse(HttpExchange exchange, int code, byte[] body) throws IOException {
-        exchange.sendResponseHeaders(code, body.length);
-        exchange.getResponseBody().write(body);
-        exchange.getResponseBody().close();
-    }
-
     public static String toString(Throwable ex) {
         return soda.unittest.Utils.toString(ex);
     }

@@ -32,7 +32,7 @@ public class ResponseFactory {
     }
 
     public static Response exception(Throwable ex) {
-        return error(HTTP_INTERNAL_ERROR, UNCLASSIFIED_ERROR_CODE, "internal server error");
+        return error(HTTP_INTERNAL_ERROR, UNCLASSIFIED_ERROR_CODE, "internal server error: " + ex);
     }
 
     public static Response text(int httpCode, String content) {

@@ -1,5 +1,7 @@
-package soda.scala.web
+package soda.scala.web.setup
+
 import com.sun.net.httpserver.HttpExchange
+import soda.scala.web.BaseHandler
 
 class SetupHandler extends BaseHandler {
   override def handleWork(exchange: HttpExchange): String = {

@@ -1,6 +1,8 @@
-package soda.web;
+package soda.web.setup;
 
 import com.sun.net.httpserver.HttpExchange;
+import soda.web.BaseHandler;
+import soda.web.Logger;
 import soda.web.http.RequestHelper;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;

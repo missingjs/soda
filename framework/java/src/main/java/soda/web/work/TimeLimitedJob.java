@@ -1,4 +1,4 @@
-package soda.web;
+package soda.web.work;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;

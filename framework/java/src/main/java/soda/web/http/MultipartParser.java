@@ -1,5 +1,6 @@
-package soda.web;
+package soda.web.http;
 
+import soda.web.Utils;
 import soda.web.http.ContentDisposition;
 import soda.web.http.Part;
 

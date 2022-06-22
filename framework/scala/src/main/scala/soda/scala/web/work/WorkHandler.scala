@@ -1,10 +1,11 @@
 package soda.scala.web
 
 import com.sun.net.httpserver.HttpExchange
-import java.util.concurrent.{TimeoutException, TimeUnit}
-import scala.reflect.runtime.universe._
 
+import java.util.concurrent.{TimeUnit, TimeoutException}
+import scala.reflect.runtime.universe._
 import play.api.libs.json._
+import soda.scala.web.setup.ClassLoaderCache
 
 class WorkHandler extends BaseHandler {
 

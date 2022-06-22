@@ -1,13 +1,12 @@
-package soda.scala.web
+package soda.scala.web.http
 
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import soda.scala.web.{BusinessCode, ServiceException}
+
+import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets
 import java.util
 import scala.collection.mutable
 import scala.util.control.Breaks._
-import soda.scala.web.http.Part
-import soda.scala.web.http.ContentDisposition
 
 class MultipartParserEx(input: InputStream, private val boundary: String) {
 

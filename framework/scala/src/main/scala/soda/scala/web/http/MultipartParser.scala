@@ -1,6 +1,6 @@
-package soda.scala.web
+package soda.scala.web.http
 
-import soda.scala.web.http.{ContentDisposition, Part}
+import soda.scala.web.Utils
 
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets

@@ -1,4 +1,6 @@
-package soda.scala.web
+package soda.scala.web.http
+
+import soda.scala.web.{BusinessCode, ServiceException}
 
 import java.io.InputStream
 

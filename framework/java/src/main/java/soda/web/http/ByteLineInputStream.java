@@ -1,4 +1,7 @@
-package soda.web;
+package soda.web.http;
+
+import soda.web.BusinessCode;
+import soda.web.ServiceException;
 
 import java.io.IOException;
 import java.io.InputStream;

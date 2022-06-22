@@ -1,4 +1,6 @@
-package soda.web;
+package soda.web.setup;
+
+import soda.web.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
