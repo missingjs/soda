@@ -1,6 +1,9 @@
 package soda.scala.web
 
 import com.sun.net.httpserver.{HttpExchange, HttpServer}
+import soda.scala.web.resp.{Response, ResponseFactory}
+import soda.scala.web.setup.SetupHandler
+import soda.scala.web.work.WorkHandler
 
 import java.net.InetSocketAddress
 import java.util.concurrent.{Executors, TimeUnit}
@@ -24,9 +27,9 @@ class Server(address: String, port: Int) {
 
   // GET
   server.createContext("/soda/scala/stop", new BaseHandler {
-    override def handleWork(exchange: HttpExchange): String = {
+    override def doGet(exchange: HttpExchange): Response = {
       stop()
-      "stop signal sent"
+      ResponseFactory.success("stop signal sent")
     }
   })
 

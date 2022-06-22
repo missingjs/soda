@@ -22,8 +22,7 @@ class JarFileBytesClassLoader(bytes: Array[Byte], parent: ClassLoader) extends C
           while ({readSize = jin.read(buffer, 0, buffer.length); readSize != -1}) {
             bout.write(buffer, 0, readSize)
           }
-          var classBytes = bout.toByteArray
-          classMap(className) = classBytes
+          classMap(className) = bout.toByteArray
         }
       }
     }

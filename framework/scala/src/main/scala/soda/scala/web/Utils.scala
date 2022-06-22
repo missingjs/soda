@@ -4,18 +4,16 @@ import com.sun.net.httpserver.HttpExchange
 
 import java.io.{ByteArrayOutputStream, InputStream, PrintStream}
 import java.nio.charset.StandardCharsets
-import java.util.regex.{Matcher, Pattern}
+import java.util.regex.Pattern
 
 object Utils {
 
-  def findOne(text: String, pattern: String, group: Int): String = {
-    Pattern.compile(pattern).matcher(text) match {
-      case mat: Matcher => mat.group(group)
-      case _ => null
-    }
+  def findOne(text: String, pattern: String, group: Int): Option[String] = {
+    val mat = Pattern.compile(pattern).matcher(text)
+    Option(if (mat.find()) mat.group(group) else null)
   }
 
-  def findOne(text: String, pattern: String): String = {
+  def findOne(text: String, pattern: String): Option[String] = {
     findOne(text, pattern, 1)
   }
 

@@ -23,15 +23,15 @@ object ResponseFactory {
   }
 
   def error(httpCode: Int, bizCode: Int, message: String): Response = {
-    JsonResponse.create(HTTP_OK, SimpleResp(httpCode, message))
+    JsonResponse.create(httpCode, SimpleResp(bizCode, message))
   }
 
   def exception(ex: ServiceException): Response = {
     error(ex.httpCode, ex.bizCode, ex.errMessage)
   }
 
-  def exception(throwable: Throwable): Response = {
-    error(HTTP_INTERNAL_SERVER_ERROR, BusinessCode.COMMON_ERROR, "internal server error")
+  def exception(ex: Throwable): Response = {
+    error(HTTP_INTERNAL_SERVER_ERROR, BusinessCode.COMMON_ERROR, s"internal server error: $ex")
   }
 
   def text(httpCode: Int, content: String): Response = new TextResponse(httpCode, content)

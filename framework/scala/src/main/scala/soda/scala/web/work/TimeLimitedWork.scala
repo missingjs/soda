@@ -1,4 +1,4 @@
-package soda.scala.web
+package soda.scala.web.work
 
 import java.util.concurrent.FutureTask
 

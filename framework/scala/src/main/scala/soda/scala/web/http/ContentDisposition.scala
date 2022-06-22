@@ -15,15 +15,14 @@ class ContentDisposition {
 object ContentDisposition {
 
   def fromHeaderValue(value: String): ContentDisposition = {
-    val name = Utils.findOne(value, "name=\"(.*?)\"")
-    if (name == null) {
-      throw new IllegalArgumentException("no name found in Content-Disposition")
+    Utils.findOne(value, "name=\"(.*?)\"") match {
+      case Some(name) =>
+        val cd = new ContentDisposition()
+        cd.name = name
+        cd.filename = Utils.findOne(value, "filename=\"(.*?)\"").orNull
+        cd
+      case None => throw new IllegalArgumentException("no name found in Content-Disposition")
     }
-
-    val cd = new ContentDisposition()
-    cd.name = name
-    cd.filename = Utils.findOne(value, "filename=\"(.*?)\"")
-    cd
   }
 
   def fromHeaderLine(headerLine: String): ContentDisposition = {

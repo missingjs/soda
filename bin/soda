@@ -203,7 +203,7 @@ function run_work()
     if [ "$remote_mode" == "yes" ]; then
         commandStr="$commandStr --remote"
         # setup remote server
-        $script remote-setup $work || exit
+        $script remote-setup $work || { echo "failed to setup server" >&2; exit 10; }
     fi
 
     # run test cases

@@ -1,11 +1,14 @@
-package soda.scala.web
+package soda.scala.web.work
 
 import com.sun.net.httpserver.HttpExchange
+import play.api.libs.json._
+import soda.scala.web.http.RequestHelper
+import soda.scala.web.resp.{Response, ResponseFactory}
+import soda.scala.web.setup.ClassLoaderCache
+import soda.scala.web.{BaseHandler, Logger}
 
 import java.util.concurrent.{TimeUnit, TimeoutException}
 import scala.reflect.runtime.universe._
-import play.api.libs.json._
-import soda.scala.web.setup.ClassLoaderCache
 
 class WorkHandler extends BaseHandler {
 
@@ -13,9 +16,9 @@ class WorkHandler extends BaseHandler {
 
   private val timeoutMillis: Long = maxTimeoutMillis
 
-  override def handleWork(exchange: HttpExchange): String = {
-    val content = readPostBody(exchange)
-    Logger.info(s"request: $content")
+  override def doPost(exchange: HttpExchange): Response = {
+    val content = RequestHelper.bodyString(exchange)
+    Logger.info(s"test input: $content")
     implicit val _format: OFormat[WorkRequest] = Json.format[WorkRequest]
     val jr = Json.parse(content).as[WorkRequest]
 
@@ -42,7 +45,9 @@ class WorkHandler extends BaseHandler {
     val job = new TimeLimitedWork(task)
     val future = job.start()
     try {
-      future.get(timeoutMillis, TimeUnit.MILLISECONDS)
+      val result = future.get(timeoutMillis, TimeUnit.MILLISECONDS)
+      Logger.info(s"test output: $result")
+      ResponseFactory.text(result)
     } catch {
       case ex: TimeoutException =>
         job.kill()

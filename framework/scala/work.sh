@@ -79,10 +79,10 @@ remote_setup()
 
     local setup_url="http://localhost:$server_port/soda/scala/setup"
     local pathkey=$(cd $output_dir && pwd)
-    curl --connect-timeout 2 -s -X POST \
+    curl --connect-timeout 2 -s -f -X POST \
         -F "key=$pathkey" \
         -F "jar=@$output_dir/$jarfile" \
-        "$setup_url" && echo
+        "$setup_url" >/dev/null
 }
 
 function create_work()

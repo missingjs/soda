@@ -5,8 +5,6 @@ import com.sun.net.httpserver.HttpExchange
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import soda.scala.web.Utils
-import java.util.regex.Pattern
-import soda.scala.web.MultipartParserEx
 
 object RequestHelper {
 
@@ -82,19 +80,14 @@ object RequestHelper {
   }
 
   private def parseBoundary(contentType: String): String = {
-    search("boundary=\"(.+?)\"", contentType, 1) match {
+    Utils.findOne(contentType, "boundary=\"(.+?)\"", 1) match {
       case Some(b) => b
       case None =>
-        search("boundary=(\\S+)", contentType, 1) match {
+        Utils.findOne(contentType, "boundary=(\\S+)", 1) match {
           case Some(bd) => bd
-          case None => throw new RuntimeException("no boundary found in content type header")
+          case None => throw new RuntimeException(s"no boundary found in content type: $contentType")
         }
     }
-  }
-
-  private def search(pattern: String, text: String, group: Int): Option[String] = {
-    val m = Pattern.compile(pattern).matcher(text)
-    Option(if (m.find()) m.group(group) else null)
   }
 
 }
