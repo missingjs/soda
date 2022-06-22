@@ -2,6 +2,7 @@ package soda.web.resp;
 
 import java.util.Map;
 
+import soda.web.BusinessCode;
 import soda.web.ServiceException;
 
 public class ResponseFactory {
@@ -10,7 +11,7 @@ public class ResponseFactory {
 
     private static final int HTTP_INTERNAL_ERROR = 500;
 
-    private static final int UNCLASSIFIED_ERROR_CODE = 1000;
+    private static final int UNCLASSIFIED_ERROR_CODE = BusinessCode.COMMON_ERROR;
     
     public static Response success(String message) {
         var data = Map.of("code", 0, "message", message);

@@ -13,7 +13,7 @@ public class MultipartParserEx {
 
     private final String boundary;
 
-    private ByteLineInputStream lineInput;
+    private final ByteLineInputStream lineInput;
 
     private static final int BUF_SIZE = 1024;
 
@@ -28,7 +28,8 @@ public class MultipartParserEx {
 
         int size = lineInput.readLine(buffer);
         if (!isBoundaryLine(buffer, 0, size, boundaryBytes)) {
-            throw new RuntimeException("body not start with boundary " + boundary);
+            var errMsg = "body not start with boundary " + boundary;
+            throw new ServiceException(BusinessCode.COMMON_ERROR, errMsg, 400);
         }
 
         var partList = new ArrayList<Part>();
@@ -63,7 +64,8 @@ public class MultipartParserEx {
             }
 
             if (part.contentDisposition == null) {
-                throw new RuntimeException("no Content-Disposition header in part");
+                var errMsg = "no Content-Disposition header in part";
+                throw new ServiceException(BusinessCode.COMMON_ERROR, errMsg, 400);
             }
 
             // read body in a part

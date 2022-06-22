@@ -58,7 +58,8 @@ public class ByteLineInputStream {
                         return j - offset;
                     }
                     // buffer[cur] == '\r', and now it reach the end of stream
-                    throw new RuntimeException("invalid format of multipart/form-data, the last char in stream is \\r");
+                    var errMsg = "invalid format of multipart/form-data, the last char in stream is \\r";
+                    throw new ServiceException(BusinessCode.COMMON_ERROR, errMsg, 400);
                 }
                 continue;
             }
