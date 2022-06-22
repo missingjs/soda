@@ -1,8 +1,6 @@
 package soda.scala.web
 
 import com.sun.net.httpserver.HttpExchange
-import java.io.File
-import java.net.{URL, URLClassLoader}
 import java.util.concurrent.{TimeoutException, TimeUnit}
 import scala.reflect.runtime.universe._
 
@@ -17,7 +15,7 @@ class WorkHandler extends BaseHandler {
   override def handleWork(exchange: HttpExchange): String = {
     val content = readPostBody(exchange)
     Logger.info(s"request: $content")
-    implicit val _format = Json.format[WorkRequest]
+    implicit val _format: OFormat[WorkRequest] = Json.format[WorkRequest]
     val jr = Json.parse(content).as[WorkRequest]
 
     val task: () => String = () => {

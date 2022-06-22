@@ -14,10 +14,9 @@ abstract class BaseHandler extends HttpHandler with MessageReader with MessageWr
       sendMessage(exchange, 200, result)
       Logger.info(s"$method $uri 200 $result")
     } catch {
-      case ex: Exception => {
+      case ex: Exception =>
         Logger.exception(s"$method $uri 500 request handling error", ex)
         sendMessageWithCatch(exchange, 500, Utils.toString(ex))
-      }
     }
   }
 

@@ -53,25 +53,23 @@ class Server(address: String, port: Int) {
 
 object Server {
   def main(args: Array[String]): Unit = {
-    var port = 9202;
+    var port = 9202
     var i = 0
     while (i < args.length) {
       val cmd = args(i)
       cmd match {
-        case "-p" | "--port" => {
+        case "-p" | "--port" =>
           i += 1
           port = args(i).toInt
-        }
-        case _ => {
+        case _ =>
           System.err.println(s"invalid option: $cmd")
           System.exit(1)
-        }
       }
       i += 1
     }
 
     val address = "localhost"
     new Server(address, port).start()
-    Logger.info(s"soda scala server start, listening ${address}:${port}")
+    Logger.info(s"soda scala server start, listening $address:$port")
   }
 }

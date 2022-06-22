@@ -4,6 +4,9 @@ import com.sun.net.httpserver.HttpExchange
 
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+import soda.scala.web.Utils
+import java.util.regex.Pattern
+import soda.scala.web.MultipartParserEx
 
 object RequestHelper {
 
@@ -24,6 +27,40 @@ object RequestHelper {
     queryStringToMultimap(queryString(exchange))
   }
 
+  def body(exchange: HttpExchange): Array[Byte] = {
+    Utils.toByteArray(exchange.getRequestBody)
+  }
+
+  def bodyString(exchange: HttpExchange): String = {
+    new String(body(exchange), StandardCharsets.UTF_8)
+  }
+
+  def formMap(exchange: HttpExchange): Map[String, String] = {
+    contentType(exchange) match {
+      case f if f.startsWith("application/x-www-form-urlencoded") =>
+        queryStringToMap(bodyString(exchange))
+      case _ => Map.empty
+    }
+  }
+
+  def formMultimap(exchange: HttpExchange): Map[String, List[String]] = {
+    contentType(exchange) match {
+      case f if f.startsWith("application/x-www-form-urlencoded") =>
+        queryStringToMultimap(bodyString(exchange))
+      case _ => Map.empty
+    }
+  }
+
+  def formParts(exchange: HttpExchange): List[Part] = {
+    val boundary = parseBoundary(contentType(exchange))
+    val parser = new MultipartParserEx(exchange.getRequestBody, boundary)
+    parser.parse()
+  }
+
+  def multipartFormData(exchange: HttpExchange): MultipartFormData = {
+    new MultipartFormData(formParts(exchange).groupBy(_.getName))
+  }
+
   private def queryStringToMap(query: String): Map[String, String] = {
     query.split("&")
       .map(_.split("=", 2))
@@ -42,6 +79,22 @@ object RequestHelper {
 
   private def decode(encodedText: String): String = {
     URLDecoder.decode(encodedText, StandardCharsets.UTF_8)
+  }
+
+  private def parseBoundary(contentType: String): String = {
+    search("boundary=\"(.+?)\"", contentType, 1) match {
+      case Some(b) => b
+      case None =>
+        search("boundary=(\\S+)", contentType, 1) match {
+          case Some(bd) => bd
+          case None => throw new RuntimeException("no boundary found in content type header")
+        }
+    }
+  }
+
+  private def search(pattern: String, text: String, group: Int): Option[String] = {
+    val m = Pattern.compile(pattern).matcher(text)
+    Option(if (m.find()) m.group(group) else null)
   }
 
 }

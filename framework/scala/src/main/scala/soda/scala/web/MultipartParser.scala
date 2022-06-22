@@ -1,6 +1,6 @@
 package soda.scala.web
 
-import soda.scala.web.http.Part
+import soda.scala.web.http.{ContentDisposition, Part}
 
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets
@@ -34,7 +34,7 @@ class MultipartParser(source: InputStream, boundary: String) {
           val header = new String(contentBytes, start, end - start, StandardCharsets.UTF_8)
           start = end + 2
           if (header.startsWith("Content-Disposition:")) {
-            part.contentDisposition = Part.Disposition.parse(header)
+            part.contentDisposition = ContentDisposition.fromHeaderLine(header)
           } else if (header.startsWith("Content-Type:")) {
             part.contentType = header.split(":", 2)(1)
           }
