@@ -79,11 +79,10 @@ remote_setup()
 
     local setup_url="http://localhost:$server_port/soda/java/setup"
     local pathkey=$(cd $output_dir && pwd)
-    echo "remote setup with key $pathkey"
     curl --connect-timeout 2 -s -X POST \
         -F "key=$pathkey" \
         -F "jar=@$output_dir/$jarfile" \
-        "$setup_url" && echo
+        "$setup_url" >/dev/null
 }
 
 new_project()
