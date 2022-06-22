@@ -21,7 +21,8 @@ class MultipartParserEx(input: InputStream, private val boundary: String) {
 
         var size = lineInput.readLine(buffer)
         if (!isBoundaryLine(buffer, 0, size, boundaryBytes)) {
-            throw new RuntimeException(s"body not start with boundary $boundary")
+            val errMsg = s"body not start with boundary $boundary"
+            throw new ServiceException(BusinessCode.COMMON_ERROR, errMsg, 400)
         }
 
         val partList = mutable.ArrayBuffer[Part]()
@@ -56,7 +57,8 @@ class MultipartParserEx(input: InputStream, private val boundary: String) {
             }
 
             if (part.contentDisposition == null) {
-                throw new RuntimeException("no Content-Disposition header in part")
+                val errMsg = "no Content-Disposition header in part"
+                throw new ServiceException(BusinessCode.COMMON_ERROR, errMsg, 400)
             }
 
             var ready = Array.fill[Byte](BUF_SIZE)(0)

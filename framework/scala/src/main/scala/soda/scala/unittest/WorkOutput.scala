@@ -10,8 +10,10 @@ class WorkOutput {
 
   case class _output(id: Int, success: Boolean, result: JsValue, elapse: Double)
 
+  implicit val outWrites: OWrites[_output] = Json.writes[_output]
+
   def jsonString: String = {
-    implicit val outWrites: OWrites[_output] = Json.writes[_output]
+//    implicit val outWrites: OWrites[_output] = Json.writes[_output]
     Json.stringify(Json.toJson(_output(id,success,result,elapse)))
   }
 }

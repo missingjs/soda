@@ -14,7 +14,7 @@ public class ResponseFactory {
     private static final int UNCLASSIFIED_ERROR_CODE = BusinessCode.COMMON_ERROR;
     
     public static Response success(String message) {
-        var data = Map.of("code", 0, "message", message);
+        var data = Map.of("code", BusinessCode.SUCCESS, "message", message);
         return new JsonResponse(HTTP_OK, data);
     }
 
