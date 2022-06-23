@@ -1,4 +1,4 @@
-package soda.scala.web
+package soda.scala.web.exception
 
 class ServiceException(
     val bizCode: Int, 

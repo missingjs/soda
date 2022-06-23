@@ -1,6 +1,7 @@
 package soda.scala.web.http
 
-import soda.scala.web.{BusinessCode, ServiceException}
+import soda.scala.web.BusinessCode
+import soda.scala.web.exception.ServiceException
 
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets

@@ -2,7 +2,8 @@ package soda.scala.web.resp
 
 import play.api.libs.json._
 
-import soda.scala.web.{BusinessCode, ServiceException}
+import soda.scala.web.BusinessCode
+import soda.scala.web.exception.ServiceException
 
 object ResponseFactory {
 

@@ -1,8 +1,8 @@
 package soda.scala.web
 
 import scala.jdk.CollectionConverters._
-
 import com.sun.net.httpserver.{HttpExchange, HttpHandler}
+import soda.scala.web.exception.ServiceException
 import soda.scala.web.resp.{Response, ResponseFactory}
 
 abstract class BaseHandler extends HttpHandler {
