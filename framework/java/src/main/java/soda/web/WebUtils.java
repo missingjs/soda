@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class WebUtils {
 
-    public static String findOne(String text, String pattern, int group) {
+    public static Optional<String> findOne(String text, String pattern, int group) {
         var mat = Pattern.compile(pattern).matcher(text);
-        return mat.find() ? mat.group(group) : null;
+        return Optional.ofNullable(mat.find() ? mat.group(group) : null);
     }
 
-    public static String findOne(String text, String pattern) {
+    public static Optional<String> findOne(String text, String pattern) {
         return findOne(text, pattern, 1);
     }
 

@@ -1,9 +1,6 @@
 package soda.web.http;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultipartFormData {
@@ -14,28 +11,24 @@ public class MultipartFormData {
         this.partData = new HashMap<>(partData);
     }
 
-    public String firstValue(String key) {
-        var v = partData.get(key);
-        return v != null && v.size() > 0 ? v.get(0).bodyString() : null;
+    public Optional<String> firstValue(String key) {
+        var v = partData.getOrDefault(key, Collections.emptyList());
+        return Optional.ofNullable(v.isEmpty() ? null : v.get(0).bodyString());
     }
 
     public List<String> values(String key) {
-        var v = partData.get(key);
-        return v != null && v.size() > 0
-                ? v.stream().map(Part::bodyString).collect(Collectors.toList())
-                : Collections.emptyList();
+        var v = partData.getOrDefault(key, Collections.emptyList());
+        return v.stream().map(Part::bodyString).collect(Collectors.toList());
     }
 
-    public byte[] firstFile(String key) {
-        var v = partData.get(key);
-        return v != null && v.size() > 0 ? v.get(0).payload : null;
+    public Optional<byte[]> firstFile(String key) {
+        var v = partData.getOrDefault(key, Collections.emptyList());
+        return Optional.ofNullable(v.isEmpty() ? null : v.get(0).payload);
     }
 
     public List<byte[]> files(String key) {
-        var v = partData.get(key);
-        return v != null && v.size() > 0
-                ? v.stream().map(p -> p.payload).collect(Collectors.toList())
-                : Collections.emptyList();
+        var v = partData.getOrDefault(key, Collections.emptyList());
+        return v.stream().map(p -> p.payload).collect(Collectors.toList());
     }
 
 }
