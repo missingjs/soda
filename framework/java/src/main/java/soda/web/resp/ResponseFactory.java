@@ -3,7 +3,7 @@ package soda.web.resp;
 import java.util.Map;
 
 import soda.web.BusinessCode;
-import soda.web.ServiceException;
+import soda.web.exception.ServiceException;
 
 public class ResponseFactory {
 

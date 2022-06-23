@@ -1,4 +1,4 @@
-package soda.web;
+package soda.web.exception;
 
 public class ServiceException extends RuntimeException {
 

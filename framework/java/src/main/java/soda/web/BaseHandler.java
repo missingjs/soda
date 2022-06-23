@@ -5,6 +5,7 @@ import java.io.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import soda.web.exception.ServiceException;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
 
