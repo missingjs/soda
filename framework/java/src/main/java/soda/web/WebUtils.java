@@ -1,14 +1,13 @@
 package soda.web;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-public class Utils {
+public class WebUtils {
 
     public static String findOne(String text, String pattern, int group) {
         var mat = Pattern.compile(pattern).matcher(text);
@@ -30,7 +29,11 @@ public class Utils {
     }
 
     public static String toString(Throwable ex) {
-        return soda.unittest.Utils.toString(ex);
+        var out = new ByteArrayOutputStream();
+        var pw = new PrintStream(out);
+        ex.printStackTrace(pw);
+        pw.flush();
+        return out.toString(StandardCharsets.UTF_8);
     }
 
 }

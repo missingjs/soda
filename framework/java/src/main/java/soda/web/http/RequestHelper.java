@@ -1,7 +1,7 @@
 package soda.web.http;
 
 import com.sun.net.httpserver.HttpExchange;
-import soda.web.Utils;
+import soda.web.WebUtils;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -30,7 +30,7 @@ public class RequestHelper {
     }
 
     public static byte[] body(HttpExchange exchange) throws IOException {
-        return Utils.toByteArray(exchange.getRequestBody());
+        return WebUtils.toByteArray(exchange.getRequestBody());
     }
 
     public static String bodyString(HttpExchange exchange) throws IOException {

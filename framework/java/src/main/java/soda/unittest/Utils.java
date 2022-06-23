@@ -30,14 +30,6 @@ public class Utils {
         }
     }
 
-    public static String toString(Throwable ex) {
-        var out = new ByteArrayOutputStream();
-        var pw = new PrintStream(out);
-        ex.printStackTrace(pw);
-        pw.flush();
-        return out.toString(StandardCharsets.UTF_8);
-    }
-
     public static void wrapEx(RunnableEx r) {
         wrapEx(() -> { r.run(); return 0; });
     }

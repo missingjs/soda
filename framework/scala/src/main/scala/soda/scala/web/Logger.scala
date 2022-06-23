@@ -14,7 +14,7 @@ object Logger {
   }
 
   def exception(message: String, ex: Throwable): Unit = {
-    error(s"$message\n${Utils.toString(ex)}")
+    error(s"$message\n${WebUtils.toString(ex)}")
   }
 
   private def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

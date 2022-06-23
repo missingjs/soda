@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpExchange
 
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-import soda.scala.web.Utils
+import soda.scala.web.WebUtils
 
 object RequestHelper {
 
@@ -26,7 +26,7 @@ object RequestHelper {
   }
 
   def body(exchange: HttpExchange): Array[Byte] = {
-    Utils.toByteArray(exchange.getRequestBody)
+    WebUtils.toByteArray(exchange.getRequestBody)
   }
 
   def bodyString(exchange: HttpExchange): String = {
@@ -80,10 +80,10 @@ object RequestHelper {
   }
 
   private def parseBoundary(contentType: String): String = {
-    Utils.findOne(contentType, "boundary=\"(.+?)\"", 1) match {
+    WebUtils.findOne(contentType, "boundary=\"(.+?)\"", 1) match {
       case Some(b) => b
       case None =>
-        Utils.findOne(contentType, "boundary=(\\S+)", 1) match {
+        WebUtils.findOne(contentType, "boundary=(\\S+)", 1) match {
           case Some(bd) => bd
           case None => throw new RuntimeException(s"no boundary found in content type: $contentType")
         }

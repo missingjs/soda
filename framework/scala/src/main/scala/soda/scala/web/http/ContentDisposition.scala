@@ -1,6 +1,6 @@
 package soda.scala.web.http
 
-import soda.scala.web.Utils
+import soda.scala.web.WebUtils
 
 class ContentDisposition {
 
@@ -15,11 +15,11 @@ class ContentDisposition {
 object ContentDisposition {
 
   def fromHeaderValue(value: String): ContentDisposition = {
-    Utils.findOne(value, "name=\"(.*?)\"") match {
+    WebUtils.findOne(value, "name=\"(.*?)\"") match {
       case Some(name) =>
         val cd = new ContentDisposition()
         cd.name = name
-        cd.filename = Utils.findOne(value, "filename=\"(.*?)\"").orNull
+        cd.filename = WebUtils.findOne(value, "filename=\"(.*?)\"").orNull
         cd
       case None => throw new IllegalArgumentException("no name found in Content-Disposition")
     }

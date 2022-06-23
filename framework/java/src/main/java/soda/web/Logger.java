@@ -1,7 +1,5 @@
 package soda.web;
 
-import soda.unittest.Utils;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,7 +30,7 @@ public class Logger {
     }
 
     public static void exception(String message, Throwable ex) {
-        errorf("%s\n%s", message, Utils.toString(ex));
+        errorf("%s\n%s", message, WebUtils.toString(ex));
     }
 
 }

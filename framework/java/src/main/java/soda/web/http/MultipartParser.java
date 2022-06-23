@@ -1,8 +1,6 @@
 package soda.web.http;
 
-import soda.web.Utils;
-import soda.web.http.ContentDisposition;
-import soda.web.http.Part;
+import soda.web.WebUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +19,7 @@ public class MultipartParser {
     }
 
     public List<Part> parse() throws IOException {
-        var contentBytes = Utils.toByteArray(source);
+        var contentBytes = WebUtils.toByteArray(source);
         var bounds = boundary.getBytes(StandardCharsets.UTF_8);
         var parts = new ArrayList<Part>();
 

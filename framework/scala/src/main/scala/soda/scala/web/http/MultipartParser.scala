@@ -1,6 +1,6 @@
 package soda.scala.web.http
 
-import soda.scala.web.Utils
+import soda.scala.web.WebUtils
 
 import java.io.{ByteArrayOutputStream, InputStream}
 import java.nio.charset.StandardCharsets
@@ -9,7 +9,7 @@ import scala.util.control.Breaks.{break, breakable}
 class MultipartParser(source: InputStream, boundary: String) {
 
   def parse(): List[Part] = {
-    val contentBytes = Utils.toByteArray(source)
+    val contentBytes = WebUtils.toByteArray(source)
     val bounds = boundary.getBytes(StandardCharsets.UTF_8)
     var parts = List.empty[Part]
 

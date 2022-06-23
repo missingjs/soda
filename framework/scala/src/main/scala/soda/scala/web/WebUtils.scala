@@ -6,7 +6,7 @@ import java.io.{ByteArrayOutputStream, InputStream, PrintStream}
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
-object Utils {
+object WebUtils {
 
   def findOne(text: String, pattern: String, group: Int): Option[String] = {
     val mat = Pattern.compile(pattern).matcher(text)
