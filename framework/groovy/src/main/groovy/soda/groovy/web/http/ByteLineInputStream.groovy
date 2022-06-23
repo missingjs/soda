@@ -1,7 +1,7 @@
 package soda.groovy.web.http
 
 import soda.groovy.web.BusinessCode
-import soda.groovy.web.ServiceException
+import soda.groovy.web.exception.ServiceException
 
 class ByteLineInputStream {
 
