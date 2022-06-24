@@ -1,7 +1,5 @@
 package soda.scala.web
 
-import com.sun.net.httpserver.HttpExchange
-
 import java.io.{ByteArrayOutputStream, InputStream, PrintStream}
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
@@ -25,17 +23,6 @@ object WebUtils {
       outs.write(buf, 0, size)
     }
     outs.toByteArray
-  }
-
-  def setResponse(exchange: HttpExchange, code: Int, body: String): Unit = {
-    val data = body.getBytes(StandardCharsets.UTF_8)
-    setResponse(exchange, code, data)
-  }
-
-  def setResponse(exchange: HttpExchange, code: Int, body: Array[Byte]): Unit = {
-    exchange.sendResponseHeaders(code, body.length)
-    exchange.getResponseBody.write(body)
-    exchange.getRequestBody.close()
   }
 
   def toString(ex: Throwable): String = {

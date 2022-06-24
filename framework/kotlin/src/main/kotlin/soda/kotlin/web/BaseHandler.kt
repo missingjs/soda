@@ -19,7 +19,7 @@ abstract class BaseHandler : HttpHandler, MessageReader, MessageWriter {
             Logger.info("$method $uri 200 $result")
         } catch (ex: Exception) {
             Logger.exception("$method $uri 500 request handling error", ex)
-            sendMessageWithCatch(exchange, 500, Utils.toString(ex))
+            sendMessageWithCatch(exchange, 500, WebUtils.toString(ex))
         }
     }
 

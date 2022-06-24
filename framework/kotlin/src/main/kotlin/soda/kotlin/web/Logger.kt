@@ -18,7 +18,7 @@ internal object Logger {
     fun error(message: String) = log("ERROR", message)
 
     fun exception(message: String, ex: Throwable) {
-        error("$message\n${Utils.toString(ex)}")
+        error("$message\n${WebUtils.toString(ex)}")
     }
 
 }
