@@ -60,11 +60,10 @@ public class WorkHandler extends BaseHandler {
     	try {
     		var result = future.get(timeoutMillis, TimeUnit.MILLISECONDS);
 			Logger.infof("test output: %s", result);
-			// Utils.setResponse(exchange, 200, result);
 			return ResponseFactory.text(result);
     	} catch (TimeoutException tex) {
     		tLJob.kill();
-    		throw new RuntimeException("Job timeout");
+    		throw new RuntimeException("Job timeout", tex);
     	}
 	}
 

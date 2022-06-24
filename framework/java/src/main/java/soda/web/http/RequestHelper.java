@@ -56,7 +56,9 @@ public class RequestHelper {
     }
 
     public static List<Part> formParts(HttpExchange exchange) throws IOException {
-        var boundary = parseBoundary(contentType(exchange));
+        var boundary = parseBoundary(contentType(exchange)).orElseThrow(
+                () -> new RuntimeException("no boundary found in content type header")
+        );
         var parser = new MultipartParserEx(exchange.getRequestBody(), boundary);
         return parser.parse();
     }
@@ -89,21 +91,9 @@ public class RequestHelper {
         return URLDecoder.decode(encodedText, StandardCharsets.UTF_8);
     }
 
-    private static String parseBoundary(String contentType) {
-        String boundary = match("boundary=\"(.+?)\"", contentType, 1);
-        if (boundary == null) {
-            boundary = match("boundary=(\\S+)", contentType, 1);
-            if (boundary == null) {
-                throw new RuntimeException("no boundary found in content type header");
-            }
-        }
-        return boundary;
-    }
-
-    private static String match(String pattern, String text, int group) {
-        var p = Pattern.compile(pattern);
-        var m = p.matcher(text);
-        return m.find() ? m.group(group) : null;
+    private static Optional<String> parseBoundary(String contentType) {
+        var res = WebUtils.findOne(contentType, "boundary=\"(.+?)\"", 1);
+        return res.isPresent() ? res : WebUtils.findOne(contentType, "boundary=(\\S+)", 1);
     }
 
 }

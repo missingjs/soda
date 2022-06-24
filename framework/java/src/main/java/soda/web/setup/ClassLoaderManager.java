@@ -1,7 +1,5 @@
 package soda.web.setup;
 
-import soda.web.Logger;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +16,6 @@ public class ClassLoaderManager {
 		var parent = ClassLoaderManager.class.getClassLoader();
 		var loader = new JarFileBytesClassLoader(jarBytes, parent);
 		loaderMap.put(key, loader);
-		Logger.info(String.format("new class loader for %s", key));
 	}
 
 	public synchronized ClassLoader getForJar(String key) {
