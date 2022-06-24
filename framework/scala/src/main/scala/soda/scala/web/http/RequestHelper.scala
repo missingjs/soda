@@ -75,7 +75,7 @@ object RequestHelper {
       .map(_.split("=", 2))
       .filter(_.length == 2)
       .toList
-      .groupMap(ss => decode(ss(0)))(_(1))
+      .groupMap(ss => decode(ss(0)))(ss => decode(ss(1)))
   }
 
   private def decode(encodedText: String): String = {

@@ -115,13 +115,13 @@ class MultipartParserEx(input: InputStream, private val boundary: String) {
         true
     }
 
-    private def isBoundaryLine(data: Array[Byte], offset: Int, length: Int, boundar: Array[Byte]): Boolean = {
-        val s = boundar.length
+    private def isBoundaryLine(data: Array[Byte], offset: Int, length: Int, boundary: Array[Byte]): Boolean = {
+        val s = boundary.length
         val end = offset + length
         (isLine(data, offset, length) 
             && (length == s + 4 || length == s + 6 && data(end-4) == '-' && data(end-3) == '-')
             && data(offset) == '-' && data(offset+1) == '-'
-            && isBoundary(data, offset + 2, s, boundar))
+            && isBoundary(data, offset + 2, s, boundary))
     }
 
 }

@@ -75,7 +75,9 @@ class RequestHelper {
                 .collect { it.split("=", 2) as List }
                 .findAll { it.size() == 2 }
                 .groupBy { decode(it[0]) }
-                .collectEntries { k, v -> [(k): v*.get(1)] } as Map<String, List<String>>
+                .collectEntries { k, v ->
+                    [(k): v.collect{ decode(it[1]) }]
+                } as Map<String, List<String>>
     }
 
     private static String decode(String encodedText) {
