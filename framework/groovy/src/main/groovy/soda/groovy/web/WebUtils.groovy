@@ -1,12 +1,11 @@
 package soda.groovy.web
 
 import java.nio.charset.StandardCharsets
-import java.util.regex.Pattern
 
 class WebUtils {
 
     static Optional<String> findOne(String text, String pattern, int group) {
-        def mat = Pattern.compile(pattern).matcher(text)
+        def mat = text =~ /$pattern/
         return Optional.ofNullable(mat.find() ? mat.group(group) : null)
     }
 

@@ -51,7 +51,9 @@ class RequestHelper {
     }
 
     static List<Part> formParts(HttpExchange exchange) throws IOException {
-        def boundary = parseBoundary(contentType(exchange))
+        def boundary = parseBoundary(contentType(exchange)).orElseThrow {
+            new RuntimeException("no boundary found in content type header")
+        }
         def parser = new MultipartParserEx(exchange.requestBody, boundary)
         return parser.parse()
     }
@@ -80,18 +82,11 @@ class RequestHelper {
         return URLDecoder.decode(encodedText, StandardCharsets.UTF_8)
     }
 
-    private static String parseBoundary(String contentType) {
-        def m = contentType =~ /boundary="(.+?)"/
-        if (m.size() > 0) {
-            return m[0][1]
+    private static Optional<String> parseBoundary(String contentType) {
+        def match = { String pattern ->
+            WebUtils.findOne(contentType, pattern, 1)
         }
-
-        m = contentType =~ /boundary=\S+/
-        if (m.size() > 0) {
-            return m[0][1]
-        }
-
-        throw new RuntimeException("no boundary found in content type header")
+        return match(/boundary="(.+?)"/) | { match(/boundary=(\S+)/) }
     }
 
 }

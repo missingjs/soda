@@ -5,6 +5,10 @@ import soda.groovy.web.exception.ServiceException
 
 class ByteLineInputStream {
 
+    private static final byte CR = 0x0d
+
+    private static final byte LF = 0x0a
+
     private InputStream input
 
     private byte[] buffer
@@ -30,7 +34,7 @@ class ByteLineInputStream {
         int j = offset, jEnd = offset + len
         while (true) {
             int si = cur, sj = j
-            while (cur < end && buffer[cur] != '\r' as char && j < jEnd) {
+            while (cur < end && buffer[cur] != CR && j < jEnd) {
                 ++cur
                 ++j
             }
@@ -69,9 +73,9 @@ class ByteLineInputStream {
                 return j - offset
             }
 
-            if (buffer[cur+1] == '\n' as char) {
-                bytes[j] = '\r' as char
-                bytes[j+1] = '\n' as char
+            if (buffer[cur+1] == LF) {
+                bytes[j] = CR
+                bytes[j+1] = LF
                 cur += 2
                 return j - offset + 2
             }

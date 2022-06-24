@@ -2,6 +2,11 @@ package soda.groovy.web
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import soda.groovy.web.resp.Response
+import soda.groovy.web.resp.ResponseFactory
+import soda.groovy.web.setup.ClassLoaderManager
+import soda.groovy.web.setup.SetupHandler
+import soda.groovy.web.work.WorkHandler
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -39,7 +44,7 @@ class SodaServer {
         var address = "localhost"
         SodaServer ss = new SodaServer(address, port)
         ss.start()
-        Logger.infof("soda java server start, listening %s:%d", address, port)
+        Logger.info("soda java server start, listening $address:$port")
     }
 
     SodaServer(String bindAddress, int port) throws IOException {
@@ -53,9 +58,9 @@ class SodaServer {
 
     private class StopHandler extends BaseHandler {
         @Override
-        String handleWork(HttpExchange exchange) throws Exception {
+        Response doGet(HttpExchange exchange) throws Exception {
             stop()
-            return "Stop signal sent"
+            return ResponseFactory.success("stop signal sent")
         }
     }
 

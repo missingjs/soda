@@ -72,16 +72,15 @@ remote_setup()
 {
     local classpath=$(pwd)
     local echo_url="http://localhost:$server_port/soda/groovy/echo?a=b"
-    curl --connect-timeout 2 -s "$echo_url" >/dev/null || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/groovy/setup"
-    sb64=$(python3 << EOF
-import base64
-with open("$execfile", "rb") as fp:
-    b64 = base64.urlsafe_b64encode(fp.read()).decode('utf-8')
-    print(b64)
-EOF
-)
-    curl --connect-timeout 2 -X POST -d "key=$classpath&script=$sb64" -s "$url" && echo
+    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
+        || { echo "server not open" >&2; exit 2; }
+
+    local setup_url="http://localhost:$server_port/soda/groovy/setup"
+    local pathkey=$(pwd)
+    curl --connect-timeout 2 -s -f -X POST \
+        -F "key=$pathkey" \
+        -F "script=@$execfile" \
+        "$setup_url" >/dev/null
 }
 
 function create_work()

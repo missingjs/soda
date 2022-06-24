@@ -7,6 +7,12 @@ import java.nio.charset.StandardCharsets
 
 class MultipartParserEx {
 
+    private static final byte CR = 0x0d
+
+    private static final byte LF = 0x0a
+
+    private static final byte HYPHEN = '-'.charAt(0)
+
     private final String boundary
 
     private final ByteLineInputStream lineInput
@@ -103,7 +109,7 @@ class MultipartParserEx {
 
     private static boolean isLine(byte[] data, int offset, int length) {
         int end = offset + length
-        return data[end-1] == '\n' as char && data[end-2] == '\r' as char
+        return data[end-1] == LF && data[end-2] == CR
     }
 
     private static boolean isBoundary(byte[] data, int offset, int length, byte[] boundary) {
@@ -119,8 +125,8 @@ class MultipartParserEx {
         int s = boundary.length
         int end = offset + length
         return isLine(data, offset, length)
-                && (length == s + 4 || length == s + 6 && data[end-4] == '-' as char && data[end-3] == '-' as char)
-                && data[offset] == '-' as char && data[offset+1] == '-' as char
+                && (length == s + 4 || length == s + 6 && data[end-4] == HYPHEN && data[end-3] == HYPHEN)
+                && data[offset] == HYPHEN && data[offset+1] == HYPHEN
                 && isBoundary(data, offset + 2, s, boundary)
     }
 

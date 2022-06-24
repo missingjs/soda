@@ -1,7 +1,13 @@
-package soda.groovy.web
+package soda.groovy.web.work
 
 import com.sun.net.httpserver.HttpExchange
 import groovy.json.JsonSlurper
+import soda.groovy.web.BaseHandler
+import soda.groovy.web.Logger
+import soda.groovy.web.http.RequestHelper
+import soda.groovy.web.resp.Response
+import soda.groovy.web.resp.ResponseFactory
+import soda.groovy.web.setup.ClassLoaderManager
 
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
@@ -19,13 +25,12 @@ class WorkHandler extends BaseHandler {
     }
 
     @Override
-    protected String handleWork(HttpExchange exchange) throws Exception {
-        String content = getPostBody(exchange)
+    protected Response doPost(HttpExchange exchange) throws Exception {
+        def content = RequestHelper.bodyString(exchange)
+        Logger.info("test input: $content")
         def jr = new WorkRequest(new JsonSlurper().parseText(content))
 
         ClassLoader loader = mgr.getForScript(jr.classpath)
-//        def gcl = new GroovyClassLoader(loader)
-//        gcl.parseClass(new File(jr.scriptFile))
         def klass = loader.loadClass(jr.bootClass)
 
         def workClosure = { ->
@@ -38,7 +43,9 @@ class WorkHandler extends BaseHandler {
         TimeLimitedJob tLJob = new TimeLimitedJob(workClosure)
         FutureTask<String> future = tLJob.start()
         try {
-            return future.get(timeoutMillis, TimeUnit.MILLISECONDS)
+            def result = future.get(timeoutMillis, TimeUnit.MILLISECONDS)
+            Logger.info("test output: $result")
+            return ResponseFactory.text(result)
         } catch (TimeoutException tex) {
             tLJob.kill()
             throw new RuntimeException("Job timeout", tex)

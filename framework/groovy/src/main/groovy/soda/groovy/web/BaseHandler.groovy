@@ -2,55 +2,63 @@ package soda.groovy.web
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
-
-import java.nio.charset.StandardCharsets
+import soda.groovy.web.exception.ServiceException
+import soda.groovy.web.resp.Response
+import soda.groovy.web.resp.ResponseFactory
 
 abstract class BaseHandler implements HttpHandler {
+
+    protected Response doGet(HttpExchange exchange) throws Exception {
+        throw new RuntimeException("not implemented")
+    }
+
+    protected Response doPost(HttpExchange exchange) throws Exception {
+        throw new RuntimeException("not implemented")
+    }
 
     @Override
     void handle(HttpExchange exchange) throws IOException {
         def method = exchange.requestMethod
         def uri = exchange.requestURI
+
+        Response resp = null
         try {
-            String result = handleWork(exchange)
-            sendMessage(exchange, 200, result)
-            Logger.info("$method $uri 200 $result")
-        } catch (Exception ex) {
-            Logger.exception("$method $uri 500 request handling error", ex)
-            sendMessageWithCatch(exchange, 500, WebUtils.toString(ex))
+            long startNano = System.nanoTime()
+
+            if (method == "GET") {
+                resp = doGet(exchange)
+            } else if (method == "POST") {
+                resp = doPost(exchange)
+            } else {
+                throw new RuntimeException("method $method not supported")
+            }
+
+            long endNano = System.nanoTime()
+            double elapseMs = (endNano - startNano) / 1e6
+            int code = resp.getHttpCode()
+            Logger.info("$method $uri $code $elapseMs")
+        } catch (ServiceException ex) {
+            Logger.exception("$method $uri ${ex.httpCode}", ex)
+            resp = ResponseFactory.exception(ex)
+        } catch (Throwable ex) {
+            Logger.exception("$method $uri 500 internal error", ex)
+            resp = ResponseFactory.exception(ex)
         }
+
+        writeResponse(exchange, resp)
     }
 
-    protected abstract String handleWork(HttpExchange exchange) throws Exception
-
-    protected void sendMessage(HttpExchange exch, int code, String message) throws IOException {
-        byte[] data = message.getBytes(StandardCharsets.UTF_8)
-        exch.sendResponseHeaders(code, data.length)
-        exch.responseBody.write(data)
-        exch.responseBody.close()
-    }
-
-    protected void sendMessageWithCatch(HttpExchange exch, int code, String message) {
-        try {
-            sendMessage(exch, code, message)
-        } catch (IOException ex) {
-            Logger.exception("message sending error, code - $code, msg - $message", ex)
+    private static void writeResponse(HttpExchange exchange, Response resp) throws IOException {
+        var headers = resp.headers
+        headers.each {key, values ->
+            values.each { exchange.responseHeaders.add(key, it) }
         }
-    }
 
-    protected Map<String, String> parseQuery(HttpExchange exch) {
-        parseQuery(exch.requestURI.query)
-    }
-
-    protected Map<String, String> parseQuery(String query) {
-        query.split('&')
-                .collect {it.split('=', 2)}
-                .findAll {it.length==2}
-                .collectEntries {[it[0], it[1]]}
-    }
-
-    protected String getPostBody(HttpExchange exch) throws IOException {
-        exch.requestBody.getText('UTF-8')
+        var body = resp.body
+        exchange.responseHeaders.set("Content-Type", resp.contentType)
+        exchange.sendResponseHeaders(resp.httpCode, body.length)
+        exchange.responseBody.write(body)
+        exchange.responseBody.close()
     }
 
 }

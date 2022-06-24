@@ -1,4 +1,4 @@
-package soda.groovy.web
+package soda.groovy.web.work
 
 class WorkRequest {
 
