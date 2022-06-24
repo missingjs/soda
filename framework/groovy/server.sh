@@ -25,12 +25,8 @@ cmd=$1
 start_server_fg()
 {
     classpath=$(get_classpath)
-    local tmp_file=$(tempfile)
-    echo "$server_class.main(args)" >$tmp_file
-    trap "rm $tmp_file" INT
     set -x
-    groovy -cp $classpath $tmp_file -p $server_port 
-    rm $tmp_file
+    groovy -cp $classpath $self_dir/src/main/groovy/soda/groovy/web/server.groovy -p $server_port
 }
 
 case $cmd in
