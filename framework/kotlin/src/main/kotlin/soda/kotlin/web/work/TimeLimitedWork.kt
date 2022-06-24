@@ -1,4 +1,4 @@
-package soda.kotlin.web
+package soda.kotlin.web.work
 
 import java.util.concurrent.FutureTask
 

@@ -74,15 +74,13 @@ remote_setup()
     local echo_url="http://localhost:$server_port/soda/kotlin/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null \
         || { echo "server not open" >&2; exit 2; }
-    local url="http://localhost:$server_port/soda/kotlin/setup"
-    jar_b64=$(python3 << EOF
-import base64
-with open("$output_dir/$jarfile", "rb") as fp:
-    b64 = base64.urlsafe_b64encode(fp.read()).decode('utf-8')
-    print(b64)
-EOF
-)
-    curl --connect-timeout 2 -X POST -d "key=$classpath&jar=$jar_b64" -s "$url" && echo
+
+    local setup_url="http://localhost:$server_port/soda/kotlin/setup"
+    local pathkey=$(cd $output_dir && pwd)
+    curl --connect-timeout 2 -s -f -X POST \
+        -F "key=$pathkey" \
+        -F "jar=@$output_dir/$jarfile" \
+        "$setup_url" >/dev/null
 }
 
 function create_work()

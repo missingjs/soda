@@ -2,13 +2,13 @@ package soda.kotlin.web
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import soda.kotlin.web.resp.Response
+import soda.kotlin.web.resp.ResponseFactory
+import soda.kotlin.web.setup.SetupHandler
+import soda.kotlin.web.work.WorkHandler
 import java.net.InetSocketAddress
-import java.net.URL
-import java.net.URLClassLoader
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.primaryConstructor
 import kotlin.system.exitProcess
 
 class Server(private val address: String, private val port: Int) {
@@ -31,9 +31,9 @@ class Server(private val address: String, private val port: Int) {
 
         // GET
         server.createContext("/soda/kotlin/stop", object: BaseHandler() {
-            override fun handleWork(exchange: HttpExchange): String {
+            override fun doGet(exchange: HttpExchange?): Response {
                 stop()
-                return "stop signal sent"
+                return ResponseFactory.success("stop signal sent")
             }
         })
     }
