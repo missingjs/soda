@@ -50,9 +50,12 @@ object RequestHelper {
   }
 
   def formParts(exchange: HttpExchange): List[Part] = {
-    val boundary = parseBoundary(contentType(exchange))
-    val parser = new MultipartParserEx(exchange.getRequestBody, boundary)
-    parser.parse()
+    parseBoundary(contentType(exchange)) match {
+      case Some(boundary) =>
+        val parser = new MultipartParserEx(exchange.getRequestBody, boundary)
+        parser.parse()
+      case None => throw new RuntimeException("no boundary found in content type header")
+    }
   }
 
   def multipartFormData(exchange: HttpExchange): MultipartFormData = {
@@ -79,15 +82,9 @@ object RequestHelper {
     URLDecoder.decode(encodedText, StandardCharsets.UTF_8)
   }
 
-  private def parseBoundary(contentType: String): String = {
-    WebUtils.findOne(contentType, "boundary=\"(.+?)\"", 1) match {
-      case Some(b) => b
-      case None =>
-        WebUtils.findOne(contentType, "boundary=(\\S+)", 1) match {
-          case Some(bd) => bd
-          case None => throw new RuntimeException(s"no boundary found in content type: $contentType")
-        }
-    }
+  private def parseBoundary(contentType: String): Option[String] = {
+    val res = WebUtils.findOne(contentType, "boundary=\"(.+?)\"", 1)
+    if (res.isDefined) res else WebUtils.findOne(contentType, "boundary=(\\S+)", 1)
   }
 
 }

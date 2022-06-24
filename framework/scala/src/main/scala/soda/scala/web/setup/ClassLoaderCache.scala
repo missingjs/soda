@@ -16,7 +16,6 @@ object ClassLoaderCache {
     val parent = Thread.currentThread().getContextClassLoader
     val loader = new JarFileBytesClassLoader(jarBytes, parent)
     loaderMap(key) = loader
-    Logger.info(s"new class loader for $key")
   }
 
   def getForJar(key: String): ClassLoader = this.synchronized {

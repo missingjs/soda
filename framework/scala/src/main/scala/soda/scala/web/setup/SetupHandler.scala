@@ -1,8 +1,8 @@
 package soda.scala.web.setup
 
 import com.sun.net.httpserver.HttpExchange
-import soda.scala.web.exception.{ParameterMissingException, ServiceException}
-import soda.scala.web.{BaseHandler, BusinessCode, Logger}
+import soda.scala.web.exception.ParameterMissingException
+import soda.scala.web.{BaseHandler, Logger}
 import soda.scala.web.http.RequestHelper
 import soda.scala.web.resp.{Response, ResponseFactory}
 
