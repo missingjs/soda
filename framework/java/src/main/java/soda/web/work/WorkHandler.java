@@ -13,7 +13,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import soda.unittest.TestWork;
 import soda.web.BaseHandler;
-import soda.web.setup.ClassLoaderManager;
+import soda.web.bootstrap.ClassLoaderManager;
 import soda.web.Logger;
 import soda.web.http.RequestHelper;
 import soda.web.resp.Response;

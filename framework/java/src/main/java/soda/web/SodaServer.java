@@ -11,8 +11,8 @@ import com.sun.net.httpserver.HttpServer;
 
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
-import soda.web.setup.ClassLoaderManager;
-import soda.web.setup.SetupHandler;
+import soda.web.bootstrap.ClassLoaderManager;
+import soda.web.bootstrap.BootstrapHandler;
 import soda.web.work.WorkHandler;
 
 public class SodaServer {
@@ -78,7 +78,7 @@ public class SodaServer {
 		server.createContext("/soda/java/work", new WorkHandler(classLoaderMgr, 5000));
 		
 		// POST, multipart/form-data
-		server.createContext("/soda/java/setup", new SetupHandler(classLoaderMgr));
+		server.createContext("/soda/java/setup", new BootstrapHandler(classLoaderMgr));
 	}
 	
 	public void start() {

@@ -1,4 +1,4 @@
-package soda.web.setup;
+package soda.web.bootstrap;
 
 import com.sun.net.httpserver.HttpExchange;
 import soda.web.BaseHandler;
@@ -8,12 +8,23 @@ import soda.web.http.RequestHelper;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
 
-public class SetupHandler extends BaseHandler {
+public class BootstrapHandler extends BaseHandler {
 	
 	private final ClassLoaderManager mgr;
 	
-	public SetupHandler(ClassLoaderManager mgr) {
+	public BootstrapHandler(ClassLoaderManager mgr) {
 		this.mgr = mgr;
+	}
+
+	@Override
+	protected Response doGet(HttpExchange exchange) throws Exception {
+		var qm = RequestHelper.queryMap(exchange);
+		var key = qm.get("key");
+		if (key == null) {
+			throw new ParameterMissingException("key");
+		}
+//		mgr.
+		return null;
 	}
 
 	@Override

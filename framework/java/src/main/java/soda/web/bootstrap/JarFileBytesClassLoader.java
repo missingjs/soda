@@ -1,4 +1,4 @@
-package soda.web.setup;
+package soda.web.bootstrap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
