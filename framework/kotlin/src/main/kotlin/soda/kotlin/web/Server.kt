@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
-class Server(private val address: String, private val port: Int) {
+class Server(address: String, port: Int) {
 
     private val server = HttpServer.create(InetSocketAddress(address, port), 0)
 

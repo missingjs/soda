@@ -2,7 +2,6 @@ package soda.kotlin.web.setup
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.jar.JarEntry
 import java.util.jar.JarInputStream
 
 class JarFileBytesClassLoader(bytes: ByteArray, parent: ClassLoader): ClassLoader(parent) {

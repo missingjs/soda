@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpHandler
 import soda.kotlin.web.exception.ServiceException
 import soda.kotlin.web.resp.Response
 import soda.kotlin.web.resp.ResponseFactory
-import java.nio.charset.StandardCharsets
 
 abstract class BaseHandler : HttpHandler {
 
