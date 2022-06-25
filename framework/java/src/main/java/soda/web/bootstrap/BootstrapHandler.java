@@ -2,6 +2,7 @@ package soda.web.bootstrap;
 
 import com.sun.net.httpserver.HttpExchange;
 import soda.web.BaseHandler;
+import soda.web.BusinessCode;
 import soda.web.Logger;
 import soda.web.exception.ParameterMissingException;
 import soda.web.http.RequestHelper;
@@ -10,10 +11,10 @@ import soda.web.resp.ResponseFactory;
 
 public class BootstrapHandler extends BaseHandler {
 	
-	private final ClassLoaderManager mgr;
-	
-	public BootstrapHandler(ClassLoaderManager mgr) {
-		this.mgr = mgr;
+	private final ContextManager contextManager;
+
+	public BootstrapHandler(ContextManager cm) {
+		contextManager = cm;
 	}
 
 	@Override
@@ -23,8 +24,16 @@ public class BootstrapHandler extends BaseHandler {
 		if (key == null) {
 			throw new ParameterMissingException("key");
 		}
-//		mgr.
-		return null;
+
+		return contextManager.get(key)
+				.map(ctx ->
+					"text".equals(qm.get("format"))
+						? ResponseFactory.text(ctx.getMd5())
+						: ResponseFactory.success(ctx.getMd5()))
+				.orElseGet(() ->
+						ResponseFactory.response(
+								404, BusinessCode.COMMON_ERROR,
+								"no context bind to key " + key));
 	}
 
 	@Override
@@ -34,7 +43,7 @@ public class BootstrapHandler extends BaseHandler {
 
 		var key = data.firstValue("key").orElseThrow(() -> new ParameterMissingException("key"));
 		var bytes = data.firstFile("jar").orElseThrow(() -> new ParameterMissingException("jar"));
-		mgr.setupForJar(key, bytes);
+		contextManager.register(key, bytes);
 		
 		Logger.infof("reset class loader for key %s", key);
 		return ResponseFactory.success();

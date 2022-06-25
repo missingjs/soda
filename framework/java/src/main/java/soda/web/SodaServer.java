@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import soda.web.bootstrap.ContextManager;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
 import soda.web.bootstrap.ClassLoaderManager;
@@ -27,7 +28,9 @@ public class SodaServer {
 	
 	private int concurrency = 20;
 	
-	private ClassLoaderManager classLoaderMgr = new ClassLoaderManager();
+//	private ClassLoaderManager classLoaderMgr = new ClassLoaderManager();
+
+	private final ContextManager contextManager = new ContextManager();
 	
 	public static void main(String[] args) throws Exception {
 		int port = 9201;
@@ -75,10 +78,11 @@ public class SodaServer {
 		server.createContext("/soda/java/stop", new StopHandler());
 		
 		// POST, application/json
-		server.createContext("/soda/java/work", new WorkHandler(classLoaderMgr, 5000));
-		
+		server.createContext("/soda/java/work", new WorkHandler(contextManager, 5000));
+
+		// GET
 		// POST, multipart/form-data
-		server.createContext("/soda/java/setup", new BootstrapHandler(classLoaderMgr));
+		server.createContext("/soda/java/bootstrap", new BootstrapHandler(contextManager));
 	}
 	
 	public void start() {
@@ -90,7 +94,10 @@ public class SodaServer {
         	server.stop(1);
         	executor.shutdown();
         	try {
-        		executor.awaitTermination(1, TimeUnit.SECONDS);
+				int shutdownTimeout = 1;
+        		if (!executor.awaitTermination(shutdownTimeout, TimeUnit.SECONDS)) {
+					Logger.errorf("executor not terminate after %d", shutdownTimeout);
+				}
         		System.out.println("server stop");
         	} catch (Exception ex) {
         		ex.printStackTrace();

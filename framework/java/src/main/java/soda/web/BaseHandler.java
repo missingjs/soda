@@ -49,7 +49,11 @@ public abstract class BaseHandler implements HttpHandler {
 			resp = ResponseFactory.exception(ex);
 		}
 
-		writeResponse(exchange, resp);
+		try {
+			writeResponse(exchange, resp);
+		} catch (Exception ex) {
+			Logger.exception("response sending error", ex);
+		}
 	}
 
 	private void writeResponse(HttpExchange exchange, Response resp) throws IOException {

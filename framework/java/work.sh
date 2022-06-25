@@ -77,12 +77,18 @@ remote_setup()
     curl --connect-timeout 2 -s "$echo_url" >/dev/null \
         || { echo "server not open" >&2; exit 2; }
 
-    local setup_url="http://localhost:$server_port/soda/java/setup"
     local pathkey=$(cd $output_dir && pwd)
-    curl --connect-timeout 2 -s -f -X POST \
-        -F "key=$pathkey" \
-        -F "jar=@$output_dir/$jarfile" \
-        "$setup_url" >/dev/null
+    local boot_url="http://localhost:$server_port/soda/java/bootstrap"
+
+    local_md5="$(md5sum $output_dir/$jarfile | awk '{print $1}')"
+    remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$pathkey&format=text")"
+
+    if [ "$local_md5" != "$remote_md5" ]; then  
+        curl --connect-timeout 2 -s -f -X POST \
+            -F "key=$pathkey" \
+            -F "jar=@$output_dir/$jarfile" \
+            "$boot_url" >/dev/null
+    fi
 }
 
 new_project()

@@ -15,30 +15,40 @@ import soda.unittest.TestWork;
 import soda.web.BaseHandler;
 import soda.web.bootstrap.ClassLoaderManager;
 import soda.web.Logger;
+import soda.web.bootstrap.ContextManager;
 import soda.web.http.RequestHelper;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
 
 public class WorkHandler extends BaseHandler {
 	
-	private final ClassLoaderManager mgr;
+//	private final ClassLoaderManager mgr;
+
+	private final ContextManager contextManager;
 	
 	private final long timeoutMillis;
+
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
-	public WorkHandler(ClassLoaderManager mgr, long timeoutMillis) {
-		this.mgr = mgr;
+	public WorkHandler(ContextManager mgr, long timeoutMillis) {
+		contextManager = mgr;
 		this.timeoutMillis = timeoutMillis;
 	}
 
 	@Override
 	protected Response doPost(HttpExchange exchange) throws Exception {
 		String content = RequestHelper.bodyString(exchange);
-		Logger.infof("test input: %s", content);
-		ObjectMapper om = new ObjectMapper();
-		WorkRequest jr = om.readValue(content, WorkRequest.class);
+		WorkRequest jr = objectMapper.readValue(content, WorkRequest.class);
+
+		Logger.infof("context key: %s", jr.classpath);
+		Logger.infof("boot class: %s", jr.bootClass);
+		Logger.infof("test case: %s", jr.testCase);
 		
-		ClassLoader loader = mgr.getForJar(jr.classpath);
-		Class<?> klass = loader.loadClass(jr.bootClass);
+//		ClassLoader loader = mgr.getForJar(jr.classpath);
+		var classLoader = contextManager.get(jr.classpath).orElseThrow(() ->
+				new RuntimeException("no context found by key " + jr.classpath)
+		).getClassLoader();
+		Class<?> klass = classLoader.loadClass(jr.bootClass);
 
 		Callable<String> callable = () -> {
 			Constructor<?> ctor = klass.getDeclaredConstructor();
