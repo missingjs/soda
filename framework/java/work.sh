@@ -54,19 +54,20 @@ remote_run()
     # $input must be in valid json format
     local input="$(</dev/stdin)"
     local classname=$1
-    local classpath=$(cd $output_dir && pwd)
-    pycode=$(cat << EOF
-import json; import sys;
-content = sys.stdin.read()
+    local pathkey=$(cd $output_dir && pwd)
+
+local pycode=$(cat << EOF
+import json
 info = {
-  "classpath": "$classpath",
+  "key": "$pathkey",
   "bootClass": "$classname",
-  "testCase" : content
+  "testCase" : """$input"""
 }
 print(json.dumps(info))
 EOF
 )
-    post_content=$(echo "$input" | python3 -c "$pycode")
+
+    local post_content="$(python3 -c "$pycode")"
     local url="http://localhost:$server_port/soda/java/work"
     curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
 }

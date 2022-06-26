@@ -13,7 +13,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import soda.unittest.TestWork;
 import soda.web.BaseHandler;
-import soda.web.bootstrap.ClassLoaderManager;
 import soda.web.Logger;
 import soda.web.bootstrap.ContextManager;
 import soda.web.http.RequestHelper;
@@ -22,8 +21,6 @@ import soda.web.resp.ResponseFactory;
 
 public class WorkHandler extends BaseHandler {
 	
-//	private final ClassLoaderManager mgr;
-
 	private final ContextManager contextManager;
 	
 	private final long timeoutMillis;
@@ -40,13 +37,12 @@ public class WorkHandler extends BaseHandler {
 		String content = RequestHelper.bodyString(exchange);
 		WorkRequest jr = objectMapper.readValue(content, WorkRequest.class);
 
-		Logger.infof("context key: %s", jr.classpath);
+		Logger.infof("context key: %s", jr.key);
 		Logger.infof("boot class: %s", jr.bootClass);
 		Logger.infof("test case: %s", jr.testCase);
 		
-//		ClassLoader loader = mgr.getForJar(jr.classpath);
-		var classLoader = contextManager.get(jr.classpath).orElseThrow(() ->
-				new RuntimeException("no context found by key " + jr.classpath)
+		var classLoader = contextManager.get(jr.key).orElseThrow(() ->
+				new RuntimeException("no context found by key " + jr.key)
 		).getClassLoader();
 		Class<?> klass = classLoader.loadClass(jr.bootClass);
 
