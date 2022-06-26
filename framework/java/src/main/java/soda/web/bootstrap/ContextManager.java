@@ -1,12 +1,13 @@
 package soda.web.bootstrap;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
 public class ContextManager {
 
-    private final Map<String, BootstrapContext> contextMap = new ConcurrentHashMap<>();
+    private final Map<String, BootstrapContext> contextMap = Collections.synchronizedMap(new WeakHashMap<>());
 
     public BootstrapContext register(String key, byte[] artifact) {
         var context = new BootstrapContext(key, artifact);
