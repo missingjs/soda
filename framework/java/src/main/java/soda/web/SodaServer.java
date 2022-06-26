@@ -12,7 +12,6 @@ import com.sun.net.httpserver.HttpServer;
 import soda.web.bootstrap.ContextManager;
 import soda.web.resp.Response;
 import soda.web.resp.ResponseFactory;
-import soda.web.bootstrap.ClassLoaderManager;
 import soda.web.bootstrap.BootstrapHandler;
 import soda.web.work.WorkHandler;
 
@@ -28,8 +27,6 @@ public class SodaServer {
 	
 	private int concurrency = 20;
 	
-//	private ClassLoaderManager classLoaderMgr = new ClassLoaderManager();
-
 	private final ContextManager contextManager = new ContextManager();
 	
 	public static void main(String[] args) throws Exception {

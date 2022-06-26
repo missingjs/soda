@@ -53,36 +53,41 @@ remote_run()
     # $input must be in valid json format
     local input="$(</dev/stdin)"
     local classname=$1
-    local classpath=$(cd $output_dir && pwd)
-    pycode=$(cat << EOF
-import json; import sys;
-content = sys.stdin.read()
+    local pathkey=$(cd $output_dir && pwd)
+
+local pycode=$(cat << EOF
+import json
 info = {
-  "classpath": "$classpath",
+  "key": "$pathkey",
   "bootClass": "$classname",
-  "testCase" : content
+  "testCase" : """$input"""
 }
 print(json.dumps(info))
 EOF
 )
-    post_content=$(echo "$input" | python3 -c "$pycode")
+    local post_content="$(python3 -c "$pycode")"
     local url="http://localhost:$server_port/soda/scala/work"
     curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
 }
 
 remote_setup()
 {
-    local classpath=$(cd $output_dir && pwd)
     local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
     curl --connect-timeout 2 -s "$echo_url" >/dev/null \
         || { echo "server not open" >&2; exit 2; }
 
-    local setup_url="http://localhost:$server_port/soda/scala/setup"
     local pathkey=$(cd $output_dir && pwd)
-    curl --connect-timeout 2 -s -f -X POST \
-        -F "key=$pathkey" \
-        -F "jar=@$output_dir/$jarfile" \
-        "$setup_url" >/dev/null
+    local boot_url="http://localhost:$server_port/soda/scala/bootstrap"
+
+    local_md5="$(md5sum $output_dir/$jarfile | awk '{print $1}')"
+    remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$pathkey&format=text")"
+
+    if [ "$local_md5" != "$remote_md5" ]; then  
+        curl --connect-timeout 2 -s -f -X POST \
+            -F "key=$pathkey" \
+            -F "jar=@$output_dir/$jarfile" \
+            "$boot_url" >/dev/null
+    fi
 }
 
 function create_work()

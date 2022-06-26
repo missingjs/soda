@@ -45,7 +45,12 @@ abstract class BaseHandler extends HttpHandler {
         resp = ResponseFactory.exception(ex)
     }
 
-    writeResponse(exchange, resp)
+    try {
+      writeResponse(exchange, resp)
+    } catch {
+      case ex: Exception =>
+        Logger.exception("response sending error", ex)
+    }
   }
 
   private def writeResponse(exchange: HttpExchange, resp: Response): Unit = {

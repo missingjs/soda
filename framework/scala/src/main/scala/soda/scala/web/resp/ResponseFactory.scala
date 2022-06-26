@@ -11,28 +11,47 @@ object ResponseFactory {
 
   private val HTTP_INTERNAL_SERVER_ERROR = 500
 
-  case class SimpleResp(code: Int, message: String)
+  case class CommonResp(code: Int, message: String, detail: JsValue)
 
-  implicit val outWrites: Writes[SimpleResp] = Json.writes[SimpleResp]
+  object CommonResp {
+    implicit val outWrites: Writes[CommonResp] = Json.writes[CommonResp]
+  }
+
+  def response(httpCode: Int, bizCode: Int, message: String, detail: JsValue): Response = {
+    val d = if (detail != null) detail else Json.obj()
+    JsonResponse.create(httpCode, CommonResp(bizCode, message, d))
+  }
+
+  def response[T](httpCode: Int, bizCode: Int, message: String, detail: T)(implicit writes: Writes[T]): Response = {
+    response(httpCode, bizCode, message, Json.toJson(detail))
+  }
+
+  def response(httpCode: Int, bizCode: Int, message: String): Response = {
+    response(httpCode, bizCode, message, null)
+  }
+
+  def success(message: String, detail: JsValue): Response = {
+    response(HTTP_OK, BusinessCode.SUCCESS, message, detail)
+  }
+
+  def success[T](message: String, detail: T)(implicit writes: Writes[T]): Response = {
+    success(message, Json.toJson(detail))
+  }
 
   def success(message: String): Response = {
-    JsonResponse.create(HTTP_OK, SimpleResp(BusinessCode.SUCCESS, message))
+    success(message, null)
   }
 
   def success(): Response = {
     success("success")
   }
 
-  def error(httpCode: Int, bizCode: Int, message: String): Response = {
-    JsonResponse.create(httpCode, SimpleResp(bizCode, message))
-  }
-
   def exception(ex: ServiceException): Response = {
-    error(ex.httpCode, ex.bizCode, ex.errMessage)
+    response(ex.httpCode, ex.bizCode, ex.errMessage)
   }
 
   def exception(ex: Throwable): Response = {
-    error(HTTP_INTERNAL_SERVER_ERROR, BusinessCode.COMMON_ERROR, s"internal server error: $ex")
+    response(HTTP_INTERNAL_SERVER_ERROR, BusinessCode.COMMON_ERROR, s"internal server error: $ex")
   }
 
   def text(httpCode: Int, content: String): Response = new TextResponse(httpCode, content)

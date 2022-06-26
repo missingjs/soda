@@ -33,7 +33,7 @@ public class BootstrapHandler extends BaseHandler {
 				.orElseGet(() ->
 						ResponseFactory.response(
 								404, BusinessCode.COMMON_ERROR,
-								"no context bind to key " + key));
+								"no context bound to key " + key));
 	}
 
 	@Override

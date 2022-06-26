@@ -2,7 +2,7 @@ package soda.scala.web
 
 import com.sun.net.httpserver.{HttpExchange, HttpServer}
 import soda.scala.web.resp.{Response, ResponseFactory}
-import soda.scala.web.setup.SetupHandler
+import soda.scala.web.bootstrap.{BootstrapHandler, ContextManager}
 import soda.scala.web.work.WorkHandler
 
 import java.net.InetSocketAddress
@@ -14,16 +14,12 @@ class Server(address: String, port: Int) {
 
   private val executor = Executors.newFixedThreadPool(4)
 
+  private val contextManager = new ContextManager
+
   server.setExecutor(executor)
 
   // GET
   server.createContext("/soda/scala/echo", new EchoHandler)
-
-  // POST
-  server.createContext("/soda/scala/setup", new SetupHandler)
-
-  // POST
-  server.createContext("/soda/scala/work", new WorkHandler)
 
   // GET
   server.createContext("/soda/scala/stop", new BaseHandler {
@@ -32,6 +28,13 @@ class Server(address: String, port: Int) {
       ResponseFactory.success("stop signal sent")
     }
   })
+
+  // POST application/json
+  server.createContext("/soda/scala/work", new WorkHandler(contextManager, 5000))
+
+  // GET
+  // POST, multipart/form-data
+  server.createContext("/soda/scala/bootstrap", new BootstrapHandler(contextManager))
 
   def start(): Unit = {
     server.start()

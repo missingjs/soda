@@ -2,6 +2,7 @@ package soda.scala.web
 
 import java.io.{ByteArrayOutputStream, InputStream, PrintStream}
 import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.util.regex.Pattern
 
 object WebUtils {
@@ -31,6 +32,27 @@ object WebUtils {
     ex.printStackTrace(pw)
     pw.flush()
     out.toString(StandardCharsets.UTF_8)
+  }
+
+  def md5Hex(data: Array[Byte]): String = try {
+    val md5 = MessageDigest.getInstance("MD5")
+    md5.update(data)
+    hex(md5.digest)
+  } catch {
+    case ex: Exception =>
+      throw new RuntimeException("md5 error", ex)
+  }
+
+  def hex(data: Array[Byte]): String = {
+    val code = "0123456789abcdef"
+    val buf = new Array[Char](data.length * 2)
+    for (i <- data.indices) {
+      val high = (data(i) >> 4) & 0x0f
+      val low = data(i) & 0x0f
+      buf(i * 2) = code.charAt(high)
+      buf(i * 2 + 1) = code.charAt(low)
+    }
+    new String(buf)
   }
 
 }
