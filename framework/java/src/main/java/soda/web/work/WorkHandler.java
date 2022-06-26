@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 
 import soda.unittest.TestWork;
+import soda.unittest.Utils;
 import soda.web.BaseHandler;
 import soda.web.Logger;
 import soda.web.bootstrap.ContextManager;
@@ -51,13 +52,9 @@ public class WorkHandler extends BaseHandler {
 			ctor.setAccessible(true);
 			var workDef = ctor.newInstance();
 			if (workDef instanceof Supplier) {
-				@SuppressWarnings("unchecked")
-				TestWork work = ((Supplier<TestWork>) workDef).get();
-				return work.run(jr.testCase);
+				return Utils.<Supplier<TestWork>>cast(workDef).get().run(jr.testCase);
 			} else {
-				@SuppressWarnings("unchecked")
-				var func = ((Function<String, String>) workDef);
-				return func.apply(jr.testCase);
+				return Utils.<Function<String, String>>cast(workDef).apply(jr.testCase);
 			}
 		};
 		
