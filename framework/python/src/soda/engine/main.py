@@ -137,6 +137,10 @@ def execute_impl(command, testname, config, testobj, pb):
     if verbose:
         pb.print('response:', json.dumps(response))
 
+    if 'success' not in response:
+        pb.print('invalid response:', json.dumps(response))
+        return False
+
     if not response['success']:
         pb.print(ColorText.red('TEST FAILED'))
         res = response['result']
