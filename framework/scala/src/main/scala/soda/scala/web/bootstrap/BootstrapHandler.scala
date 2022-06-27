@@ -35,9 +35,9 @@ class BootstrapHandler(private val contextManager: ContextManager) extends BaseH
       case None => throw new ParameterMissingException("key")
     }
 
-    val bytes = data.firstFile("jar") match {
+    val bytes = data.firstFile("binary") match {
       case Some(bytes) => bytes
-      case None => throw new ParameterMissingException("jar")
+      case None => throw new ParameterMissingException("binary")
     }
 
     contextManager.register(key, bytes)

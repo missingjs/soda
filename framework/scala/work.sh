@@ -41,74 +41,29 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
-assert_testname() {
-    [ -z $testname ] && usage
-}
 testname=$(python3 -c "print('$testname'.capitalize())")
+srcfile=${testname}.scala
 output_dir=./scala
 jarfile=work.jar
-
-remote_run()
-{
-    # $input must be in valid json format
-    local input="$(</dev/stdin)"
-    local classname=$1
-    local pathkey=$(cd $output_dir && pwd)
-
-local pycode=$(cat << EOF
-import json
-info = {
-  "key": "$pathkey",
-  "bootClass": "$classname",
-  "testCase" : """$input"""
-}
-print(json.dumps(info))
-EOF
-)
-    local post_content="$(python3 -c "$pycode")"
-    local url="http://localhost:$server_port/soda/scala/work"
-    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
-}
-
-remote_setup()
-{
-    local echo_url="http://localhost:$server_port/soda/scala/echo?a=b"
-    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
-        || { echo "server not open" >&2; exit 2; }
-
-    local pathkey=$(cd $output_dir && pwd)
-    local boot_url="http://localhost:$server_port/soda/scala/bootstrap"
-
-    local_md5="$(md5sum $output_dir/$jarfile | awk '{print $1}')"
-    remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$pathkey&format=text")"
-
-    if [ "$local_md5" != "$remote_md5" ]; then  
-        curl --connect-timeout 2 -s -f -X POST \
-            -F "key=$pathkey" \
-            -F "jar=@$output_dir/$jarfile" \
-            "$boot_url" >/dev/null
-    fi
-}
 
 function create_work()
 {
     assert_testname
-    source_file=${testname}.scala
+    target_file=$srcfile
     template_file=$self_dir/src/main/scala/soda/scala/unittest/__Bootstrap__.scala
-    create_source_file $template_file $source_file
+    create_source_file $template_file $target_file
     classname=$testname
     echo "import soda.scala.unittest._" > ${classname}.tmp
-    cat $source_file \
+    cat $target_file \
         | grep -v '^package ' \
         | sed "s/__Bootstrap__/$classname/g" \
         >> ${classname}.tmp
-    mv ${classname}.tmp $source_file
+    mv ${classname}.tmp $target_file
 }
 
 function build_work()
 {
     assert_testname
-    srcfile=${testname}.scala
     [ -e $output_dir ] || mkdir $output_dir
     classfile=$output_dir/${testname}.class
     if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
@@ -126,10 +81,12 @@ function build_work()
 function run_work()
 {
     local run_mode=$1
+    local classname=$testname
+
     assert_testname
-    classname=$testname
     if [ "$run_mode" == "--remote" ]; then
-        remote_run $classname <&0
+        local key=$(cd $output_dir && pwd)
+        remote_run scala "$key" "$classname" -
     else
         assert_framework
         scala -cp $(get_classpath):$output_dir $classname
@@ -141,7 +98,7 @@ case $cmd in
         create_work
         ;;
     source)
-        echo ${testname}.scala
+        echo $srcfile
         ;;
     make)
         build_work
@@ -155,7 +112,8 @@ case $cmd in
         [ -e $output_dir ] && rm -rfv $output_dir || true
         ;;
     remote-setup)
-        remote_setup
+        runkey=$(cd $output_dir && pwd)
+        remote_setup scala "$runkey" "$output_dir/$jarfile"
         ;;
     *)
         usage

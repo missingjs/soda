@@ -89,8 +89,9 @@ make_project()
 run_project()
 {
     local run_mode=$1
+    local classname=$testname
+
     assert_testname
-    classname=$testname
     if [ "$run_mode" == "--remote" ]; then
         local key=$(cd $output_dir && pwd)
         remote_run java "$key" "$classname" -
