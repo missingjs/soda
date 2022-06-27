@@ -42,8 +42,8 @@ class BootstrapHandler extends BaseHandler {
         def key = data.firstValue("key").orElseThrow {
             new ParameterMissingException("key")
         }
-        def bytes = data.firstFile("script").orElseThrow {
-            new ParameterMissingException("script")
+        def bytes = data.firstFile("binary").orElseThrow {
+            new ParameterMissingException("binary")
         }
         contextManager.register(key, bytes)
 
