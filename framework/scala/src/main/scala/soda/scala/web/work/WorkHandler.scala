@@ -17,7 +17,7 @@ class WorkHandler(private val contextManager: ContextManager, private val timeou
   override def doPost(exchange: HttpExchange): Response = {
     val req = WorkHandler.parse(exchange)
     Logger.info(s"context key: ${req.key}")
-    Logger.info(s"boot class: ${req.entryClass}")
+    Logger.info(s"entry class: ${req.entryClass}")
     Logger.info(s"test case: ${req.testCase}")
 
     val task: () => String = () => {

@@ -12,12 +12,24 @@ class WorkRequest {
         obj.key as String
     }
 
-    String getBootClass() {
-        obj.bootClass as String
+    void setKey(String key) {
+        obj.key = key
+    }
+
+    String getEntryClass() {
+        obj.entryClass as String
+    }
+
+    void setEntryClass(String entryClass) {
+        obj.entryClass = entryClass
     }
 
     String getTestCase() {
         obj.testCase as String
+    }
+
+    void setTestCase(String testCase) {
+        obj.testCase = testCase
     }
 
 }

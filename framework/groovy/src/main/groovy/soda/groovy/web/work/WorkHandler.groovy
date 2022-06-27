@@ -3,12 +3,16 @@ package soda.groovy.web.work
 import com.sun.net.httpserver.HttpExchange
 import groovy.json.JsonSlurper
 import soda.groovy.web.BaseHandler
+import soda.groovy.web.BusinessCode
 import soda.groovy.web.Logger
 import soda.groovy.web.bootstrap.ContextManager
+import soda.groovy.web.exception.ParameterMissingException
+import soda.groovy.web.exception.ServiceException
 import soda.groovy.web.http.RequestHelper
 import soda.groovy.web.resp.Response
 import soda.groovy.web.resp.ResponseFactory
 
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -26,23 +30,21 @@ class WorkHandler extends BaseHandler {
 
     @Override
     protected Response doPost(HttpExchange exchange) throws Exception {
-        def content = RequestHelper.bodyString(exchange)
-        def jr = new WorkRequest(new JsonSlurper().parseText(content))
+        def req = parse(exchange)
+        Logger.info("context key: ${req.key}")
+        Logger.info("entry class: ${req.entryClass}")
+        Logger.info("test case: ${req.testCase}")
 
-        Logger.info("context key: ${jr.key}")
-        Logger.info("boot class: ${jr.bootClass}")
-        Logger.info("test case: ${jr.testCase}")
-
-        ClassLoader loader = contextManager.get(jr.key).orElseThrow {
-            new RuntimeException("no context found by key ${jr.key}")
+        ClassLoader loader = contextManager.get(req.key).orElseThrow {
+            new RuntimeException("no context found by key ${req.key}")
         }.classLoader
-        def klass = loader.loadClass(jr.bootClass)
+        def klass = loader.loadClass(req.entryClass)
 
         def workClosure = { ->
             def ctor = klass.getDeclaredConstructor()
             ctor.setAccessible(true)
             def obj = ctor.newInstance()
-            return obj(jr.testCase)
+            return obj(req.testCase)
         }
 
         TimeLimitedJob tLJob = new TimeLimitedJob(workClosure)
@@ -54,6 +56,33 @@ class WorkHandler extends BaseHandler {
         } catch (TimeoutException tex) {
             tLJob.kill()
             throw new RuntimeException("Job timeout", tex)
+        }
+    }
+
+    private static WorkRequest parse(HttpExchange exchange) throws Exception {
+        def contentType = exchange.getRequestHeaders().getFirst("Content-Type")
+        if (contentType.contains("application/json")) {
+            def body = RequestHelper.bodyString(exchange)
+            return new WorkRequest(new JsonSlurper().parseText(body))
+        } else if (contentType.contains("multipart/form-data")) {
+            def formData = RequestHelper.multipartFormData(exchange)
+            def key = formData.firstValue("key").orElseThrow {
+                new ParameterMissingException("key")
+            }
+            def entryClass = formData.firstValue("entry_class").orElseThrow {
+                new ParameterMissingException("entry_class")
+            }
+            def caseBytes = formData.firstFile("test_case").orElseThrow {
+                new ParameterMissingException("test_case")
+            }
+            def testCase = new String(caseBytes, StandardCharsets.UTF_8)
+            def workReq = new WorkRequest([:])
+            workReq.key = key
+            workReq.entryClass = entryClass
+            workReq.testCase = testCase
+            return workReq
+        } else {
+            throw new ServiceException(BusinessCode.COMMON_ERROR, "unknown Content-Type: " + contentType, 400)
         }
     }
 

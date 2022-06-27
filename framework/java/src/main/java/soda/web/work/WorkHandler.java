@@ -74,10 +74,9 @@ public class WorkHandler extends BaseHandler {
 
 	private static WorkRequest parse(HttpExchange exchange) throws Exception {
 		var contentType = exchange.getRequestHeaders().getFirst("Content-Type");
-		var workReq = new WorkRequest();
 		if (contentType.contains("application/json")) {
 			var body = RequestHelper.bodyString(exchange);
-			workReq = objectMapper.readValue(body, WorkRequest.class);
+			return objectMapper.readValue(body, WorkRequest.class);
 		} else if (contentType.contains("multipart/form-data")) {
 			var formData = RequestHelper.multipartFormData(exchange);
 			var key = formData.firstValue("key").orElseThrow(
@@ -90,13 +89,14 @@ public class WorkHandler extends BaseHandler {
 					() -> new ParameterMissingException("test_case")
 			);
 			var testCase = new String(caseBytes, StandardCharsets.UTF_8);
+			var workReq = new WorkRequest();
 			workReq.key = key;
 			workReq.entryClass = entryClass;
 			workReq.testCase = testCase;
+			return workReq;
 		} else {
 			throw new ServiceException(BusinessCode.COMMON_ERROR, "unknown Content-Type: " + contentType, 400);
 		}
-		return workReq;
 	}
 
 }
