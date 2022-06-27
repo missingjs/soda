@@ -18,7 +18,6 @@ import soda.web.BaseHandler;
 import soda.web.BusinessCode;
 import soda.web.Logger;
 import soda.web.bootstrap.ContextManager;
-import soda.web.exception.ParameterMissingException;
 import soda.web.exception.ServiceException;
 import soda.web.http.RequestHelper;
 import soda.web.resp.Response;
@@ -79,15 +78,9 @@ public class WorkHandler extends BaseHandler {
 			return objectMapper.readValue(body, WorkRequest.class);
 		} else if (contentType.contains("multipart/form-data")) {
 			var formData = RequestHelper.multipartFormData(exchange);
-			var key = formData.firstValue("key").orElseThrow(
-					() -> new ParameterMissingException("key")
-			);
-			var entryClass = formData.firstValue("entry_class").orElseThrow(
-					() -> new ParameterMissingException("entry_class")
-			);
-			var caseBytes = formData.firstFile("test_case").orElseThrow(
-					() -> new ParameterMissingException("test_case")
-			);
+			var key = formData.firstValue("key");
+			var entryClass = formData.firstValue("entry_class");
+			var caseBytes = formData.firstFile("test_case");
 			var testCase = new String(caseBytes, StandardCharsets.UTF_8);
 			var workReq = new WorkRequest();
 			workReq.key = key;

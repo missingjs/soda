@@ -65,18 +65,9 @@ object WorkHandler {
       Json.parse(content).as[WorkRequest]
     } else if (contentType.contains("multipart/form-data")) {
       val formData = RequestHelper.multipartFormData(exchange)
-      val key = formData.firstValue("key") match {
-        case Some(key) => key
-        case None => throw new ParameterMissingException("key")
-      }
-      val entryClass = formData.firstValue("entry_class") match {
-        case Some(ec) => ec
-        case None => throw new ParameterMissingException("entry_class")
-      }
-      val caseBytes = formData.firstFile("test_case") match {
-        case Some(cb) => cb
-        case None => throw new ParameterMissingException("test_case")
-      }
+      val key = formData.firstValue("key")
+      val entryClass = formData.firstValue("entry_class")
+      val caseBytes = formData.firstFile("test_case")
       val testCase = new String(caseBytes, StandardCharsets.UTF_8)
       WorkRequest(key, entryClass, testCase)
     } else {

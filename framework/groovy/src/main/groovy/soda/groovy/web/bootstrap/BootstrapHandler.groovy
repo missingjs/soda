@@ -39,12 +39,8 @@ class BootstrapHandler extends BaseHandler {
         // multipart/form-data, key = ?, script = ?
         def data = RequestHelper.multipartFormData(exchange)
 
-        def key = data.firstValue("key").orElseThrow {
-            new ParameterMissingException("key")
-        }
-        def bytes = data.firstFile("binary").orElseThrow {
-            new ParameterMissingException("binary")
-        }
+        def key = data.firstValue("key")
+        def bytes = data.firstFile("binary")
         contextManager.register(key, bytes)
 
         Logger.info("reset class loader for key $key")

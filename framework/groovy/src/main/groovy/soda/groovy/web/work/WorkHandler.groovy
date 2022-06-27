@@ -66,15 +66,9 @@ class WorkHandler extends BaseHandler {
             return new WorkRequest(new JsonSlurper().parseText(body))
         } else if (contentType.contains("multipart/form-data")) {
             def formData = RequestHelper.multipartFormData(exchange)
-            def key = formData.firstValue("key").orElseThrow {
-                new ParameterMissingException("key")
-            }
-            def entryClass = formData.firstValue("entry_class").orElseThrow {
-                new ParameterMissingException("entry_class")
-            }
-            def caseBytes = formData.firstFile("test_case").orElseThrow {
-                new ParameterMissingException("test_case")
-            }
+            def key = formData.firstValue("key")
+            def entryClass = formData.firstValue("entry_class")
+            def caseBytes = formData.firstFile("test_case")
             def testCase = new String(caseBytes, StandardCharsets.UTF_8)
             def workReq = new WorkRequest([:])
             workReq.key = key

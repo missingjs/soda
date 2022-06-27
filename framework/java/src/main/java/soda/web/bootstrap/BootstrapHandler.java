@@ -41,12 +41,8 @@ public class BootstrapHandler extends BaseHandler {
 		// multipart/form-data, key = ?, jar = ?
 		var data = RequestHelper.multipartFormData(exchange);
 
-		var key = data.firstValue("key").orElseThrow(
-				() -> new ParameterMissingException("key")
-		);
-		var bytes = data.firstFile("binary").orElseThrow(
-				() -> new ParameterMissingException("binary")
-		);
+		var key = data.firstValue("key");
+		var bytes = data.firstFile("binary");
 		contextManager.register(key, bytes);
 		
 		Logger.infof("reset class loader for key %s", key);

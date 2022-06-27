@@ -30,16 +30,8 @@ class BootstrapHandler(private val contextManager: ContextManager) extends BaseH
     // multipart/form-data, key = ?, jar = ?
     val data = RequestHelper.multipartFormData(exchange)
 
-    val key = data.firstValue("key") match {
-      case Some(key) => key
-      case None => throw new ParameterMissingException("key")
-    }
-
-    val bytes = data.firstFile("binary") match {
-      case Some(bytes) => bytes
-      case None => throw new ParameterMissingException("binary")
-    }
-
+    val key = data.firstValue("key")
+    val bytes = data.firstFile("binary")
     contextManager.register(key, bytes)
 
     Logger.info(s"reset class loader for key $key")
