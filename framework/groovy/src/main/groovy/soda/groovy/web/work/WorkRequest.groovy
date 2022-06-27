@@ -8,8 +8,8 @@ class WorkRequest {
         this.obj = obj as Map
     }
 
-    String getClasspath() {
-        obj.classpath as String
+    String getKey() {
+        obj.key as String
     }
 
     String getBootClass() {

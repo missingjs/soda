@@ -27,15 +27,15 @@ class ServiceException extends RuntimeException {
     }
 
     int getBizCode() {
-        return bizCode;
+        return bizCode
     }
 
     String getErrorMessage() {
-        return errMessage;
+        return errMessage
     }
 
     int getHttpCode() {
-        return httpCode;
+        return httpCode
     }
 
 }

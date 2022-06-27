@@ -2,10 +2,11 @@ package soda.groovy.web
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import soda.groovy.web.bootstrap.ContextManager
 import soda.groovy.web.resp.Response
 import soda.groovy.web.resp.ResponseFactory
-import soda.groovy.web.bootstrap.ClassLoaderManager
-import soda.groovy.web.bootstrap.SetupHandler
+
+import soda.groovy.web.bootstrap.BootstrapHandler
 import soda.groovy.web.work.WorkHandler
 
 import java.util.concurrent.ExecutorService
@@ -24,7 +25,7 @@ class SodaServer {
 
     private int concurrency = 20
 
-    private ClassLoaderManager classLoaderMgr = new ClassLoaderManager()
+    private final ContextManager contextManager = new ContextManager()
 
     static void main(String... args) throws Exception {
         int port = 9203
@@ -72,10 +73,11 @@ class SodaServer {
         server.createContext("/soda/groovy/stop", new StopHandler())
 
         // POST, application/json
-        server.createContext("/soda/groovy/work", new WorkHandler(classLoaderMgr, 5000))
+        server.createContext("/soda/groovy/work", new WorkHandler(contextManager, 5000))
 
-        // POST, application/x-www-form-urlencoded
-        server.createContext("/soda/groovy/setup", new SetupHandler(classLoaderMgr))
+        // GET
+        // POST, multipart/form-data
+        server.createContext("/soda/groovy/bootstrap", new BootstrapHandler(contextManager))
     }
 
     void start() {
