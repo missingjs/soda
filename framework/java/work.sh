@@ -41,56 +41,10 @@ cmd=$1
 [ -z $cmd ] && usage
 
 testname=$2
-assert_testname() {
-    [ -z $testname ] && usage
-}
 testname=$(python3 -c "print('$testname'.capitalize())")
 srcfile=${testname}.java
 output_dir=./java
 jarfile=work.jar
-
-remote_run()
-{
-    # $input must be in valid json format
-    local input="$(</dev/stdin)"
-    local classname=$1
-    local pathkey=$(cd $output_dir && pwd)
-
-local pycode=$(cat << EOF
-import json
-info = {
-  "key": "$pathkey",
-  "bootClass": "$classname",
-  "testCase" : """$input"""
-}
-print(json.dumps(info))
-EOF
-)
-
-    local post_content="$(python3 -c "$pycode")"
-    local url="http://localhost:$server_port/soda/java/work"
-    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
-}
-
-remote_setup()
-{
-    local echo_url="http://localhost:$server_port/soda/java/echo?a=b"
-    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
-        || { echo "server not open" >&2; exit 2; }
-
-    local pathkey=$(cd $output_dir && pwd)
-    local boot_url="http://localhost:$server_port/soda/java/bootstrap"
-
-    local_md5="$(md5sum $output_dir/$jarfile | awk '{print $1}')"
-    remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$pathkey&format=text")"
-
-    if [ "$local_md5" != "$remote_md5" ]; then  
-        curl --connect-timeout 2 -s -f -X POST \
-            -F "key=$pathkey" \
-            -F "jar=@$output_dir/$jarfile" \
-            "$boot_url" >/dev/null
-    fi
-}
 
 new_project()
 {
@@ -138,7 +92,8 @@ run_project()
     assert_testname
     classname=$testname
     if [ "$run_mode" == "--remote" ]; then
-        remote_run $classname <&0
+        local key=$(cd $output_dir && pwd)
+        remote_run java "$key" "$classname" -
     else
         assert_framework
         java -cp $(get_classpath):$output_dir $classname
@@ -164,7 +119,8 @@ case $cmd in
         [ -e $output_dir ] && rm -rfv $output_dir || true
         ;;
     remote-setup)
-        remote_setup
+        runkey=$(cd $output_dir && pwd)
+        remote_setup java "$runkey" "$output_dir/$jarfile"
         ;;
     *)
         usage
