@@ -1,6 +1,5 @@
-package soda.groovy.web.setup
+package soda.groovy.web.bootstrap
 
-import soda.groovy.web.Logger
 
 import java.nio.charset.StandardCharsets
 

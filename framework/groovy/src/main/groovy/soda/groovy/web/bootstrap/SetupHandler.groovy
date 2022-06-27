@@ -1,4 +1,4 @@
-package soda.groovy.web.setup
+package soda.groovy.web.bootstrap
 
 import com.sun.net.httpserver.HttpExchange
 import soda.groovy.web.BaseHandler

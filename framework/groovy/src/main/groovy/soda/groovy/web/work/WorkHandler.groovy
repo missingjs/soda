@@ -7,7 +7,7 @@ import soda.groovy.web.Logger
 import soda.groovy.web.http.RequestHelper
 import soda.groovy.web.resp.Response
 import soda.groovy.web.resp.ResponseFactory
-import soda.groovy.web.setup.ClassLoaderManager
+import soda.groovy.web.bootstrap.ClassLoaderManager
 
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit

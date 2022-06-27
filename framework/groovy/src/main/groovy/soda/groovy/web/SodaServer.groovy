@@ -4,8 +4,8 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import soda.groovy.web.resp.Response
 import soda.groovy.web.resp.ResponseFactory
-import soda.groovy.web.setup.ClassLoaderManager
-import soda.groovy.web.setup.SetupHandler
+import soda.groovy.web.bootstrap.ClassLoaderManager
+import soda.groovy.web.bootstrap.SetupHandler
 import soda.groovy.web.work.WorkHandler
 
 import java.util.concurrent.ExecutorService
