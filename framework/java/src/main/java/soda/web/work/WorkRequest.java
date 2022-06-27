@@ -4,7 +4,7 @@ public class WorkRequest {
 
 	public String key;
 	
-	public String bootClass;
+	public String entryClass;
 	
 	public String testCase;
 	

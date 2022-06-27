@@ -31,40 +31,57 @@ assert_testname()
     [ -z $testname ] && usage
 }
 
+remote_run()
+{
 # args:
 #   lang:   java, scala, ...
 #   key:    key of current test case, normally the absolute path of it
 #   class:  name of entry class
 #   file:   file of test case, use '-' as stdin
-remote_run()
-{
     local lang=$1
     local key=$2
     local entry_class=$3
     local file=$4
+    local content_type=multipart
+#    local content_type=json
 
+    local work_url="http://localhost:$server_port/soda/$lang/work"
+
+    if [ "$content_type" == "multipart" ]; then
+        curl --connect-timeout 2 -sf -X POST \
+            -F "key=$key" \
+            -F "entry_class=$entry_class" \
+            -F "test_case=@$file" \
+            "$work_url"
+    elif [ "$content_type" == "json" ]; then
 local pycode=$(cat << EOF
 import json
 info = {
   "key": "$key",
-  "bootClass": "$entry_class",
+  "entryClass": "$entry_class",
   "testCase" : """$(cat $file)"""
 }
 print(json.dumps(info))
 EOF
 )
 
-    local post_content="$(python3 -c "$pycode")"
-    local url="http://localhost:$server_port/soda/$lang/work"
-    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
+        local post_content="$(python3 -c "$pycode")"
+        curl --connect-timeout 2 -sf -X POST \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$post_content" \
+            "$work_url"
+    else
+        echo "error of remote run: unknown content type: $content_type" >&2
+        exit 10
+    fi
 }
 
+remote_setup()
+{
 # args:
 #   lang:   java, scala, ...
 #   key:    key of current test case, normally the absolute path of it
 #   file:   bootstrap file, normally a jar, or a script
-remote_setup()
-{
     local lang=$1
     local key=$2
     local file=$3
