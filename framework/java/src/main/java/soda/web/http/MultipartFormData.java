@@ -3,6 +3,7 @@ package soda.web.http;
 import soda.web.exception.ParameterMissingException;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MultipartFormData {
@@ -14,31 +15,41 @@ public class MultipartFormData {
     }
 
     public Optional<String> firstValueOpt(String key) {
-        var v = partData.getOrDefault(key, Collections.emptyList());
-        return Optional.ofNullable(v.isEmpty() ? null : v.get(0).bodyString());
+        return elementOpt(key, Part::bodyString);
     }
 
     public String firstValue(String key) throws ParameterMissingException {
-        return firstValueOpt(key).orElseThrow(() -> new ParameterMissingException(key));
+        return firstElement(key, Part::bodyString);
     }
 
     public List<String> values(String key) {
-        var v = partData.getOrDefault(key, Collections.emptyList());
-        return v.stream().map(Part::bodyString).collect(Collectors.toList());
+        return elements(key, Part::bodyString);
     }
 
     public Optional<byte[]> firstFileOpt(String key) {
-        var v = partData.getOrDefault(key, Collections.emptyList());
-        return Optional.ofNullable(v.isEmpty() ? null : v.get(0).payload);
+        return elementOpt(key, p -> p.payload);
     }
 
     public byte[] firstFile(String key) {
-        return firstFileOpt(key).orElseThrow(() -> new ParameterMissingException(key));
+        return firstElement(key, p -> p.payload);
     }
 
     public List<byte[]> files(String key) {
-        var v = partData.getOrDefault(key, Collections.emptyList());
-        return v.stream().map(p -> p.payload).collect(Collectors.toList());
+        return elements(key, p -> p.payload);
+    }
+
+    private <T> List<T> elements(String key, Function<Part, T> mapper) {
+        var parts = partData.getOrDefault(key, Collections.emptyList());
+        return parts.stream().map(mapper).collect(Collectors.toList());
+    }
+
+    private <T> Optional<T> elementOpt(String key, Function<Part, T> mapper) {
+        var es = elements(key, mapper);
+        return Optional.ofNullable(es.isEmpty() ? null : es.get(0));
+    }
+
+    private <T> T firstElement(String key, Function<Part, T> mapper) {
+        return elementOpt(key, mapper).orElseThrow(() -> new ParameterMissingException(key));
     }
 
 }
