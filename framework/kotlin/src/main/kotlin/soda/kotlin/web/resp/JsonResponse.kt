@@ -2,7 +2,6 @@ package soda.kotlin.web.resp
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 import java.nio.charset.StandardCharsets

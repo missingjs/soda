@@ -71,7 +71,7 @@ object WorkHandler {
       val testCase = new String(caseBytes, StandardCharsets.UTF_8)
       WorkRequest(key, entryClass, testCase)
     } else {
-      throw new ServiceException(BusinessCode.COMMON_ERROR, "unknown Content-Type: " + contentType, 400)
+      throw new ServiceException(BusinessCode.COMMON_ERROR, s"unknown Content-Type: $contentType", 400)
     }
   }
 }

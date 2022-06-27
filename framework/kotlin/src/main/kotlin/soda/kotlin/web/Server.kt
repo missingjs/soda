@@ -4,7 +4,8 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import soda.kotlin.web.resp.Response
 import soda.kotlin.web.resp.ResponseFactory
-import soda.kotlin.web.setup.SetupHandler
+import soda.kotlin.web.bootstrap.BootstrapHandler
+import soda.kotlin.web.bootstrap.ContextManager
 import soda.kotlin.web.work.WorkHandler
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
@@ -17,17 +18,13 @@ class Server(address: String, port: Int) {
 
     private val executor = Executors.newFixedThreadPool(4)
 
+    private val contextManager = ContextManager()
+
     init {
         server.executor = executor
 
         // GET
         server.createContext("/soda/kotlin/echo", EchoHandler())
-
-        // POST
-        server.createContext("/soda/kotlin/setup", SetupHandler())
-
-        // POST
-        server.createContext("/soda/kotlin/work", WorkHandler())
 
         // GET
         server.createContext("/soda/kotlin/stop", object: BaseHandler() {
@@ -36,6 +33,13 @@ class Server(address: String, port: Int) {
                 return ResponseFactory.success("stop signal sent")
             }
         })
+
+        // POST application/json
+        server.createContext("/soda/kotlin/work", WorkHandler(contextManager, 5000))
+
+        // GET
+        // POST, multipart/form-data
+        server.createContext("/soda/kotlin/bootstrap", BootstrapHandler(contextManager))
     }
 
     fun start() = server.start()

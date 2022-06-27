@@ -1,4 +1,4 @@
-package soda.kotlin.web.setup
+package soda.kotlin.web.bootstrap
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
