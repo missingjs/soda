@@ -51,11 +51,18 @@ public class WorkHandler extends BaseHandler {
 		Callable<String> callable = () -> {
 			Constructor<?> ctor = klass.getDeclaredConstructor();
 			ctor.setAccessible(true);
-			var workDef = ctor.newInstance();
-			if (workDef instanceof Supplier) {
-				return Utils.<Supplier<TestWork>>cast(workDef).get().run(req.testCase);
-			} else {
-				return Utils.<Function<String, String>>cast(workDef).apply(req.testCase);
+			var thread = Thread.currentThread();
+			var contextClassLoader = thread.getContextClassLoader();
+			try {
+				thread.setContextClassLoader(classLoader);
+				var workDef = ctor.newInstance();
+				if (workDef instanceof Supplier) {
+					return Utils.<Supplier<TestWork>>cast(workDef).get().run(req.testCase);
+				} else {
+					return Utils.<Function<String, String>>cast(workDef).apply(req.testCase);
+				}
+			} finally {
+				thread.setContextClassLoader(contextClassLoader);
 			}
 		};
 		
