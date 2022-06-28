@@ -44,7 +44,7 @@ public class Revword implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = GenericTestWork.create1u(new Solution()::reverseWords);
+        var work = GenericTestWork.create(new Solution()::reverseWords);
         // var work = new TestWork(new Solution(), "reverseWords");
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);

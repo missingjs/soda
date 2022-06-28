@@ -37,7 +37,7 @@ public class Permute implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = GenericTestWork.create2(new Solution()::permutation);
+        var work = GenericTestWork.create(new Solution()::permutation);
         // var work = GenericTestWork.create2(Solution.class, "permutation", new Solution()::permutation);
         // var work = new TestWork(new Solution(), "permutation");
         // var work = TestWork.forStruct(Struct.class);

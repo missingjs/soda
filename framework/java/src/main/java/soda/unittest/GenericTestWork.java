@@ -8,8 +8,6 @@ import soda.unittest.validate.FeatureFactory;
 
 import java.util.Objects;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class GenericTestWork<R> {
 
@@ -80,41 +78,42 @@ public class GenericTestWork<R> {
         return new GenericTestWork<>(new Task2<>(func));
     }
 
+    public static <P1, P2, P3, R> GenericTestWork<R> create(Function3<P1, P2, P3, R> func) {
+        return new GenericTestWork<>(new Task3<>(func));
+    }
+
+    public static <P1, P2, P3, P4, R> GenericTestWork<R> create(
+            Function4<P1, P2, P3, P4, R> func) {
+        return new GenericTestWork<>(new Task4<>(func));
+    }
+
+    public static <P1, P2, P3, P4, P5, R> GenericTestWork<R> create(
+            Function5<P1, P2, P3, P4, P5, R> func) {
+        return new GenericTestWork<>(new Task5<>(func));
+    }
+
+    public static <P1, P2, P3, P4, P5, P6, R> GenericTestWork<R> create(
+            Function6<P1, P2, P3, P4, P5, P6, R> func) {
+        return new GenericTestWork<>(new Task6<>(func));
+    }
+
+    public static <P1, P2, P3, P4, P5, P6, P7, R> GenericTestWork<R> create(
+            Function7<P1, P2, P3, P4, P5, P6, P7, R> func) {
+        return new GenericTestWork<>(new Task7<>(func));
+    }
+
+    public static <P1, P2, P3, P4, P5, P6, P7, P8, R> GenericTestWork<R> create(
+            Function8<P1, P2, P3, P4, P5, P6, P7, P8, R> func) {
+        return new GenericTestWork<>(new Task8<>(func));
+    }
+
+    public static <P1, P2, P3, P4, P5, P6, P7, P8, P9, R> GenericTestWork<R> create(
+            Function9<P1, P2, P3, P4, P5, P6, P7, P8, P9, R> func) {
+        return new GenericTestWork<>(new Task9<>(func));
+    }
+
     public static GenericTestWork<Object> forStruct(Class<?> structClass) {
         return create(new StructTester(structClass)::test);
     }
-
-//    public static <P1, P2, R> GenericTestWork<R> create2(
-//            Class<?> workClass, String methodName, Function2<P1, P2, R> func) {
-//        return new GenericTestWork<>(new Task2<>(workClass, methodName, func));
-//    }
-//
-//    public static <P1, P2, P3, R> GenericTestWork<R> create3(
-//            Class<?> workClass, String methodName, Function3<P1, P2, P3, R> func) {
-//        return new GenericTestWork<>(new Task3<>(workClass, methodName, func));
-//    }
-//
-//    public static <P1, P2, P3, P4, R> GenericTestWork<R> create4(
-//            Class<?> workClass, String methodName, Function4<P1, P2, P3, P4, R> func) {
-//        return new GenericTestWork<>(new Task4<>(workClass, methodName, func));
-//    }
-//
-//    public static <P1, P2, P3, P4, P5, R> GenericTestWork<R> create5(
-//            Class<?> workClass, String methodName, Function5<P1, P2, P3, P4, P5, R> func) {
-//        return new GenericTestWork<>(new Task5<>(workClass, methodName, func));
-//    }
-//
-//    public static <P1, P2, P3, P4, P5, P6, R> GenericTestWork<R> create6(
-//            Class<?> workClass, String methodName, Function6<P1, P2, P3, P4, P5, P6, R> func) {
-//        return new GenericTestWork<>(new Task6<>(workClass, methodName, func));
-//    }
-//
-//    // DO NOT use this !!! It's just a placeholder in bootstrap file
-//    public static <P1, R> GenericTestWork<R> create1(Function1<P1, R> func) {
-//        return create1(Solution.class, "METHOD", func);
-//    }
-//    public static <P1, P2, R> GenericTestWork<R> create2(Function2<P1, P2, R> func) {
-//        return create2(Solution.class, "METHOD", func);
-//    }
 
 }

@@ -7,7 +7,7 @@ public class ReflectionTask extends TaskBase<Object> {
     private final Object solution;
 
     public ReflectionTask(Object solution, String methodName) {
-        super(solution.getClass(), methodName);
+        super(Utils.findMethod(solution.getClass(), methodName), null);
         this.solution = solution;
     }
 

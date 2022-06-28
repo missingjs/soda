@@ -1,5 +1,6 @@
 package soda.unittest.function;
 
-public interface Function4<P1, P2, P3, P4, R> {
+@FunctionalInterface
+public interface Function4<P1, P2, P3, P4, R> extends BaseFun {
     R apply(P1 p1, P2 p2, P3 p3, P4 p4);
 }

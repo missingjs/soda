@@ -26,10 +26,6 @@ abstract class TaskBase<R> implements TaskProxy<R> {
 
     protected BaseFun taskFunction;
 
-    TaskBase(Class<?> workClass, String methodName) {
-        init(Utils.findMethod(workClass, methodName));
-    }
-
     TaskBase(BaseFun function) {
         this.taskFunction = function;
         init(Utils.lambdaToMethod(function));

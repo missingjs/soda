@@ -37,7 +37,7 @@ public class Leet implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = GenericTestWork.create1(new Solution()::mergeKLists);
+        var work = GenericTestWork.create(new Solution()::mergeKLists);
         // var work = GenericTestWork.forStruct(Solution.class);
         // var work = TestWork.forObject(new Solution(), "METHOD");
         // var work = TestWork.forStruct(Struct.class);

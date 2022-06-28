@@ -144,7 +144,7 @@ public class Leet implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = GenericTestWork.create3(new Solution()::calcEquation);
+        var work = GenericTestWork.create(new Solution()::calcEquation);
         // var work = new TestWork(new Solution(), "calcEquation");
         // var work = TestWork.forStruct(Struct.class);
         // work.setValidator((e, r) -> {...});
