@@ -8,17 +8,24 @@ import soda.leetcode.*;
 import soda.unittest.*;
 
 class Solution {
-    public int convert(int a) { return a + 10; }
+    public int add(int a, int b) { return a + b; }
 }
 
 public class __Bootstrap__ implements Function<String, String> {
 
     @Override
     public String apply(String text) {
-        var work = GenericTestWork.create1(new Solution()::convert);
+        // * create work by method, including method that has no return value
+        var work = GenericTestWork.create(new Solution()::add);
+
+        // * by class of data struct
         // var work = GenericTestWork.forStruct(Solution.class);
+
+        // * for legacy code, discouraged
         // var work = TestWork.forObject(new Solution(), "METHOD");
         // var work = TestWork.forStruct(Struct.class);
+
+        // * setup validator
         // work.setValidator((e, r) -> {...});
         work.setCompareSerial(true);
         return work.run(text);

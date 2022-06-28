@@ -9,6 +9,8 @@ import soda.unittest.function.SupplierEx;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -70,6 +72,41 @@ public class Utils {
             }
         }
         throw new RuntimeException(new NoSuchMethodException(methodName));
+    }
+
+    public static SerializedLambda getSerializedLambda(Object lambda) {
+        SerializedLambda serializedLambda = null;
+        for (Class<?> cl = lambda.getClass(); cl != null; cl = cl.getSuperclass()) {
+            try {
+                var m = cl.getDeclaredMethod("writeReplace");
+                m.setAccessible(true);
+                Object replacement = m.invoke(lambda);
+                if (!(replacement instanceof SerializedLambda))
+                    break;// custom interface implementation
+                serializedLambda = (SerializedLambda) replacement;
+                break;
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return serializedLambda;
+    }
+
+    public static Method lambdaToMethod(Object func) {
+        var lambda = Utils.getSerializedLambda(func);
+        var implClassName = lambda.getImplClass().replaceAll("/", ".");
+        var workClass = loadClass(implClassName);
+        var implMethodName = lambda.getImplMethodName();
+        return Utils.findMethod(workClass, implMethodName);
+    }
+
+    private static Class<?> loadClass(String className) {
+        try {
+            return Thread.currentThread().getContextClassLoader().loadClass(className);
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

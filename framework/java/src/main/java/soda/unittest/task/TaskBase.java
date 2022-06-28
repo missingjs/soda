@@ -2,6 +2,7 @@ package soda.unittest.task;
 
 import soda.unittest.Utils;
 import soda.unittest.WorkInput;
+import soda.unittest.function.BaseFun;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -13,18 +14,34 @@ abstract class TaskBase<R> implements TaskProxy<R> {
 
     private double elapseMillis;
 
-    private final Type returnType;
+    private Type returnType;
 
-    private final List<Type> argTypes;
+    private List<Type> argTypes;
 
     private List<Object> args;
 
-    protected final Method method;
+    protected Method method;
 
-    protected final boolean voidFunc;
+    protected boolean voidFunc;
+
+    protected BaseFun taskFunction;
 
     TaskBase(Class<?> workClass, String methodName) {
-        method = Utils.findMethod(workClass, methodName);
+        init(Utils.findMethod(workClass, methodName));
+    }
+
+    TaskBase(BaseFun function) {
+        this.taskFunction = function;
+        init(Utils.lambdaToMethod(function));
+    }
+
+    TaskBase(Method methodInfo, BaseFun taskFunction) {
+        this.taskFunction = taskFunction;
+        init(methodInfo);
+    }
+
+    private void init(Method method) {
+        this.method = method;
         var ats = method.getGenericParameterTypes();
         argTypes = Arrays.stream(ats).collect(Collectors.toList());
         var retType = method.getGenericReturnType();
