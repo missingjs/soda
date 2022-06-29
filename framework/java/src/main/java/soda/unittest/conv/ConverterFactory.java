@@ -1,6 +1,7 @@
 package soda.unittest.conv;
 
 import soda.leetcode.*;
+import soda.unittest.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
 
 public class ConverterFactory {
 
-	private static final Map<Type, Supplier<ObjectConverter<?,?>>> factoryMap = new HashMap<>();
+	private static final Map<Type, Supplier<ObjConv>> factoryMap = new HashMap<>();
 
 	private static <R,J> void registerFactory(Class<R> klass, Supplier<ObjectConverter<R,J>> factory) {
 		regFact(klass, factory);
@@ -25,7 +26,7 @@ public class ConverterFactory {
 	}
 
 	private static <R,J> void registerFactory(Class<R> klass, Function<J,R> parser, Function<R,J> serializer) {
-		regFact((Type) klass, parser, serializer);
+		regFact(klass, parser, serializer);
 	}
 
 	private static <R,J> void registerFactory(TypeRef<R> ref, Function<J,R> parser, Function<R,J> serializer) {
@@ -41,10 +42,6 @@ public class ConverterFactory {
 				return serializer.apply(r);
 			}
 		});
-	}
-
-	private static Supplier<ObjectConverter<?,?>> getFactory(Type type) {
-		return factoryMap.get(type);
 	}
 	
 	static {
@@ -74,16 +71,16 @@ public class ConverterFactory {
 		registerFactory(new TypeRef<>() {}, NestedIntegerListConverter::new);
 	}
 
-	public static ObjectConverter<?,?> createConverter(Type type) {
-		var factory = getFactory(type);
+	public static <T> ObjectConverter<T, Object> create(Type type) {
+		var factory = factoryMap.get(type);
 		if (factory != null) {
-			return factory.get();
+			return factory.get().as();
 		}
-		return new ObjectConverter<Object, Object>() {
-			@Override public Object fromJsonSerializable(Object j) {
-				return j;
+		return new ObjectConverter<>() {
+			@Override public T fromJsonSerializable(Object j) {
+				return Utils.cast(j);
 			}
-			@Override public Object toJsonSerializable(Object r) {
+			@Override public Object toJsonSerializable(T r) {
 				return r;
 			}
 		};

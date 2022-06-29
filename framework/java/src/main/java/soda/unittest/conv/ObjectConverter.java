@@ -1,6 +1,6 @@
 package soda.unittest.conv;
 
-public interface ObjectConverter<R,J> {
+public interface ObjectConverter<R, J> extends ObjConv {
 
     R fromJsonSerializable(J j);
 

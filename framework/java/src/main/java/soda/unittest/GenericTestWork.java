@@ -31,7 +31,7 @@ public class GenericTestWork<R> {
             output.elapse = proxy.getElapseMillis();
 
             var retType = proxy.getReturnType();
-            ObjectConverter<R, Object> resConv = Utils.cast(ConverterFactory.createConverter(retType));
+            ObjectConverter<R, Object> resConv = ConverterFactory.create(retType);
             output.result = resConv.toJsonSerializable(result);
 
             boolean success = true;

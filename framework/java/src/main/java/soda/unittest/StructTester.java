@@ -31,7 +31,7 @@ public class StructTester {
                 method.setAccessible(true);
                 var params = Utils.parseArguments(method.getGenericParameterTypes(), Utils.cast(parameters.get(i)));
                 var r = method.invoke(obj, params);
-                ObjectConverter<Object, Object> conv = Utils.cast(ConverterFactory.createConverter(method.getGenericReturnType()));
+                ObjectConverter<Object, Object> conv = ConverterFactory.create(method.getGenericReturnType());
                 res.add(conv.toJsonSerializable(r));
             }
             return res;

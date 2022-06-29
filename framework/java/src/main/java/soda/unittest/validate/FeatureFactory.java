@@ -1,6 +1,5 @@
 package soda.unittest.validate;
 
-import soda.unittest.Utils;
 import soda.unittest.conv.ConvUtils;
 import soda.unittest.conv.TypeRef;
 
@@ -12,7 +11,7 @@ import java.util.function.Supplier;
 
 public class FeatureFactory {
 
-    private static final Map<Type, Supplier<ObjectFeature<?>>> factoryMap = new HashMap<>();
+    private static final Map<Type, Supplier<ObjFeat>> factoryMap = new HashMap<>();
 
     private static <T> void registerFactory(Type type, Supplier<ObjectFeature<T>> fact) {
         factoryMap.put(type, fact::get);
@@ -39,10 +38,7 @@ public class FeatureFactory {
 
     public static <T> ObjectFeature<T> create(Type type) {
         var fact = factoryMap.get(type);
-        if (fact != null) {
-            return Utils.cast(fact.get());
-        }
-        return new GenericFeature<>();
+        return fact != null ? fact.get().as() : new GenericFeature<>();
     }
 
     public static <T> ObjectFeature<T> create(TypeRef<T> typeRef) {

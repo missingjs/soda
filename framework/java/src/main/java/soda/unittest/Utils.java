@@ -6,9 +6,7 @@ import soda.unittest.conv.ObjectConverter;
 import soda.unittest.function.RunnableEx;
 import soda.unittest.function.SupplierEx;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,7 +51,7 @@ public class Utils {
     public static Object[] parseArguments(Type[] types, List<Object> rawParams) {
         Object[] arguments = new Object[types.length];
         for (int i = 0; i < arguments.length; ++i) {
-            ObjectConverter<Object, Object> conv = cast(ConverterFactory.createConverter(types[i]));
+            ObjectConverter<Object, Object> conv = ConverterFactory.create(types[i]);
             arguments[i] = conv.fromJsonSerializable(rawParams.get(i));
         }
         return arguments;
