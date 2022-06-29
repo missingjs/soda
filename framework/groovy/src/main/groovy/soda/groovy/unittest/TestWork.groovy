@@ -7,7 +7,6 @@ import soda.groovy.unittest.conv.ConverterFactory
 import soda.groovy.unittest.validate.FeatureFactory
 
 import java.lang.reflect.Type
-import java.util.function.BiPredicate
 
 class TestWork<R> {
 
@@ -74,11 +73,10 @@ class TestWork<R> {
         def owner = mc.owner
         def methodName = mc.method
         def method = Utils.findMethod(owner.class, methodName)
-        def argTypes = method.getGenericParameterTypes();
+        def argTypes = method.getGenericParameterTypes()
         def typeList = [*argTypes]
         def retType = method.getGenericReturnType()
         if (retType == void.class) {
-            retType = typeList[0]
             def closure = { Object... args ->
                 mc.call(args)
                 args[0]
