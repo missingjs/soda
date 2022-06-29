@@ -4,27 +4,38 @@ import soda.scala.unittest.{Utils, WorkInput}
 
 import scala.reflect.runtime.universe._
 
-class ReflectionTask(methodMirror: MethodMirror) extends _TaskBase[Any] {
+class ReflectionTask(methodMirror: MethodMirror) extends TaskProxy[Any] {
 
-  private val _argumentTypes = Utils.getParamTypes(methodMirror)
+  private val argTypes = Utils.getParamTypes(methodMirror)
 
-  private val _returnType = Utils.getReturnType(methodMirror)
+  private val retType = Utils.getReturnType(methodMirror)
 
-  private def voidFunc: Boolean = _returnType.toString == typeOf[Unit].toString
+  private val voidFunc = retType.toString == typeOf[Unit].toString
 
-  override def returnType: Type = if (voidFunc) _argumentTypes.head else _returnType
+  private var args: List[Any] = List.empty
 
-  override def argumentTypes: List[Type] = _argumentTypes
+  private var elapse: Double = 0.0
 
   override def execute(input: WorkInput): Any = {
-    val task =
-      if (voidFunc)
-        () => {
-          methodMirror.apply(arguments: _*)
-          arguments.head
-        }
-      else
-        () => methodMirror.apply(arguments: _*)
-    run(_argumentTypes, input, task)
+    args = Utils.parseArguments(argTypes, input.arguments).toList
+    val startNano = System.nanoTime()
+    val result = if (voidFunc) {
+      methodMirror.apply(args: _*)
+      args.head
+    } else {
+      methodMirror.apply(args: _*)
+    }
+    val endNano = System.nanoTime()
+    elapse = (endNano - startNano) / 1e6
+    result
   }
+
+  override def returnType: Type = if (voidFunc) argTypes.head else retType
+
+  override def argumentTypes: List[Type] = argTypes
+
+  override def elapseMillis: Double = elapse
+
+  override def arguments: List[Any] = args
+  
 }
