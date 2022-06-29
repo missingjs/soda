@@ -46,43 +46,6 @@ output_dir=./kotlin
 srcfile=${testname}.kt
 jarfile=${testname}.jar
 
-#remote_run()
-#{
-#    # $input must be in valid json format
-#    local input="$(</dev/stdin)"
-#    local classname=$1
-#    local classpath=$(cd $output_dir && pwd)
-#    pycode=$(cat << EOF
-#import json; import sys;
-#content = sys.stdin.read()
-#info = {
-#  "classpath": "$classpath",
-#  "bootClass": "$classname",
-#  "testCase" : content
-#}
-#print(json.dumps(info))
-#EOF
-#)
-#    post_content=$(echo "$input" | python3 -c "$pycode")
-#    local url="http://localhost:$server_port/soda/kotlin/work"
-#    curl --connect-timeout 2 -X POST -d "$post_content" -s "$url"
-#}
-#
-#remote_setup()
-#{
-#    local classpath=$(cd $output_dir && pwd)
-#    local echo_url="http://localhost:$server_port/soda/kotlin/echo?a=b"
-#    curl --connect-timeout 2 -s "$echo_url" >/dev/null \
-#        || { echo "server not open" >&2; exit 2; }
-#
-#    local setup_url="http://localhost:$server_port/soda/kotlin/setup"
-#    local pathkey=$(cd $output_dir && pwd)
-#    curl --connect-timeout 2 -s -f -X POST \
-#        -F "key=$pathkey" \
-#        -F "jar=@$output_dir/$jarfile" \
-#        "$setup_url" >/dev/null
-#}
-
 function create_work()
 {
     assert_testname
