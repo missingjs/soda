@@ -37,5 +37,5 @@ class ReflectionTask(methodMirror: MethodMirror) extends TaskProxy[Any] {
   override def elapseMillis: Double = elapse
 
   override def arguments: List[Any] = args
-  
+
 }
