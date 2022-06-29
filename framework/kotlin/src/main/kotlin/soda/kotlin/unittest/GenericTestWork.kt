@@ -56,7 +56,7 @@ class GenericTestWork<T>(private val proxy: TaskProxy<T>) {
             return GenericTestWork(Task2(func))
         }
 
-        inline fun <reified P1, reified P2, reified P3,reified R>
+        inline fun <reified P1, reified P2, reified P3, reified R>
                 create(noinline func: (P1, P2, P3) -> R): GenericTestWork<R> {
             return GenericTestWork(Task3(func))
         }
