@@ -30,14 +30,13 @@ class XMap[K, V](feat: ObjectFeature[K]) {
   def put(key: K, value: V): Unit = {
     val e = _entry(key) match {
       case Some(entry) => entry
-      case None => {
+      case None =>
         val h = _hash(key)
         val values = dict.getOrElseUpdate(h, mutable.ArrayBuffer[XEntry]())
         val entry = XEntry(key, value)
         values += entry
         size += 1
         entry
-      }
     }
     e.value = value
   }
@@ -45,15 +44,13 @@ class XMap[K, V](feat: ObjectFeature[K]) {
   def remove(key: K): Unit = {
     val h = _hash(key)
     dict.get(h) match {
-      case Some(entries) => {
+      case Some(entries) =>
         entries.find(e => feat.isEqual(key, e.key)) match {
-          case Some(entry) => {
+          case Some(entry) =>
             dict(h) -= entry
             size -= 1
-          }
           case None =>
         }
-      }
       case None =>
     }
   }

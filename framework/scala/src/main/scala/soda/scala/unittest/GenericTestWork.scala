@@ -23,7 +23,7 @@ class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) {
     _arguments = proxy.arguments
 
     val retType = proxy.returnType
-    val resConv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[R]]
+    val resConv = ConverterFactory.create[R](retType)
     val serialResult = resConv.toJsonSerializable(result)
     val output = new WorkOutput
     output.id = input.id
@@ -40,7 +40,7 @@ class GenericTestWork[R: TypeTag](proxy: TaskProxy[R]) {
         val expect = resConv.fromJsonSerializable(input.expected)
         success = validator match {
           case Some(va) => va.apply(expect, result)
-          case None => FeatureFactory.create(retType).isEqual(expect, result)
+          case None => FeatureFactory.create[R](retType).isEqual(expect, result)
         }
       }
     }

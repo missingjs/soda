@@ -25,7 +25,7 @@ class StructTester(classType: Type) {
       val r = method.apply(ArraySeq.unsafeWrapArray(params): _*)
       val retType = Utils.getReturnType(method)
       if (retType.toString != typeOf[Unit].toString) {
-        val conv = ConverterFactory.create(retType).asInstanceOf[ObjectConverter[Any]]
+        val conv = ConverterFactory.create[Any](retType)
         res.append(conv.toJsonSerializable(r))
       } else {
         res.append(JsNull)

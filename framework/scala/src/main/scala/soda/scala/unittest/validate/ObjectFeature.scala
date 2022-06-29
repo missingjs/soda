@@ -1,6 +1,10 @@
 package soda.scala.unittest.validate
 
-trait ObjectFeature[T] {
+trait ObjFeat {
+  def as[T]: ObjectFeature[T] = this.asInstanceOf[ObjectFeature[T]]
+}
+
+trait ObjectFeature[T] extends ObjFeat {
 
   def hash(obj: T): Long = obj.hashCode
 

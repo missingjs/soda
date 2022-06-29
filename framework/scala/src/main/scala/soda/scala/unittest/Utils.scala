@@ -60,7 +60,7 @@ object Utils {
   def parseArguments(types: List[Type], rawParams: JsValue): Array[Any] = {
     val args = Array.fill[Any](types.size)(null)
     for (i <- types.indices) {
-      args(i) = ConverterFactory.create(types(i)).fromJsonSerializable(rawParams(i))
+      args(i) = ConverterFactory.create[Any](types(i)).fromJsonSerializable(rawParams(i))
     }
     args
   }

@@ -5,7 +5,7 @@ import scala.reflect.runtime.universe._
 
 object FeatureFactory {
 
-  private val factoryMap = mutable.Map[String, () => ObjectFeature[_]]()
+  private val factoryMap = mutable.Map[String, () => ObjFeat]()
 
   private def registerFactory[T](factory: () => ObjectFeature[T])(implicit tt: TypeTag[T]): Unit = {
     factoryMap(typeOf[T].toString) = factory
@@ -23,7 +23,7 @@ object FeatureFactory {
 
   def create[T](elemType: Type): ObjectFeature[T] = {
     factoryMap.get(elemType.toString) match {
-      case Some(fact) => fact().asInstanceOf[ObjectFeature[T]]
+      case Some(fact) => fact().as[T]
       case None => new DefaultObjectFeature
     }
   }

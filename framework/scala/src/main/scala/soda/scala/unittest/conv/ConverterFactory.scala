@@ -8,7 +8,7 @@ import soda.scala.leetcode._
 
 object ConverterFactory {
 
-  private val factoryMap = mutable.Map[String, () => ObjectConverter[_]]()
+  private val factoryMap = mutable.Map[String, () => ObjConv]()
 
   private def registerFactory[E](factory: () => ObjectConverter[E])(implicit tt: TypeTag[E]): Unit = {
     factoryMap(typeOf[E].toString) = factory
@@ -17,7 +17,6 @@ object ConverterFactory {
   private def registerFactory[T, M](parser: M => T, serializer: T => M)(implicit tt: TypeTag[T], fmt: Format[M]): Unit = {
     registerFactory(() => new ObjectConverter[T] {
       override def fromJsonSerializable(js: JsValue): T = parser(js.as[M])
-
       override def toJsonSerializable(element: T): JsValue = Json.toJson(serializer(element))
     })
   }
@@ -118,20 +117,15 @@ object ConverterFactory {
   // JsValue
   registerFactory((j: JsValue) => j, (d: JsValue) => d)
 
-  def create[E]()(implicit tt: TypeTag[E]): ObjectConverter[E] = {
-    create(typeOf[E]).asInstanceOf[ObjectConverter[E]]
-  }
-
-  def create(elemType: Type): ObjectConverter[_] = {
+  def create[E](elemType: Type): ObjectConverter[E] = {
     create(elemType.toString)
   }
 
-  def create(typeName: String): ObjectConverter[_] = {
+  def create[E](typeName: String): ObjectConverter[E] = {
     factoryMap.get(typeName) match {
-      case Some(fact) => fact()
-      case None => {
+      case Some(fact) => fact().as[E]
+      case None =>
         throw new RuntimeException(s"[ConverterFactory] element type is not supported: $typeName")
-      }
     }
   }
 
