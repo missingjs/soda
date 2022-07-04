@@ -20,7 +20,6 @@ self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/support/commonlib.sh || exit
 
 project_file=soda.prj.yml
-work_name_file=.work_name
 
 # will be set later
 work_name=
@@ -67,13 +66,7 @@ EOF
 
 function get_work_name()
 {
-    [ -e $work_name_file -a -n "$(cat $work_name_file 2>/dev/null)" ] || python3 >$work_name_file << eof
-import yaml
-with open("$project_file", "rt") as fp:
-    config = yaml.load(fp, Loader=yaml.FullLoader)
-    print(config['soda']['work_name'])
-eof
-    cat $work_name_file
+    grep work_name: $project_file | awk '{print $2}'
 }
 
 function prepare_working_dir()
