@@ -9,3 +9,4 @@ Makefile.gen.*
 *__gen.cpp
 .python-version
 go.sum
+_source_tag.log

@@ -35,6 +35,7 @@ soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
 loadconf=$self_dir/support/loadconf.sh
 volume_dir=~/.soda/volumes/$lang
+src_tag_log=_source_tag.log
 
 docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
@@ -119,6 +120,24 @@ show_info()
 }
 
 sync_file_to_container()
+{
+    local file=$1
+    [ -e $file ] || { echo "file not exist: $file"; exit 2; }
+
+    local guest_mt=$(grep "^$lang " $src_tag_log 2>/dev/null | awk '{print $2}')
+    local host_mt=$(date -r $file "+%s")
+    
+    if [ "$host_mt" != "$guest_mt" ]; then
+        set -x; docker cp $file $container:$workdir/$file; set +x
+        if [ -n "$guest_mt" ]; then
+            sed -i "s/^$lang .*\$/$lang $host_mt/g" $src_tag_log
+        else
+            echo "$lang $host_mt" >> $src_tag_log
+        fi
+    fi
+}
+
+sync_file_to_container_old()
 {
     local file=$1
     [ -e $file ] || { echo "file not exist: $file"; exit 2; }

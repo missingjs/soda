@@ -141,18 +141,6 @@ function restore_work_in_container()
     $dku exec $ilang -w $workdir rm $srcfile
 }
 
-_t1=
-_t2=
-function timer_start()
-{
-    _t1=`date +%s%N`
-}
-function timer_end()
-{
-    _t2=`date +%s%N`
-    echo time elapse $((($_t2 - $_t1) / 1000000)) ms
-}
-
 function run_work()
 {
     local tags=

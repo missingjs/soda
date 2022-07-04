@@ -28,3 +28,22 @@ function trans_lang_name()
     esac
     echo $name
 }
+
+function nano_time()
+{
+    date +%s%N
+}
+
+function ms_since()
+{
+    local start_nano=$1
+    local end_nano=$(nano_time)
+    echo $((($end_nano - $start_nano) / 1000000))
+}
+
+function report_elapse_ms()
+{
+    local start_nano=$1
+    echo "time elapse: $(ms_since $start_nano) ms"
+}
+
