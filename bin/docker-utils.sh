@@ -21,6 +21,9 @@ usage:
     $cmd drop-project <lang>   remove whole content of project in container
 
     $cmd show <lang> <container|workdir>
+
+    $cmd assert-running <lang>
+        check whether the container is running. If not, show error message then exit with code 2
 EOF
     exit 1
 }
@@ -165,8 +168,6 @@ sync_file_to_container_old()
             ;;
         *)
             # docker exec failed
-            docker exec $container /usr/bin/true 2>/dev/null \
-                || echo "docker container not running, please run: $(basename $0) start $lang"
             exit 2
             ;;
     esac
@@ -186,6 +187,13 @@ function exec_command()
 function drop_project_in_container()
 {
     [ -e soda.prj.yml ] && docker exec $container rm -rfv $workdir
+}
+
+function assert_running()
+{
+    local status=$(docker inspect -f '{{.State.Running}}' $container)
+    [ "$status" == "true" ] \
+        || { echo "docker container not running, you can execute \`$(basename $0) start $lang\` to start it" >&2; exit 2; }
 }
 
 case $subcmd in
@@ -218,6 +226,9 @@ case $subcmd in
         key=$3
         [ -z $key ] && usage
         show_info $key
+        ;;
+    assert-running)
+        assert_running
         ;;
     *)
         usage

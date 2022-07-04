@@ -166,6 +166,9 @@ function run_work()
 
     set -e
 
+    # check if container is running
+    $dku assert-running $ilang
+
     [ "$restore_work" == "yes" ] && restore_work_in_container
 
     local work=$work_name
