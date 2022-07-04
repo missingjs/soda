@@ -146,6 +146,8 @@ sync_file_to_container()
             ;;
         *)
             # docker exec failed
+            docker exec $container /usr/bin/true 2>/dev/null \
+                || echo "docker container not running, please run: $(basename $0) start $lang"
             exit 2
             ;;
     esac
