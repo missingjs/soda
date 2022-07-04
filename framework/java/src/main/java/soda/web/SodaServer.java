@@ -30,6 +30,7 @@ public class SodaServer {
 	private final ContextManager contextManager = new ContextManager();
 	
 	public static void main(String[] args) throws Exception {
+		var address = "0.0.0.0";
 		int port = 9201;
 		int i = 0;
 		while (i < args.length) {
@@ -37,6 +38,9 @@ public class SodaServer {
 			if (cmd.equals("-p") || cmd.equals("--port")) {
 				++i;
 				port = Integer.parseInt(args[i]);
+			} else if (cmd.equals("--address")) {
+				++i;
+				address = args[i];
 			} else {
 				System.err.println("invalid option: " + cmd);
 				System.exit(1);
@@ -44,7 +48,6 @@ public class SodaServer {
 			++i;
 		}
 
-		var address = "localhost";
 		SodaServer ss = new SodaServer(address, port);
 		ss.start();
 		Logger.infof("soda java server start, listening %s:%d", address, port);

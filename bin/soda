@@ -139,6 +139,9 @@ function restore_work_in_container()
     local srcfile=$($framework_dir/$ilang/work.sh source $work)
     local workdir=$($dku show $ilang workdir)
     $dku exec $ilang -w $workdir rm $srcfile
+
+    # clear local cache
+    $dku clear-cache $ilang
 }
 
 function run_work()
@@ -166,6 +169,7 @@ function run_work()
 
     set -e
 
+
     # check if container is running
     $dku assert-running $ilang
 
@@ -187,6 +191,7 @@ function run_work()
     if [ "$remote_mode" == "yes" ]; then
         commandStr="$commandStr --remote"
         # setup remote server
+        export SODA_SERVER_ADDRESS=$($dku get-ip $ilang)
         $script remote-setup $work || { echo "failed to setup server" >&2; exit 10; }
     fi
 

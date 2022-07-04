@@ -45,7 +45,8 @@ remote_run()
     local content_type=multipart
 #    local content_type=json
 
-    local work_url="http://localhost:$server_port/soda/$lang/work"
+    local address=$SODA_SERVER_ADDRESS
+    local work_url="http://$address:$server_port/soda/$lang/work"
 
     if [ "$content_type" == "multipart" ]; then
         curl --connect-timeout 2 -sf -X POST \
@@ -86,13 +87,14 @@ remote_setup()
     local key=$2
     local file=$3
 
-    local echo_url="http://localhost:$server_port/soda/$lang/echo?a=b"
+    local address=$SODA_SERVER_ADDRESS
+    local echo_url="http://$address:$server_port/soda/$lang/echo?a=b"
     if ! curl --connect-timeout 2 -s "$echo_url" >/dev/null; then
         echo "server not open" >&2
         exit 2
     fi
 
-    local boot_url="http://localhost:$server_port/soda/$lang/bootstrap"
+    local boot_url="http://$address:$server_port/soda/$lang/bootstrap"
     local local_md5="$(md5sum $file | awk '{print $1}')"
     local remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$key&format=text")"
 

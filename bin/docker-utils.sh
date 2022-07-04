@@ -15,6 +15,7 @@ usage:
         for common commands
 
     $cmd sync-file <lang>      sync local file to container
+    $cmd clear-cache <lang>    invalidate file tag cache in local
 
     $cmd force-purge <lang>    stop and remove
 
@@ -24,6 +25,9 @@ usage:
 
     $cmd assert-running <lang>
         check whether the container is running. If not, show error message then exit with code 2
+
+    $cmd get-ip <lang>
+        show ip address of specific container
 EOF
     exit 1
 }
@@ -59,7 +63,7 @@ docker_start()
         docker run -d \
             --privileged \
             --name $container \
-            --network host $proxy_option \
+            --network bridge $proxy_option \
             -v "$soda_dir:/soda" \
             -v "/etc/group:/etc/group:ro" \
             -v "/etc/passwd:/etc/passwd:ro" \
@@ -131,7 +135,11 @@ sync_file_to_container()
     local host_mt=$(date -r $file "+%s")
     
     if [ "$host_mt" != "$guest_mt" ]; then
+        docker exec -u $(id -u) $container \
+            bash -c "[ -e $workdir ] || mkdir -p $workdir"
+
         set -x; docker cp $file $container:$workdir/$file; set +x
+
         if [ -n "$guest_mt" ]; then
             sed -i "s/^$lang .*\$/$lang $host_mt/g" $src_tag_log
         else
@@ -173,6 +181,11 @@ sync_file_to_container_old()
     esac
 }
 
+function clear_cache()
+{
+    [ -e $src_tag_log ] && sed -i "s/^$lang .*\$/$lang 0/g" $src_tag_log
+}
+
 function exec_command()
 {
     if [ "$1" == '-w' ]; then
@@ -196,6 +209,12 @@ function assert_running()
         || { echo "docker container not running, you can execute \`$(basename $0) start $lang\` to start it" >&2; exit 2; }
 }
 
+function get_ip()
+{
+    local ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container)
+    echo ${ip:-127.0.0.1}
+}
+
 case $subcmd in
     start)
         docker_start
@@ -205,16 +224,23 @@ case $subcmd in
         ;;
     play)
         shift; shift
-        exec_command -w $workdir /soda/framework/$lang/work.sh "$@"
+        docker exec -i -u $(id -u) \
+            -w $workdir $proxy_option \
+            --env SODA_SERVER_ADDRESS=$SODA_SERVER_ADDRESS \
+            $container /soda/framework/$lang/work.sh "$@"
         ;;
     exec)
         shift; shift
         exec_command "$@"
+#        docker exec -i -u $(id -u) $proxy_option $container "$@"
         ;;
     sync-file)
         file=$3
         [ -z "$file" ] && usage
         sync_file_to_container $file
+        ;;
+    clear-cache)
+        clear_cache
         ;;
     force-purge)
         force_purge
@@ -229,6 +255,9 @@ case $subcmd in
         ;;
     assert-running)
         assert_running
+        ;;
+    get-ip)
+        get_ip
         ;;
     *)
         usage
