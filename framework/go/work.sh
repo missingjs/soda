@@ -55,9 +55,9 @@ function create_project()
     set -e
     create_source_file $self_dir/src/bootstrap.go $srcfile
 
+    suffix=$(basename $(pwd))
     mkdir $output_dir
     cd $output_dir
-    suffix=$(basename $(pwd))-$(date +%Y%m%d%H%M%S)
     go mod init "$package_name/coding/$suffix"
     go mod edit -require "$package_name@$package_version"
     go mod edit -replace "$package_name=$self_dir/src"
