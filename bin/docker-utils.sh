@@ -14,6 +14,8 @@ usage:
     $cmd exec  <lang> [-w <dir>] <command> [args...]
         for common commands
 
+    $cmd invoke <lang> [exec-options... --] <commands>
+
     $cmd sync-file <lang>      sync local file to container
     $cmd clear-cache <lang>    invalidate file tag cache in local
 
@@ -199,6 +201,30 @@ function exec_command()
     fi
 }
 
+function invoke_command()
+{
+    local index=0
+    local args=("$@")
+    local options=()
+    local commands=()
+
+    while [ $index -lt ${#args[@]} ]; do
+        [ "${args[$index]}" == "--" ] && break
+        ((index++))
+    done
+
+    if [ $index -lt ${#args[@]} ]; then
+        options+=("${args[@]:0:$index}")
+        let p=index+1
+        commands+=("${args[@]:$p}")
+    else
+        # no options
+        commands+=("${args[@]}")
+    fi
+
+    docker exec -i -u $(id -u) $proxy_option "${options[@]}" $container "${commands[@]}"
+}
+
 function drop_project_in_container()
 {
     [ -e soda.prj.yml ] && docker exec $container rm -rfv $workdir
@@ -235,6 +261,10 @@ case $subcmd in
         shift; shift
         exec_command "$@"
 #        docker exec -i -u $(id -u) $proxy_option $container "$@"
+        ;;
+    invoke)
+        shift; shift
+        invoke_command "$@"
         ;;
     sync-file)
         file=$3
