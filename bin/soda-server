@@ -28,7 +28,7 @@ port=$($framework_dir/$lang/server.sh port)
 
 function stop_server()
 {
-    curl -s --connect-timeout 2 "http://$host:$port/soda/$lang/stop" && echo
+    curl -vs --connect-timeout 2 "http://$host:$port/soda/$lang/stop" && echo
 }
 
 function test_server()
