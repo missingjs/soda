@@ -6,12 +6,15 @@ soda_dir=$(realpath $self_dir/../..)
 out_dir=./dist
 
 cd $self_dir
-[ -d $out_dir ] && rm -r $out_dir
+[ -d $out_dir ] && rm -rvf $out_dir
 
 dku=$soda_dir/bin/docker-utils.sh 
-$dku start ts || exit
 
-$dku exec ts -w /soda/framework/ts bash -c "
+set -e
+
+$dku start ts
+
+$dku invoke ts -w /soda/framework/ts -- bash -c "
     set -e
     echo 'running npm install...'
     npm install
@@ -19,4 +22,6 @@ $dku exec ts -w /soda/framework/ts bash -c "
     tsc --outDir $out_dir
     echo '{\"type\":\"module\"}' > $out_dir/soda/package.json
 "
+
+echo DONE
 
