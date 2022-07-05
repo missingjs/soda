@@ -67,6 +67,8 @@ docker_start()
             -v "$soda_dir:/soda" \
             -v "/etc/group:/etc/group:ro" \
             -v "/etc/passwd:/etc/passwd:ro" \
+            -v "/etc/timezone:/etc/timezone:ro" \
+            -v "/etc/localtime:/etc/localtime:ro" \
             -v "$home_vol:/home/$user" \
             $docker_image tail -f /dev/null
 
