@@ -13,8 +13,9 @@ runtime_lib_dir=$cur_dir/rt-lib
 
 function assert_library()
 {
+    local lang=$1
     [ -e $runtime_lib_dir ] && ls $runtime_lib_dir/*.jar >/dev/null 2>&1 \
-        || { echo "Framework need to build. Please run $cur_dir/make.sh to do it" >&2; exit 3; }
+        || { echo "$lang framework need to build. Please run make.sh to do it" >&2; exit 3; }
 }
 
 function get_classpath()

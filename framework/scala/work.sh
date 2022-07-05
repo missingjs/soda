@@ -33,6 +33,7 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 source $framework_dir/common/bashlib.sh || exit
+source $framework_dir/common/jvm-like.sh || exit
 
 [ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
 source $self_dir/setup_env.sh || exit
@@ -67,7 +68,7 @@ function build_work()
     [ -e $output_dir ] || mkdir $output_dir
     classfile=$output_dir/${testname}.class
     if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
-        assert_framework
+        assert_library scala
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
         set -x
@@ -88,7 +89,7 @@ function run_work()
         local key=$(cd $output_dir && pwd)
         remote_run scala "$key" "$classname" -
     else
-        assert_framework
+        assert_library scala
         scala -cp $(get_classpath):$output_dir $classname
     fi
 }

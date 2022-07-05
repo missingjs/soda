@@ -68,7 +68,7 @@ make_project()
     [ -e $output_dir ] || mkdir $output_dir
     classfile=$output_dir/${testname}.class
     if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
-        assert_library
+        assert_library java
         [ -e $output_dir/$jarfile ] && rm $output_dir/$jarfile
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
@@ -90,7 +90,7 @@ run_project()
         local key=$(cd $output_dir && pwd)
         remote_run java "$key" "$classname" -
     else
-        assert_library
+        assert_library java
         java -cp $(get_classpath):$output_dir $classname
     fi
 }
