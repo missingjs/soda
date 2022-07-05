@@ -12,7 +12,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
-class Server(address: String, port: Int) {
+class SodaServer(address: String, port: Int) {
 
     private val server = HttpServer.create(InetSocketAddress(address, port), 0)
 
@@ -61,20 +61,25 @@ class Server(address: String, port: Int) {
 }
 
 fun main(args: Array<String>) {
+    var address = "0.0.0.0"
     var port = 9204
     var i = 0
     while (i < args.size) {
-        val cmd = args[i]
-        if (cmd == "-p" || cmd == "--port") {
-            port = args[++i].toInt()
-        } else {
-            System.err.println("invalid option: $cmd")
-            exitProcess(1)
+        when (val cmd = args[i]) {
+            "-p", "--port" -> {
+                port = args[++i].toInt()
+            }
+            "--address" -> {
+                address = args[++i]
+            }
+            else -> {
+                System.err.println("invalid option: $cmd")
+                exitProcess(1)
+            }
         }
         ++i
     }
 
-    val address = "localhost"
-    Server(address, port).start()
+    SodaServer(address, port).start()
     Logger.info("soda kotlin server start, listening $address:$port")
 }

@@ -15,7 +15,7 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/setup_env.sh || exit
 
-server_class="soda.kotlin.web.ServerKt"
+server_class="soda.kotlin.web.SodaServerKt"
 
 cmd=$1
 [ -z $cmd ] && usage
