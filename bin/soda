@@ -188,7 +188,7 @@ function run_work()
     # compose command arguments
     local command_str="$dku run-work $ilang run $work"
     if [ "$remote_mode" == "yes" ]; then
-        local server_addr=$($dku get-ip $ilang)
+        local server_addr=$($dku show $ilang ip)
         command_str="$dku run-work $ilang --env SODA_SERVER_ADDRESS=$server_addr -- run $work --remote"
         # setup remote server
         $dku run-work $ilang \

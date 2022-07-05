@@ -20,13 +20,11 @@ usage:
 
     $cmd drop-project <lang>   remove whole content of project in container
 
-    $cmd show <lang> <container|workdir>
+    $cmd show <lang> <container|workdir|ip>
 
     $cmd assert-running <lang>
         check whether the container is running. If not, show error message then exit with code 2
 
-    $cmd get-ip <lang>
-        show ip address of specific container
 EOF
     exit 1
 }
@@ -119,6 +117,10 @@ show_info()
             ;;
         workdir)
             echo $workdir
+            ;;
+        ip)
+            local ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container)
+            echo ${ip:-127.0.0.1}
             ;;
         *)
             usage
@@ -234,12 +236,6 @@ function assert_running()
         || { echo "docker container not running, you can execute \`$(basename $0) start $lang\` to start it" >&2; exit 2; }
 }
 
-function get_ip()
-{
-    local ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container)
-    echo ${ip:-127.0.0.1}
-}
-
 case $subcmd in
     start)
         docker_start
@@ -276,9 +272,6 @@ case $subcmd in
         ;;
     assert-running)
         assert_running
-        ;;
-    get-ip)
-        get_ip
         ;;
     *)
         usage

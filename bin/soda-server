@@ -22,7 +22,7 @@ lang=$2
 check_sdk $lang
 
 lang=$(trans_lang_name $lang)
-host=$($dku get-ip $lang)
+host=$($dku show $lang ip)
 port=$($framework_dir/$lang/server.sh port)
 
 [ -z $port ] && { echo "$lang server port not specified"; exit 1; }
