@@ -33,6 +33,7 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 source $framework_dir/common/bashlib.sh || exit
+source $framework_dir/common/jvm-like.sh || exit
 
 [ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
 source $self_dir/setup_env.sh || exit
@@ -62,7 +63,7 @@ function build_work()
     [ -e $output_dir ] || mkdir $output_dir
     local jar="$output_dir/$jarfile"
     if [[ ! -e $jar ]] || [[ $srcfile -nt $jar ]]; then
-        assert_framework
+        assert_library kotlin
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
         set -ex
@@ -83,7 +84,7 @@ function run_work()
         remote_run kotlin "$key" "$classname" -
     else
         local classname="${testname}Kt"
-        assert_framework
+        assert_library kotlin
         java -cp $(get_classpath):$output_dir/$jarfile $classname
     fi
 }
