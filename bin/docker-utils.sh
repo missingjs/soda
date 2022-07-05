@@ -8,11 +8,8 @@ usage:
     $cmd start <lang>
     $cmd stop  <lang>
 
-    $cmd play  <lang> <command> [args...]
+    $cmd run-work  <lang> <command> [args...]
         just for framework/{lang}/work.sh
-
-    $cmd exec  <lang> [-w <dir>] <command> [args...]
-        for common commands
 
     $cmd invoke <lang> [exec-options... --] <commands>
 
@@ -190,39 +187,40 @@ function clear_cache()
     [ -e $src_tag_log ] && sed -i "s/^$lang .*\$/$lang 0/g" $src_tag_log
 }
 
-function exec_command()
-{
-    if [ "$1" == '-w' ]; then
-        local dir=$2
-        shift; shift
-        docker exec -i -u $(id -u) -w $dir $proxy_option $container "$@"
-    else
-        docker exec -i -u $(id -u) $proxy_option $container "$@"
-    fi
-}
-
-function invoke_command()
+__options=
+__commands=
+function collect_options_and_commands()
 {
     local index=0
     local args=("$@")
-    local options=()
-    local commands=()
 
+    __options=()
+    __commands=()
     while [ $index -lt ${#args[@]} ]; do
         [ "${args[$index]}" == "--" ] && break
         ((index++))
     done
 
     if [ $index -lt ${#args[@]} ]; then
-        options+=("${args[@]:0:$index}")
+        __options+=("${args[@]:0:$index}")
         let p=index+1
-        commands+=("${args[@]:$p}")
+        __commands+=("${args[@]:$p}")
     else
         # no options
-        commands+=("${args[@]}")
+        __commands+=("${args[@]}")
     fi
+}
 
-    docker exec -i -u $(id -u) $proxy_option "${options[@]}" $container "${commands[@]}"
+function invoke_command()
+{
+    collect_options_and_commands "$@"
+    docker exec -i -u $(id -u) $proxy_option "${__options[@]}" $container "${__commands[@]}"
+}
+
+function run_work()
+{
+    collect_options_and_commands "$@"
+    invoke_command "${__options[@]}" -w $workdir -- /soda/framework/$lang/work.sh "${__commands[@]}"
 }
 
 function drop_project_in_container()
@@ -250,17 +248,13 @@ case $subcmd in
     stop)
         docker stop -t 1 $container
         ;;
-    play)
+    run-work)
         shift; shift
-        docker exec -i -u $(id -u) \
-            -w $workdir $proxy_option \
-            --env SODA_SERVER_ADDRESS=$SODA_SERVER_ADDRESS \
-            $container /soda/framework/$lang/work.sh "$@"
-        ;;
-    exec)
-        shift; shift
-        exec_command "$@"
-#        docker exec -i -u $(id -u) $proxy_option $container "$@"
+        run_work "$@"
+#        docker exec -i -u $(id -u) \
+#            -w $workdir $proxy_option \
+#            --env SODA_SERVER_ADDRESS=$SODA_SERVER_ADDRESS \
+#            $container /soda/framework/$lang/work.sh "$@"
         ;;
     invoke)
         shift; shift

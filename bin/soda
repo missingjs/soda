@@ -96,7 +96,7 @@ function create_work()
     container=$($dku show $ilang container)
     echo "container: $container"
     echo "work path: $workdir"
-    $dku play $ilang new $work
+    $dku run-work $ilang new $work
 
     # pull source file to local
     docker cp $container:$workdir/$source_file ./
@@ -132,7 +132,7 @@ function restore_work_in_container()
     prepare_working_dir
 
     # create work
-    $dku play $ilang new $work_name
+    $dku run-work $ilang new $work_name
 
     # remove source template
     local work=$work_name
@@ -176,27 +176,29 @@ function run_work()
     [ "$restore_work" == "yes" ] && restore_work_in_container
 
     local work=$work_name
-    source_file=$($framework_dir/$ilang/work.sh source $work)
+    local source_file=$($framework_dir/$ilang/work.sh source $work)
     $dku sync-file $ilang $source_file
 
-    script="$dku play $ilang"
+    local script="$dku run-work $ilang"
     # build executable
     [ "$force_rebuild" == "yes" ] && $script clean $work
     $script make $work || exit 
 
     # compose command arguments
-    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
-    runner=soda.engine.main
-    commandStr="$script run $work"
+    local command_str="$dku run-work $ilang run $work"
     if [ "$remote_mode" == "yes" ]; then
-        commandStr="$commandStr --remote"
+        local server_addr=$($dku get-ip $ilang)
+        command_str="$dku run-work $ilang --env SODA_SERVER_ADDRESS=$server_addr -- run $work --remote"
         # setup remote server
-        export SODA_SERVER_ADDRESS=$($dku get-ip $ilang)
-        $script remote-setup $work || { echo "failed to setup server" >&2; exit 10; }
+        $dku run-work $ilang \
+            --env SODA_SERVER_ADDRESS=$server_addr \
+            -- remote-setup $work \
+            || { echo "failed to setup server" >&2; exit 10; }
     fi
 
     # run test cases
-    python3 -m $runner $work --command "$commandStr" "${py_args[@]}"
+    export PYTHONPATH="$framework_dir/python/src:$PYTHONPATH"
+    python3 -m soda.engine.main $work --command "$command_str" "${py_args[@]}"
 }
 
 cmd=$1
@@ -220,7 +222,7 @@ case $cmd in
     clean)
         global_prepare "$2"
         docker_prepare
-        $dku play $ilang clean $work_name
+        $dku run-work $ilang clean $work_name
         ;;
     *)
         usage

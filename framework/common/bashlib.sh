@@ -46,6 +46,8 @@ remote_run()
 #    local content_type=json
 
     local address=$SODA_SERVER_ADDRESS
+    [ -z "$address" ] && { echo "SODA_SERVER_ADDRESS is empty" >&2; exit 3; }
+
     local work_url="http://$address:$server_port/soda/$lang/work"
 
     if [ "$content_type" == "multipart" ]; then
