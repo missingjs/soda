@@ -33,6 +33,7 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 source $framework_dir/common/bashlib.sh || exit
+source $framework_dir/common/jvm-like.sh || exit
 
 [ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
 source $self_dir/setup_env.sh || exit
@@ -67,7 +68,7 @@ make_project()
     [ -e $output_dir ] || mkdir $output_dir
     classfile=$output_dir/${testname}.class
     if [[ ! -e $classfile ]] || [[ $srcfile -nt $classfile ]]; then
-        assert_framework
+        assert_library
         [ -e $output_dir/$jarfile ] && rm $output_dir/$jarfile
         echo "Compiling $srcfile ..."
         classpath=$(get_classpath)
@@ -89,7 +90,7 @@ run_project()
         local key=$(cd $output_dir && pwd)
         remote_run java "$key" "$classname" -
     else
-        assert_framework
+        assert_library
         java -cp $(get_classpath):$output_dir $classname
     fi
 }

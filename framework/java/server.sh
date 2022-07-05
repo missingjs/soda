@@ -13,6 +13,9 @@ EOF
 }
 
 self_dir=$(cd $(dirname $0) && pwd)
+framework_dir=$(dirname $self_dir)
+
+source $framework_dir/common/jvm-like.sh || exit
 source $self_dir/setup_env.sh || exit
 
 server_class="soda.web.SodaServer"
