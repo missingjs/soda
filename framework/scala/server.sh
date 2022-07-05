@@ -15,7 +15,7 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 source $self_dir/setup_env.sh || exit
 
-server_class="soda.scala.web.Server"
+server_class="soda.scala.web.SodaServer"
 
 cmd=$1
 [ -z $cmd ] && usage

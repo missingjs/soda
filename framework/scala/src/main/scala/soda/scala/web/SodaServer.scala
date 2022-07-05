@@ -8,7 +8,7 @@ import soda.scala.web.work.WorkHandler
 import java.net.InetSocketAddress
 import java.util.concurrent.{Executors, TimeUnit}
 
-class Server(address: String, port: Int) {
+class SodaServer(address: String, port: Int) {
 
   private val server = HttpServer.create(new InetSocketAddress(address, port), 0)
 
@@ -57,8 +57,9 @@ class Server(address: String, port: Int) {
 
 }
 
-object Server {
+object SodaServer {
   def main(args: Array[String]): Unit = {
+    var address = "0.0.0.0"
     var port = 9202
     var i = 0
     while (i < args.length) {
@@ -67,6 +68,9 @@ object Server {
         case "-p" | "--port" =>
           i += 1
           port = args(i).toInt
+        case "--address" =>
+          i += 1
+          address = args(i)
         case _ =>
           System.err.println(s"invalid option: $cmd")
           System.exit(1)
@@ -74,8 +78,7 @@ object Server {
       i += 1
     }
 
-    val address = "localhost"
-    new Server(address, port).start()
+    new SodaServer(address, port).start()
     Logger.info(s"soda scala server start, listening $address:$port")
   }
 }
