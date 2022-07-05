@@ -5,25 +5,45 @@ usage()
     local cmd=$(basename $0)
     cat << EOF
 usage: 
+    $cmd <command> <lang> [options]
+
+For container management
+
     $cmd start <lang>
+        Start language specific container, it will be created if not exist.
+
     $cmd stop  <lang>
+        Stop container
+
+    $cmd force-purge <lang>
+        Stop container forcely then remove
+
+Project management
+
+    $cmd drop-project <lang>
+        Remove whole content of project in container
 
     $cmd run-work  <lang> <command> [args...]
-        just for framework/{lang}/work.sh
+        Call framework/{lang}/work.sh in container
 
     $cmd invoke <lang> [exec-options... --] <commands>
+        Execute generic commands in container, options for 'docker exec' and the commands your would like to run separated by '--'
 
-    $cmd sync-file <lang>      sync local file to container
-    $cmd clear-cache <lang>    invalidate file tag cache in local
+    $cmd sync-file <lang>
+        Sync local file with container
 
-    $cmd force-purge <lang>    stop and remove
+    $cmd clear-cache <lang>
+        Invalidate file tag cache in local
 
-    $cmd drop-project <lang>   remove whole content of project in container
+Information query
 
     $cmd show <lang> <container|workdir|ip>
+        container: container name
+        workdir:   working director in container
+        ip:        ip of container
 
     $cmd assert-running <lang>
-        check whether the container is running. If not, show error message then exit with code 2
+        Check whether the container is running. If not, show error message then exit with code 2
 
 EOF
     exit 1
