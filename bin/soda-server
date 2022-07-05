@@ -39,12 +39,12 @@ function test_server()
 
 function start_server_foreground()
 {
-    $dku exec $lang "/soda/framework/$lang/server.sh" start
+    $dku invoke $lang "/soda/framework/$lang/server.sh" start
 }
 
 function start_server_background()
 {
-    $dku exec $lang bash -c "
+    $dku invoke $lang bash -c "
         set -e
         log_path=~/.soda/server/logs
         [ -e \$log_path ] || mkdir -p \$log_path

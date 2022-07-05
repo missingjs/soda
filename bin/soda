@@ -72,7 +72,7 @@ function get_work_name()
 function prepare_working_dir()
 {
     local workdir=$($dku show $ilang workdir)
-    $dku exec $ilang bash -c "[ -e $workdir ] || mkdir -p $workdir"
+    $dku invoke $ilang bash -c "[ -e $workdir ] || mkdir -p $workdir"
 }
 
 function create_work()
@@ -138,7 +138,7 @@ function restore_work_in_container()
     local work=$work_name
     local srcfile=$($framework_dir/$ilang/work.sh source $work)
     local workdir=$($dku show $ilang workdir)
-    $dku exec $ilang -w $workdir rm $srcfile
+    $dku invoke $ilang -w $workdir -- rm $srcfile
 
     # clear local cache
     $dku clear-cache $ilang
