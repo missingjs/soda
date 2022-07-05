@@ -33,7 +33,6 @@ source $framework_dir/common/bashlib.sh || exit
 
 [ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
 source $self_dir/setup_env.sh || exit
-source $self_dir/common.sh || exit
 
 cmd=$1
 [ -z $cmd ] && usage
@@ -70,7 +69,7 @@ EOF
 
 tell_to_build()
 {
-    echo "Please run $this_dir/deploy.sh to build soda C# library" >&2
+    echo "Please run deploy.sh to build soda C# library" >&2
     exit 3
 }
 

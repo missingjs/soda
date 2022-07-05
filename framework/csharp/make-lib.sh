@@ -4,7 +4,6 @@ self_dir=$(cd $(dirname $0) && pwd)
 
 [ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
 source $self_dir/setup_env.sh || exit
-source $self_dir/common.sh || exit
 
 check_package
 
@@ -27,3 +26,6 @@ global_pack_dir=~/.nuget/packages/$package_id/$package_version
 
 # !!! OR clear all global package caches
 # dotnet nuget locals global-packages --clear
+
+echo DONE
+
