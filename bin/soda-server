@@ -13,7 +13,8 @@ EOF
 }
 
 self_dir=$(cd $(dirname $0) && pwd)
-source $self_dir/support/commonlib.sh
+bashlib=$(realpath $self_dir/../framework/common/bashlib.sh)
+source $bashlib || exit
 
 cmd=$1
 lang=$2

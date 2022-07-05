@@ -39,7 +39,6 @@ lang=$2
 self_dir=$(cd $(dirname $0) && pwd)
 soda_dir=$(dirname $self_dir)
 framework_dir=$soda_dir/framework
-loadconf=$self_dir/support/loadconf.sh
 volume_dir=~/.soda/volumes/$lang
 src_tag_log=_source_tag.log
 
@@ -251,10 +250,6 @@ case $subcmd in
     run-work)
         shift; shift
         run_work "$@"
-#        docker exec -i -u $(id -u) \
-#            -w $workdir $proxy_option \
-#            --env SODA_SERVER_ADDRESS=$SODA_SERVER_ADDRESS \
-#            $container /soda/framework/$lang/work.sh "$@"
         ;;
     invoke)
         shift; shift

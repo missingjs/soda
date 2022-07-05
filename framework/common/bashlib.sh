@@ -1,5 +1,15 @@
+#!/bin/bash
+
+# ****
+# This file should only be sourced in other script
+# ****
+
 this_dir=$(cd -P $(dirname ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)
-framework_dir=$(dirname $this_dir)
+soda_dir=$(realpath $this_dir/../..)
+framework_dir=$soda_dir/framework
+dku=$soda_dir/bin/docker-utils.sh
+
+export SODA_FRAMEWORK_DIR=$framework_dir
 
 command_run_help=\
 "    run <testname> [--testcase <files> [--delim <DELIM>]] [--verbose] [--timeout <SEC>]
@@ -31,80 +41,45 @@ assert_testname()
     [ -z $testname ] && usage
 }
 
-remote_run()
+function check_sdk()
 {
-# args:
-#   lang:   java, scala, ...
-#   key:    key of current test case, normally the absolute path of it
-#   class:  name of entry class
-#   file:   file of test case, use '-' as stdin
     local lang=$1
-    local key=$2
-    local entry_class=$3
-    local file=$4
-    local content_type=multipart
-#    local content_type=json
-
-    local address=$SODA_SERVER_ADDRESS
-    [ -z "$address" ] && { echo "SODA_SERVER_ADDRESS is empty" >&2; exit 3; }
-
-    local work_url="http://$address:$server_port/soda/$lang/work"
-
-    if [ "$content_type" == "multipart" ]; then
-        curl --connect-timeout 2 -sf -X POST \
-            -F "key=$key" \
-            -F "entry_class=$entry_class" \
-            -F "test_case=@$file" \
-            "$work_url"
-    elif [ "$content_type" == "json" ]; then
-local pycode=$(cat << EOF
-import json
-info = {
-  "key": "$key",
-  "entryClass": "$entry_class",
-  "testCase" : """$(cat $file)"""
-}
-print(json.dumps(info))
-EOF
-)
-
-        local post_content="$(python3 -c "$pycode")"
-        curl --connect-timeout 2 -sf -X POST \
-            -H 'Content-Type: application/json; charset=utf-8' \
-            -d "$post_content" \
-            "$work_url"
-    else
-        echo "error of remote run: unknown content type: $content_type" >&2
-        exit 10
-    fi
+    local sdk_dir=$framework_dir/$lang
+    [ -e $sdk_dir/work.sh -a -e $sdk_dir/build-docker.sh ] \
+        || { echo "language '$lang' not supported"; exit 3; }
 }
 
-remote_setup()
+function trans_lang_name()
 {
-# args:
-#   lang:   java, scala, ...
-#   key:    key of current test case, normally the absolute path of it
-#   file:   bootstrap file, normally a jar, or a script
-    local lang=$1
-    local key=$2
-    local file=$3
+    local name=$1
+    case $name in
+        cs)
+            name=csharp
+            ;;
+        py)
+            name=python
+            ;;
+        *)
+            ;;
+    esac
+    echo $name
+}
 
-    local address=$SODA_SERVER_ADDRESS
-    local echo_url="http://$address:$server_port/soda/$lang/echo?a=b"
-    if ! curl --connect-timeout 2 -s "$echo_url" >/dev/null; then
-        echo "server not open" >&2
-        exit 2
-    fi
+function nano_time()
+{
+    date +%s%N
+}
 
-    local boot_url="http://$address:$server_port/soda/$lang/bootstrap"
-    local local_md5="$(md5sum $file | awk '{print $1}')"
-    local remote_md5="$(curl --connect-timeout 2 -s "${boot_url}?key=$key&format=text")"
+function ms_since()
+{
+    local start_nano=$1
+    local end_nano=$(nano_time)
+    echo $((($end_nano - $start_nano) / 1000000))
+}
 
-    if [ "$local_md5" != "$remote_md5" ]; then  
-        curl --connect-timeout 2 -X POST -sf \
-            -F "key=$key" \
-            -F "binary=@$file" \
-            "$boot_url" >/dev/null
-    fi
+function report_elapse_ms()
+{
+    local start_nano=$1
+    echo "time elapse: $(ms_since $start_nano) ms"
 }
 
