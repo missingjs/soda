@@ -24,5 +24,22 @@ $dku invoke java -w /soda/framework/java -- bash -c "
     mvn clean package
 "
 
-cp target/soda-java-*.jar $runtime_lib_dir/
+jar_name=$(python3 <<EOF
+import xml.etree.ElementTree as ET
+
+nsmap = {}
+for _, v in ET.iterparse('pom.xml', events=['start-ns']):
+    key, url = v
+    nsmap[key] = url
+
+tree = ET.parse('pom.xml')
+root = tree.getroot()
+ns = nsmap['']
+artifact = root.findall(f'./{{{ns}}}artifactId')[0].text
+version = root.findall(f'./{{{ns}}}version')[0].text
+print(f'{artifact}-{version}.jar')
+EOF
+)
+
+cp target/$jar_name $runtime_lib_dir/
 
