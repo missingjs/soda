@@ -1,7 +1,7 @@
 SOURCES := $(wildcard *.cpp)
 OBJS = $(SOURCES:.cpp=.o)
+DEPS = $(SOURCES:.cpp=.d)
 CC = g++
-#CPPFLAGS = -shared -fPIC -Wreturn-type -fsanitize=address -fsanitize=signed-integer-overflow -std=c++17
 CPPFLAGS = -shared -fPIC ${SODA_CPP_FLAGS}
 
 LIB_DIR = .
@@ -17,7 +17,7 @@ all: $(TARGET)
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-sinclude $(SOURCES:.cpp=.d)
+sinclude $(DEPS)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CPPFLAGS) -o $(LIB_FILE) $(OBJS)

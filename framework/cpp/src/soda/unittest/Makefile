@@ -17,7 +17,6 @@ all: $(TARGET)
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-#sinclude $(SOURCES:.cpp=.d)
 sinclude $(DEPS)
 
 $(TARGET): $(OBJS)
