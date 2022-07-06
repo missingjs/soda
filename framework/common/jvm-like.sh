@@ -89,7 +89,7 @@ remote_setup()
     local address=$SODA_SERVER_ADDRESS
     local echo_url="http://$address:$server_port/soda/$lang/echo?a=b"
     if ! curl --connect-timeout 2 -s "$echo_url" >/dev/null; then
-        echo "server not open" >&2
+        echo "server not open, failed to visit $echo_url" >&2
         exit 2
     fi
 
