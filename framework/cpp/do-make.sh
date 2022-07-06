@@ -8,6 +8,8 @@ source_setup_env $self_dir
 
 lib_dir=$self_dir/lib
 
+subcmd=$1
+
 [ -d $lib_dir ] || { mkdir -p $lib_dir || exit; }
 rm -rfv lib/* 2>/dev/null
 
@@ -17,8 +19,15 @@ mods="leetcode unittest"
 
 for mod in $mods; do
     cd $self_dir/src/soda/$mod
-    make clean && make || exit
-    cd -
-    cp $self_dir/src/soda/$mod/lib*.so $lib_dir/
+    case "$subcmd" in
+        clean)
+            make clean
+            ;;
+        *)
+            make clean && make || exit
+            cp $self_dir/src/soda/$mod/lib*.so $lib_dir/
+            ;;
+    esac
+    cd - >/dev/null
 done
 

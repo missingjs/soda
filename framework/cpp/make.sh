@@ -11,7 +11,7 @@ set -e
 
 $dku start cpp
 
-$dku invoke cpp -w /soda/framework/cpp -- bash do-make.sh
+$dku invoke cpp -w /soda/framework/cpp -- bash do-make.sh "$@"
 
 ls $lib_dir/
 

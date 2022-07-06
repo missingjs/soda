@@ -23,4 +23,4 @@ $(TARGET): $(OBJS)
 	$(CC) $(CPPFLAGS) -o $(LIB_FILE) $(OBJS)
 
 clean:
-	rm -f *.o *.d $(LIB_FILE)
+	rm -f $(OBJS) $(DEPS) $(LIB_FILE)
