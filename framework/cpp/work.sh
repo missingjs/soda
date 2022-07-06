@@ -95,8 +95,7 @@ case $cmd in
     run)
         execfile=$output_dir/${testname}.out
         [ -e $execfile ] || { echo "Error: no executable file" >&2; exit 2; }
-        export LD_LIBRARY_PATH=$self_dir/src/soda/leetcode:$self_dir/src/soda/unittest:$LD_LIBRARY_PATH
-        export DYLD_LIBRARY_PATH=$self_dir/src/soda/leetcode:$self_dir/src/soda/unittest:$DYLD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=$self_dir/lib:$LD_LIBRARY_PATH
         ASAN_OPTIONS="detect_leaks=0" $execfile
         ;;
     clean)
