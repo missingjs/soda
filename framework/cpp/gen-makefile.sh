@@ -27,20 +27,12 @@ done
 cat << EOF
 SOURCES = ${case_name}__gen.cpp
 OBJS = \$(SOURCES:.cpp=.o)
-LIBRARY = -L${self_dir}/src/soda/leetcode -lleetcode -L${self_dir}/src/soda/unittest -lsodatest
+LIBRARY = -L${self_dir}/lib -lleetcode -lsodatest
 CC = g++
 CPPFLAGS = \${SODA_INCLUDE} \${SODA_CPP_FLAGS}
 TARGET = ${case_name}.out
 
 all: \$(TARGET)
-
-LEETCODE_LIB:
-	@cd ${self_dir}/src/soda/leetcode; \\
-	make; cd -;
-
-SODATEST_LIB:
-	@cd ${self_dir}/src/soda/unittest; \\
-	make; cd -;
 
 EOF
 
@@ -53,7 +45,7 @@ cat <<"EOF"
 
 sinclude $(SOURCES:.cpp=.d)
 
-$(TARGET): $(OBJS) LEETCODE_LIB SODATEST_LIB
+$(TARGET): $(OBJS)
 	$(CC) $(CPPFLAGS) -o $(TARGET) $(OBJS) $(LIBRARY)
 
 clean:
