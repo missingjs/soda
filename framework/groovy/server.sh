@@ -15,8 +15,10 @@ EOF
 self_dir=$(cd $(dirname $0) && pwd)
 framework_dir=$(dirname $self_dir)
 
+source $framework_dir/common/bashlib.sh || exit
 source $framework_dir/common/jvm-like.sh || exit
-source $self_dir/setup_env.sh || exit
+
+source_setup_env $self_dir
 
 server_class="soda.groovy.web.SodaServer"
 

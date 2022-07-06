@@ -67,3 +67,10 @@ function report_elapse_ms()
     echo "time elapse: $(ms_since $start_nano) ms"
 }
 
+function source_setup_env()
+{
+    local path="$1"
+    [ -e $path/setup_env.sh ] || cp $path/_setup_env.sh $path/setup_env.sh
+    source $path/setup_env.sh || exit
+}
+

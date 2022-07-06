@@ -1,9 +1,10 @@
 #!/bin/bash
 
 self_dir=$(cd $(dirname $0) && pwd)
+framework_dir=$(dirname $self_dir)
+source $framework_dir/common/bashlib.sh || exit
 
-[ -e $self_dir/setup_env.sh ] || cp $self_dir/_setup_env.sh $self_dir/setup_env.sh
-source $self_dir/setup_env.sh || exit
+source_setup_env $self_dir
 
 check_package
 
