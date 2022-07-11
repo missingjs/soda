@@ -27,7 +27,7 @@ done
 cat << EOF
 SOURCES = ${case_name}__gen.cpp
 OBJS = \$(SOURCES:.cpp=.o)
-LIBRARY = -L${self_dir}/lib -lleetcode -lsodatest
+LIBRARY = -L${self_dir}/lib -lsoda-cpp
 CC = g++
 CPPFLAGS = \${SODA_INCLUDE} \${SODA_CPP_FLAGS}
 TARGET = ${case_name}.out

@@ -10,24 +10,19 @@ lib_dir=$self_dir/lib
 
 subcmd=$1
 
-[ -d $lib_dir ] || { mkdir -p $lib_dir || exit; }
-rm -rfv lib/* 2>/dev/null
+cd $self_dir
+
+# prepare directories
+for dir in build $lib_dir; do
+    [ -d $dir ] || { mkdir -p $dir || exit; }
+    rm -rfv $dir/* 2>/dev/null
+done
 
 set -e
 
-mods="leetcode unittest"
+cmake -H. -B build
 
-for mod in $mods; do
-    cd $self_dir/src/soda/$mod
-    case "$subcmd" in
-        clean)
-            make clean
-            ;;
-        *)
-            make clean && make || exit
-            cp $self_dir/src/soda/$mod/lib*.so $lib_dir/
-            ;;
-    esac
-    cd - >/dev/null
-done
+cd build && cmake --build . && cd - >/dev/null
+
+cp build/libsoda-cpp.so $lib_dir/
 
