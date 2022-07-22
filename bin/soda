@@ -170,7 +170,6 @@ function run_work()
 
     set -e
 
-
     # check if container is running
     $dku assert-running $ilang
 

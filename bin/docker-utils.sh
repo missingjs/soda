@@ -70,10 +70,12 @@ docker_start()
     # check if container exist
     if ! docker container ls --all | grep -q $container; then
         local home_vol="$volume_dir/home"
+        local task_vol="$volume_dir/task"
         local user="$(id -un)"
 
         set -e
         [ -d $home_vol ] || mkdir -p $home_vol
+        [ -d $task_vol ] || mkdir -p $task_vol
 
         echo "create docker container $container"
         docker run -d \
@@ -86,14 +88,16 @@ docker_start()
             -v "/etc/timezone:/etc/timezone:ro" \
             -v "/etc/localtime:/etc/localtime:ro" \
             -v "$home_vol:/home/$user" \
+            -v "$task_vol:/task" \
             $docker_image tail -f /dev/null
 
+
         # initialize container
-        docker container exec $container \
-            bash -c "
-                [ -e /task ] || mkdir /task
-                chmod 777 /task
-            "
+#        docker container exec $container \
+#            bash -c "
+#                [ -e /task ] || mkdir /task
+#                chmod 777 /task
+#            "
 
 #        user_id=$(id -u)
 #        user_name=$(id -un)
