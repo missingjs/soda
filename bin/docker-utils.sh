@@ -282,6 +282,7 @@ case $subcmd in
         ;;
     clear-cache)
         clear_cache
+        exit 0
         ;;
     force-purge)
         force_purge
