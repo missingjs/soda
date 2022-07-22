@@ -82,7 +82,9 @@ docker_start()
             --privileged \
             --name $container \
             --network bridge $proxy_option \
-            -v "$soda_dir:/soda" \
+            -v "$soda_dir/bin:/soda/bin:ro" \
+            -v "$soda_dir/framework/common:/soda/framework/common:ro" \
+            -v "$soda_dir/framework/$lang:/soda/framework/$lang" \
             -v "/etc/group:/etc/group:ro" \
             -v "/etc/passwd:/etc/passwd:ro" \
             -v "/etc/timezone:/etc/timezone:ro" \
