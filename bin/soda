@@ -182,7 +182,17 @@ function run_work()
     local script="$dku run-work $ilang"
     # build executable
     [ "$force_rebuild" == "yes" ] && $script clean $work
-    $script make $work || exit 
+    $script make $work || {
+        local err_code=$?
+        if [ $err_code -eq 126 ]; then
+            echo "error code 126, trying to fix..."
+            $dku clear-cache $ilang
+            $dku sync-file $ilang $source_file
+            $script make $work || exit
+        else
+            exit $err_code
+        fi
+    }
 
     # compose command arguments
     local command_str="$dku run-work $ilang run $work"
