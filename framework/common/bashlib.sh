@@ -29,8 +29,9 @@ function check_sdk()
 {
     local lang=$1
     local sdk_dir=$framework_dir/$lang
-    [ -e $sdk_dir/work.sh -a -e $sdk_dir/build-docker.sh ] \
-        || { echo "language '$lang' not supported"; exit 3; }
+    for f in work.sh Dockerfile; do
+        [ -e $sdk_dir/$f ] || { echo "$sdk_dir/$f not found" >&2; exit 3; }
+    done
 }
 
 function trans_lang_name()
