@@ -9,6 +9,9 @@ usage:
 
 For container management
 
+    $cmd build <lang>
+        Build image with framework/<lang>/Dockerfile.
+
     $cmd start <lang>
         Start language specific container, it will be created if not exist.
 
@@ -64,6 +67,31 @@ docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
 workdir=/task$(pwd)
 proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
+
+build_image()
+{
+    local base_image="$docker_image-base"
+    echo "Building image $base_image..."
+    cd $framework_dir/$lang
+
+    # proxy options for docker build
+    local proxy_option="$($self_dir/support/build-utils.sh proxy-arg)"
+
+    docker build --network host $proxy_option -t $base_image . || exit
+
+    # install common software, or do some common configurations
+    local tmpdir=$(mktemp -d)
+    cd $tmpdir
+    cat >Dockerfile <<EOF
+FROM $base_image
+EOF
+    
+    set -x
+    docker build --network host $proxy_option -t $docker_image .
+
+    cd - >/dev/null
+    rm -rf $tmpdir
+}
 
 docker_start()
 {
@@ -263,6 +291,9 @@ function assert_running()
 }
 
 case $subcmd in
+    build)
+        build_image
+        ;;
     start)
         docker_start
         ;;
