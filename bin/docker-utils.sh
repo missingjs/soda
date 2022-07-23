@@ -66,7 +66,7 @@ src_tag_log=_source_tag.log
 docker_image="missingjs/soda-$lang"
 container="soda-task-$lang"
 workdir=/task$(pwd)
-proxy_option=$($framework_dir/common/build-utils.sh run-proxy)
+proxy_option=$($soda_dir/docker/build-utils.sh run-proxy)
 
 build_image()
 {
@@ -75,7 +75,7 @@ build_image()
     cd $framework_dir/$lang
 
     # proxy options for docker build
-    local proxy_option="$($self_dir/support/build-utils.sh proxy-arg)"
+    local proxy_option="$($soda_dir/docker/build-utils.sh proxy-arg)"
 
     docker build --network host $proxy_option -t $base_image . || exit
 
